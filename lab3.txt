@@ -1,0 +1,239 @@
+Prepare the example project "BFT" as described in UG888.
+
+Begin with Lab2 "Using the Project Design Flow"
+
+Within Step1: Creating a Project
+
+- Launch Vivado according to sub-steps 1..5, outlined in sub-section
+  "On Windows"
+
+- THEN carry out the sub-steps 1..5 of Creating a New Project (i.e.
+  specify a project name and location)
+  
+- CONTINUE with sub-steps 6 and 7 but do NOT add any files or directories
+  (just skip sub-steps 6-a..c and 7-a..b)
+  
+- NOW from the main menu choose File -> Open Journal and take a note of
+  the Tcl commands carried out so far.
+  
+    - Locate the description of these commands in UG835 and (try to)
+	  explain what has been achieved so far
+	  
+    - In the Tcl console from the Vivado GUI enter the command
+	  stop_gui
+	  
+IMPORTANT: If this does not bring you back to the Vivado Shell, something
+major must have went wrong. DO NOT CONTINUE but show your tutor what has
+happened and let him bring you back on track.
+
+- Back in the Vivado shell once more type
+  start_gui
+  
+- Back in the GUI in the Tcl console type
+  stop_gui
+  
+Note: you have nothing advanced so far, but the point is you should get_cells
+accustomed with the way to switch between the GUI and the Vivado Shell, so that
+in future there need be no directives more explicit as
+
+                        - Continue in Vivado GUI
+and
+						- Continue in Vivado Shell
+
+- Continue in Vivado Shell
+
+    - use the command current_project
+	
+    - verify it returned name you did choos for the project when you
+	  created it in the Vivado GUI (If you very closely followed the
+	  steps of Lab2 in UG888 it should be project_bft; this name is
+	  also assumbed occasionally in some following steps. In case you
+	  have chosen a different name, please use THAT at the appropriate
+	  places below)
+	  
+	- again use the command current_project, but STORE ITS RETURN VALUE
+	    set p [current_project]
+	  
+	- use the command
+	    report_property $p
+	  
+	- explain the output of the above (comparing it to the expectations
+	  you had if you did what is ALWAYS recommended whenever you encounter
+	  a new command in these labs: RTFM)
+	  
+	- try the following commmands to find if they work (if not you may
+	  make an attempt to find an explanation for the reasons, but do not
+	  spend too much time on wondering - things will be explained later)
+	    report_property [current_project]
+	    report_property project_bft
+	    report_property project_bft
+	    get_property CLASS $p
+	    get_property NAME $p
+	    puts $p
+	    string equal $p project_bft
+	    set p [split $p ""]
+	    set p [join $p ""]
+		
+	- again use the commands
+		puts $p
+	    string equal $p project_bft
+	    report_property $p
+	  and THIS TIME try harder to explain why the command report_property
+	  gives an error message
+	  
+	- restore the content of p from "being just a plain string" to refer
+	  to the current_project (which has the name project_bft - or whatever
+	  you chose during creation in the Vivado GUI, then use the commands
+	    get_property PART $p
+		get_property Part $p
+		get_property PaRt $p
+
+    - use the command		
+		  set_property part xc7vx485tffg1157-2
+	  and verify that it actually changed the PART property
+	  
+- Continue in Vivado GUI
+
+    - again from the main menu choose File -> Open Journal
+	
+	- locate the command that once created the project
+	
+	- in the Tcl Console of the Vivado GUI(!) - use the command
+	  you took from the journal, once used to create the project
+	  
+	- watch the error message issued and change the command in so
+ 	  far that there is no error any more
+	  
+	- modify the create_project command so that a project created
+	  with a name, that doesn't already exists
+	  
+	- what about the directoy property - needs this to be different
+	  in different projects too?
+	  
+=========================================================================
+	  
+VERY ADVANCED INTERMEZZO - please skip if you are not confident you can
+come up with a solution in ten minutes or so - you need good knowledge
+of the Tcl language, may be from other projects - also "stand alone"
+projects outside Vivado.
+
+    - write a Tcl subroutine that compares two project objects by all
+	  their properties and shows the differences only
+	  
+	- can you generalize this to compare other design objects too?
+	    - completely - i.e. for ALL properties they have
+		- partially - i.e. forselected properties only
+	  
+=========================================================================
+
+- Still in the Vivado GUI
+
+  - Carry out the step to add files that has been skipped, but DO NOT
+    ADD ALL FILES in ONE SINGLE operation, do it separately, one after
+	the other
+	
+  - After adding the first file (FifoBuffer.v) determine the Tcl command
+    actually used from the Journal, and look up its documentation in
+	UG835.
+	
+  - When adding the second file (aync_fifo.v) UN-check in the GUI the
+    box "copy files into project". If you again look in the Journal,
+	which change is obviously caused by this check-box.
+	
+  - Add the remaining sources (according to UG888 Fig. 11 via the GUI
+  
+                         - OR ALTERNATIVELY -
+						 
+  - add these file in the Vivado Shell using Tcl commands (only).
+  
+ NOTE: You should definitely to study the options of import_files and/or
+       add_files in UG835 before doing this.
+	   
+- Continue in Vivado Shell
+
+  - What do you expect from the following commands (explain and or look
+    up the documentation in tehe appropriate manuals):
+	
+	  get_files
+	  puts [get_files]
+	  llength [get_files]
+	  set files [get_files]
+	  llength $files
+	  puts [lindex $files 0]
+	  puts [lindex $files end]
+	  report_property [lindex $files 0]
+	  report_property [lindex $files end]
+	  set first [lindex $files 0]
+	  set last [lindex $files end]
+	  get_property USED_IN $first
+	  get_property USED_IN $last
+	  get_property USED_IN $files
+	  
+  - In UG835 carefully read the documentation for the command get_files.
+    
+	- especially pay attention to the section describing the -filter
+	  option (NOT the one in the overview table at the beginning but the
+	  somewhat more detailed one near the middle)
+	  
+	- also look up the filtering examples at the end of the command's
+	  description
+	
+  - With that knowledge you have to choices: EITHER implement what is
+    describe in the next section yourself OR explain how it is achieved
+	by the solution in the section after it.
+	
+	- Extract three groups of source file objects using get_files as
+	  lists into three variables:
+	  
+	     set synth_files ...(TO BE DONE)...  ;# files used in synthesis
+	     set impl_files ...(TO BE DONE)...   ;# ... in implementation
+	     set sim_files ...(TO BE DONE)...    ;# ... in simulation
+		 
+      (NOTE (and show) that the three sets are NOT DISJOINT)
+	  
+	  
+	 - And this is the solution:
+	 
+	 	set synth_files [get_files -filter {USED_IN =~ *synthesis*}]
+    	set impl_files [get_files -filter {USED_IN =~ *implementation*}]
+    	set sim_files [get_files -filter {USED_IN =~ *simulation*}]
+		
+	  And as a side-note:
+	  A programmatic way to "prove" these sets are NOT disjoint is this:
+
+	    expr [llength $files] < [llength $synth_files]\
+		                      + [llength $impl_files] \
+							  + [llength $sim_files]
+							  
+- Continue in Vivado GUI
+
+   - If still any files are missing fom the steps initially skipped,
+     add these now.
+	 
+   - Lauch synthesis and implementation from the GUI
+   
+   - View the Journal and locate the Tcl commands that have been run
+   
+- Continue in Vivado Shell
+
+    - Use the commands from the journal directly
+	
+	  - right NOW and also
+	  - AFTER you modified some source file
+	  
+    - Learn to navigate the design model with Tcl commands following
+      what is described	UG894 pages 39ff.
+	  
+**********************************************************************
+* The latter is an area of little surprise - what you need to do is: *
+* Practice, practice, practice ... you can and even NEED to do this  *
+* mostly on your own. If you still have questions or encounter any   *
+* problem you cannot solve yourself by consulting UG835, send me an  *
+* email:  me@tbfe.de -- Martin Weitzel                               *
+**********************************************************************
+
+    
+  
+
+	
+

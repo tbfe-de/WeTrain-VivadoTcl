@@ -1,0 +1,19 @@
+# -----------------------------------------------------------------------------
+# List All Infographics Used in this Training
+# -----------------------------------------------------------------------------
+# Note:
+# - Empty lines are ignored
+# - Comment as usual (start with # after first non-whitespace)
+# - Sections separated by colon-lines (currently no special meaning)
+# - Order matters for generating combined PDF
+
+:::::::::::::::::::::::::::: Tcl-Intro
+
+Tcl_Vivado_Integration
+
+:::::::::::::::::::::::::::: Tcl-Vivado
+
+VivadoVsTclSyntax
+VivadoDesignFlows
+VivadoModesAndTcl
+VivadoProjectMode

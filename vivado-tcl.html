@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vivado Advanced Tcl Scripting</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- when changing the stylesheet file please see also remark below -->
+    <link rel="stylesheet" type="text/css" href="styling.css" />
+  </head>
+  <body>
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- :::::::::: template pages come first ... skip to REALCONTENT ::::::::: -->
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<textarea id="source">
+
+layout: true
+name: blank
+styling: styling.css
+styling-by: Martin Weitzel
+
+<!--
+  *****************************************************************************
+  Template used for title page (only)
+  *****************************************************************************
+  Please change the 'styling-by:' attribute if you change the style-sheet.
+-->
+
+.stylehint[
+Styled with [{{styling}}]({{styling}}) by {{styling-by}}
+]
+
+---
+layout: true
+name: plain
+copyright: (CC) BY-SA
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2016-04-26 … 2016-04-28
+customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
+
+<!--
+  *****************************************************************************
+  Template used for for pages NOT referring to any Info-Graphic
+  *****************************************************************************
+  The following attributes are mandatory FOR THE TEMPLATE PAGE and should
+  simply be left empty if not meaningful.
+
+  copyright: will be reproduced in each page footer first
+  branding: will reproduced in each page footer next
+  customer: will be reproduced in each page footer last
+
+  As the above attributes are part of several page templates a global replace
+  should be used for consistent changes.
+
+  On pages USING THIS TEMPLATE the following attributes must be set:
+
+  header: ## and header text (i.e. including the markdown formatting indicator)
+
+-->
+
+{{header}}
+
+.pagefooter[
+{{copyright}}: {{branding}} .plc2-logo[{{customer}}]
+]
+
+---
+layout: true
+name: linkinfo
+copyright: (CC) BY-SA
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2016-04-26 … 2016-04-28
+customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
+
+<!--
+  *****************************************************************************
+  Template used for for pages INTRODUCING to a new Info-Graphic
+  *****************************************************************************
+  On this kind of pages a size-reduced version of the whole info graphic will
+  be reproduced and occupies approximately 2/3 of the page width. So only add
+  little information, preferably links to later pages dealing with single
+  sections of the info graphic.
+
+  On pages USING THIS TEMPLATE the following attributes must be set:
+
+  graphic: file path to of the infographic EXCLUDING the suffix.
+  header: ## and header text (i.e. including the markdown formatting indicator)
+
+-->
+
+{{header}}
+
+.infographic[
+[![Info-Grafik](InfoGraphics/{{graphic}}.png)](InfoGraphics/{{graphic}}.png
+                "Click to open – add [CTRL+] SHIFT for new [tabbed] window")
+]
+
+.pagefooter[
+{{copyright}}: {{branding}} {{customer}} .plc2-logo[]
+]
+
+---
+layout: false
+template: blank
+name: frontmatter
+
+.title[
+	Advanced Vivado-Tcl-Scripting._[]
+]
+
+.subtitle[
+	Controlling and Automating the  
+	Vivado Design Flow with Tcl-Scripts  
+]
+.author.pull-left[
+	Durchführung  
+	Dipl.-Ing. Martin Weitzel  
+	Technische Beratung für EDV  
+	http://tbfe.de  
+
+]
+.client.pull-right[
+	Open Training and Workshop  
+	2016-04-26 to 2016-04-28  
+	Programming Logic Competence Center  
+	http://plc2.com
+]
+
+.F[:
+You may download this presentation from the
+[Author's Internet Site](http://tbfe.de/archive)
+for any use in compliance with the
+[Creative Commons BY-SA License](http://creativecommons.org/licenses/by-sa/2.0/).
+As it has been created using the free HTML4-Tool [Remark](http://remarkjs.com),
+its content is written using the
+[Markdown-Syntax](http://daringfireball.net/projects/markdown/syntax),
+so you may even enhance the purely electronic (non-printed) form with your own
+annotations, only by means of any ordinary text editor. Just hit the P-key while
+viewing this in an internet browser, and follow instructions.
+]
+
+???
+
+(use +/- above to adjust the font size for convenient reading)
+
+Remark allows to add presenter notes to each page. As that feature is **not**
+used by the author of that presentation, it is available for private annotations
+from [this page](#content) on.
+
+Assuming you have downloaded and stored this presentation as HTML-file, proceed
+as follows:
+
+* Open the file in a text editor of your choice.
+
+* Locate the page which you want to annotate.
+
+  * You may do so by just scrolling down (but often it is easier to)
+  * use the text search feature of your editor.
+
+* Locate the separator to the next page (i.e. `---` in a line of its own).
+
+* Before that add another line with three question marks (`???`) only.
+
+Between these to separator lines you can put your annotations and view these
+by using as you just view this page.
+
+**Hint:**
+Indent code examples with four spaces at the beginning of each line and they
+will be displayed with their original line breaks. As an example, below the
+page structure including annotations is shown:
+
+    template: plain
+    name: used_for_internal_links
+    header: ## Shown at the Top of the Page
+
+    Simply scroll down through this document loaded in an editor and you will
+    probably catch the basics of Markdown-Syntax easily, e.g.  how to put in
+    *slight* or **strong** emphasis or [add a link](http://tbfe.de/downloads).
+
+    ???
+    From here follow the [Presenter Notes], i.e. your private annotations
+    ...
+    ...
+
+    [Presenter Notes]: adding-longer-links-that-keeps-text--uncluttered
+
+    ...
+    up to here.
+    ---
+
+To return to the normal view, now press the P-key once more.
+
+<!--
+If you want to put in meta-annotations, i.e. text that is not even shown
+after pressing the P-key, simply use HTML comments, like it is done here.
+-->
+
+---
+template: plain
+class: agenda
+name: content
+header: ## Agenda
+
+------------------------------------------------------------------------------
+
+* 2016-04-26
+
+    * Part 1: [Tcl Quick Refresher](#tcl_quick_refresher)
+
+    * Part 2: [Tcl Vivado Integration](#tcl_vivado_integration)
+
+* 2016-04-27 
+
+    * Part 3: [Retrieving Scripts from Journals](#retrieving_scripts_from_journals)
+
+    * Part 4: [Processing Files and Reports](#processing_files_and_reports)
+
+* 2016-04-28
+
+    * Part 5: [Tcl from the Reusablity Viewpoint](#tcl_reusability)
+
+    * Part 6: [Your Choice (or maybe some Tk?)](#maybe_some_tk)
+
+------------------------------------------------------------------------------
+
+Each part consists of some "theory" or background information and is enhanced
+by practical demonstrations, followed by a work-shop style phase to be used for
+solving practical problems, which **YOU** are welcome to contribute.
+
+---
+template: plain
+name: tcl_quick_refresher
+header: ## Part 1: Tcl Quick Refresher
+
+------------------------------------------------------------------------------
+
+* [Tcl Quick Syntax Refresher](#tcl_quick_syntax)
+
+    * [Command and Word Separation](#tcl_command_and_word_sep)
+    * [Three Kinds of Quoting](#tcl_three_kinds_of_quoting)
+    * [Variable and Command Substitution](#tcl_variable_and_command_subst)
+    * [Basic Flow Control](#tcl_basic_flow_control)
+    * [List Handling](#tcl_list_handling)
+    * [Arithmetic Expressions](#tcl_math_operations)
+
+------------------------------------------------------------------------------
+
+* [Tcl Quick Library Refresher](#tcl_quick_library)
+
+    * [Character Strings](#tcl_character_strings)
+    * [Regular Expressions](#tcl_regular_expressions)
+    * [File Handling](#tcl_file_handling)
+    * [Date & Time](#tcl_date_and_time)
+
+------------------------------------------------------------------------------
+
+---
+template: linkinfo
+graphic: VivadoVsTclSyntax
+name: tcl_quick_syntax
+header: ### Tcl Quick Syntax Refresher
+
+* Tcl syntax very simple
+
+* Flexibility comes from
+
+   * using variables and
+
+   * command return values
+
+* Anything else is inside the commands, i.e.
+
+   * uniformity comes from conventions
+
+   * *Tcl Style* and *Vivado Style* slightly differs
+
+---
+template: plain
+name: tcl_command_and_word_sep
+header: #### Command and Word Separation
+
+The first step._[] of *Tcl Syntax Analysis* is locating
+
+* Command Separators:
+
+    * Un-masked Line-Endings
+
+    * Semicolons
+
+* Word Separators:
+
+    * Sequences of *White-Space*
+
+.N[
+Command and Word Separation may be protected by any of Tcl's mechanisms
+for Quoting.
+]
+
+* [Quick-Tcl → Line Concatenation](quick-tcl.html#line_concatenation)
+* [Quick-Tcl → Command Separation](quick-tcl.html#command_separation)
+* [Quick-Tcl → Word Separation](quick-tcl.html#word_separation)
+
+.F[:
+Technically detecting masked line-endings, though it appears to be a kind of
+quoting, is a step that occurs separately before Tcl looks for command an
+word separators.  A line-ending is masked with a back-slash (`\`), removing
+it completely together with any leading white-space of the next line (which
+may or may not have another masked line-ending itself).
+]
+
+---
+template: plain
+name: tcl_variable_and_command_subst
+header: #### Variable and Command Substitution
+
+---
+template: plain
+name: tcl_three_kinds_of_quoting
+header: #### Three Kinds of Quoting
+
+Tcl Syntax elements triggering special mechanisms can be disabled by
+*Quoting* which comes in three forms:._[]
+
+* *Backslash-Quoting* (`\`…) – disable special interpretation of the
+  character following next
+
+* *Partial Quoting* (`"` … `"`) – disable word/command separators  
+  (backslash quoting still works, full quoting is disabled too)
+
+* *Full Quoting* (`{` … `}`) – disable every special meaning, only …
+    * … **match** the closing brace by counting contained braces  
+      (opening = +1, closing = -1, closing for counter zero is match)
+    * … **disable** counting for braces preceded with a backslash
+
+.N.center[
+Mastering the "Tcl-Syntax" to a large degree is to master quoting.
+]
+
+* [Quick-Tcl → Quoting with Backslashes](quick-tcl.html#backslash_quoting)
+* [Quick-Tcl → Quoting with Double Quotes](quick-tcl.html#doublequote_quoting)
+* [Quick-Tcl → Quoting with Curly Braces](quick-tcl.html#curlybrace_quoting)
+
+.F[:
+By use of a backslash also certain non-graphic character my be specified,
+much like in C/C++.
+]
+
+---
+template: plain
+name: tcl_basic_flow_control
+header: #### Basic Flow Control
+
+Flow Control in Tcl is actually implemented via commands:
+
+* It might appear to be part of the syntax – **but is not**
+
+* Instead there is an ordinary parsing of the command line …
+
+    * … which might turn out to call a flow control command
+
+    * … that *internally* implements the required behaviour
+
+.N[
+This may not be obvious at first glance, even not at second or third …._[]
+]
+
+.F[:
+One of the reasons is the use of curly braces as nestable quoting mechanism.
+This makes flow control in Tcl look much like (inseparable) blocks of code
+in C/C++, though in that case braces are a **syntactical** mechanism.  
+In other words: Considering its syntax (only), Tcl knows **a lot less**
+– actually close to nothing – about control flow in a program
+in comparison to most
+any other programming language.
+On the other hand this allows to introduce
+new ways of flow control simply by defining another command with the desired
+behaviour.
+]
+
+* [Quick Tcl → Flow Control](quick-tcl.html#flow_control)
+* [Quick Tcl → Subroutines](quick-tcl.html#subroutines)
+
+---
+template: plain
+name: tcl_list_handling
+header: #### List Handling
+
+Some commands central to Vivado return there result as lists
+
+* Familiarity with Tcl's list handling is crucial for Vivado scripting too
+
+* Compared to (native) Tcl lists in Vivado are slightly extended
+
+* It may pay to get some experience with lists **outside** Vivado first
+
+.N[
+Vivado extensions to Tcl lists have little effect on most any of Tcl's
+list handling commands, except when new elements are added to a list.._[]
+]
+
+* [Quick Tcl → Lists 101 – The Basics](quick-tcl.html#the_basics)
+* [Quick Tcl → Lists 101 – Nested Lists](quick-tcl.html#nested_lists)
+* [Quick Tcl → Lists 101 – Constructing Lists](quick-tcl.html#constructing_lists)
+* [Quick Tcl → Lists 101 – Extending (and Shorting) Lists](quick-tcl.html#extending_lists)
+
+.F[:
+**That is the difference:** In Tcl data is not really "typed". Especially
+everything that can be put as element into a list has a representation as
+string. Therefore a (native Tcl) list can be "heterogeneous" with respect
+to the contained elements. Contrary, in Vivado, when a lists contains
+elements that represent specific elements of the *Internal Design Model*,
+it must be homogeneous. Accessing a single list element keeps it type
+(as some object of the design model), **but using it in a string context
+strips away anything and keeps (as string value) just the *name* property.
+]
+
+---
+template: plain
+name: tcl_math_operations
+header: #### Mathematical Operations
+
+As a major difference to other high-level programming languages the
+Tcl Syntax does **not** know about
+
+* Basic arithmetic, logic, and relational expressions
+
+    * plus, minus, multiplies, …
+
+    * equals/unequals, less, less-or-equal, …
+
+    * negate, and, or, shift
+
+* Mathematic Functions
+
+    * classic trigonometric and their inverses
+
+    * powers and logarithms, …
+
+.N.center[
+All this operations are carried out (only) by the command `expr`.
+]
+
+* [Quick Tcl → Evaluating Arithmetic Expressions](quick-tcl.html#cmd_expr)
+
+---
+template: plain
+name: tcl_recursive_syntax
+header: #### Recursive Syntax
+
+The individual steps of Tcl syntax analysis happen in a given order
+which sometimes – but rarely – is not adequate for the problem at hand.
+
+* E.g. spaces as content of a variable are not word separators …
+
+* … because such are looked up **prior** to variable substitution
+
+.N[
+The command `eval` helps out here by starting another run through
+syntax analysis on its concatenated arguments after the first – the
+one that turned out the command to execute is `eval`.
+]
+
+* [Quick Tcl → Evaluating Any String As Command](quick-tcl.html#cmd_eval)
+
+---
+template: plain
+name: tcl_quick_library
+header: ### Tcl Quick Library Refresher
+
+The most important *Tcl Library Functions* for Vivado scripting
+
+* [String Handling](#tcl_character_strings)
+
+* [File Handling](#tcl_file_handling)
+
+* [Date & Time](#tcl_date_and_time)
+
+.N[
+Tasks in string processing belonging to the category of
+*Analyzing and Parsing Content* are often easily solved via
+[Regular Expressions](#tcl_regular_expressions).
+]
+
+---
+template: plain
+name: tcl_character_strings
+header: #### Character Strings
+
+Most any handling of character strings is done by sub-commands of
+the Tcl command `string`:
+
+* Comparisons
+
+* Substring and single character access
+
+* Character classification
+
+* …
+
+.N[
+For concatenating two strings held in variables (or one string
+from a variable with a fixed part) no special command is necessary.._[]
+]
+
+* [Quick Tcl → Handling Character Strings](quick-tcl.html#char_strings)
+
+.F[:
+Probably obvious is that … `$greet$name` … produces the concatenated
+content of the variables `greet` and `name`.
+Not quite obvious may be how a single letter could be appended to a
+variable content, say for pluralisation. If `x` contains some word to
+which a literal `s` must be appended, `$xs` clearly doesn't work. The
+solution is to use `${x}s`.
+]
+
+---
+template: plain
+name: tcl_regular_expressions
+header: #### Regular Expressions
+
+Originating in the Unix tradition, Tcl **of course** supports REs._[] for:
+
+* Flexible comparisons, e.g.
+
+    * … `regexp {[+-][0-9]+([.][0-9]*)?} $num` …
+
+* Parsing, e.g.
+
+   * `regexp {(\d{1,3}(?:\.\d{3})*),(\d{2}) Euro} $ec - euro cent`
+
+* Substitutions, e.g.
+
+    * `regsub {^[ \t]*(.*[^ \t])[ \t]*$) $line {\1} line`
+
+.N.center[
+Clearly, the above is does not strive to introduce REs from ground-up :-).
+]
+
+* [Quick Tcl → Using Regular Expressions](quick-tcl.html#regular_expressions)
+
+.F[:
+Regular Expressions – or REs in short – are part of nearly any modern
+programming language. They are rooted in Unix, which used REs since its
+very beginning in the `ed` editor, from which later the command `grep`
+was derived, as Unix users often started the editor to use the (single)
+command `g/`*`re`*`/p` to search in a file for a line matching the pattern
+*`re`*.
+]
+
+---
+template: plain
+name: tcl_file_handling
+header: #### File Handling
+
+File handling is part of Tcl in two forms:
+
+* Handling files and directories as whole. with
+
+   * most operations as `file` subcommands._[]
+
+* Handling the **content** a files with a C-style API._[]
+
+   * `open` returns a "magic cookie" (called *channel*) …
+
+   * … serving as handle for other commands (`read`, `puts` …) …
+ 
+   * … which must finally be `close`-d
+
+.N[
+TCP/IP connections are handled in a much similar style but have to
+be opened with the `socket` command.
+]
+
+* [Quick Tcl → File Handling](quick-tcl.html#file_handling)
+
+.F[:
+Because of tradition (and then backward compatibility) there are some few
+more commands, like `pwd`, `cd`, and `glob`. These are also covered under
+the *Quick Tcl* Link above.
+]
+
+
+---
+template: plain
+name: tcl_date_and_time
+header: #### Date & Time
+
+In the Unix tradition the Tcl's idea of time is kept as a count since
+some epoch.
+
+* Subcommands of `clock` support a rich variety of operations
+
+* Older versions of Tcl counted in seconds from 1970-01-01 GMT
+
+* Resolution now is increased, epoch can be easily determined with
+
+    * `puts [clock format 0]`
+
+.N[
+Note that the above displays the epoch in **local time** according to
+the time zone of the computer on which the command is executed.._[]
+]
+
+* [Quick Tcl → Date And Time](quick-tcl.html#date_and_time)
+
+.F[:
+Therefore in Germany the output will probably not be … `00:00:00` … but
+… `01:00:00` … (as the timepoint of the epoch). So you may want to add
+`-timezone UTC` to the above.
+]
+
+---
+template: plain
+name: tcl_vivado_integration
+header: ## Tcl Vivado Integration
+
+------------------------------------------------------------------------------
+
+* [Tcl and Vivado – The Big Picture](#tcl_vivado_big_picture)
+
+    * [Non-Project- vs. Project Mode](#nonproject_vs_project_mode)
+
+    * [Understanding Project Mode](#understanding_project_mode)
+
+    * [Interaction of Design Model and Tcl](#design_model_and_tcl)
+
+* [Vivado Command Conventions](#vivado_command_conventions)
+
+    * [Tcl vs. Vivado Commands](#tcl_vs_vivado_commands)
+
+    * [Necessity of Quoting](#necessity_of_quoting)
+
+    * [Storing Commands in Variables](#storing_commands_in_variables)
+
+* [Understanding the Design Model](#understanding_the_design_model)
+
+    * [Basics of Design Navigation](#basics_of_design_navigation)
+
+    * [Accessing Object Properties](#accessing_object_properties)
+
+------------------------------------------------------------------------------
+
+---
+template: linkinfo
+graphic: Tcl_Vivado_Integration
+name: tcl_vivado_big_picture
+header: ### Tcl and Vivado – The Big Picture
+
+* Being
+  **A *Tool Command Language* by Design** …
+
+* … Tcl lends itself perfectly as scripting language for Vivado …
+
+* … though the added commands not always follow conventions and
+  style of (native) Tcl
+
+---
+template: linkinfo
+graphic: VivadoModesAndTcl
+name: nonproject_vs_project_mode
+header: #### Non-Project vs. Project Mode
+
+* *Non-Project Mode* and *Project Mode* are two ways to use Vivado
+  during design elaboration …
+
+* … but the difference is **not** how much of the work is done via
+  GUI and how much with Tcl
+
+---
+template: linkinfo
+graphic: VivadoProjectMode
+name: understanding_project_mode
+header: #### Understanding Project Mode
+
+* Relationships in *Project Mode* need some more explanation
+
+* Basically it automates managing dependencies between files while minimising
+  tool use
+
+* Also options for various optimisation runs are specified in a packaged
+  form, called *Strategies*
+
+---
+template: plain
+name: vivado_command_conventions
+header: ### Vivado Command Conventions
+
+As already has been mentioned Tcl commands
+
+* evaluate their arguments themselves (each)
+
+* hence achieve "uniformity" by following conventions only
+
+* where *Tcl Style* and *Vivado Style* slightly differs
+
+.N.center[
+Differences are not quite from separate worlds but visible enough.
+]
+
+Therefore it pays to be aware of a command's origin – Tcl or Vivado …._[]
+
+.F[:
+… somewhat like being aware whether driving a gear-shifting car or a
+car with automatic transmission – Tcl is more on the gear-shifting side,
+Vivado more on the other (author's advice and personal opinion).  
+The reasons for the differences are manifold and partially speculative:
+(1) Tcl itself is not completely "as if made from one piece" and therefore
+not quite consistent. (2) There may have been the intent to be more
+"user friendly" in Vivado. (3) Scarce resources originally guiding some
+Tcl design decisions are no longer an issue today.
+]
+
+---
+template: linkinfo
+graphic: VivadoVsTclSyntax
+name: tcl_vs_vivado_commands
+header: #### Tcl vs. Vivado Commands
+
+* **Common** to Tcl and Vivado is Syntax Analysis only
+
+* Beyond that slightly different styles become apparent
+
+---
+template: plain
+name: understanding_the_design_model
+header: ### Understanding the Design Model
+
+Prior to navigating._[] within the design using Tcl commands there needs to be a basic
+understanding the model itself.
+
+.I[
+For more information refer to:  
+[XILINX UG894] **Using Tcl Scripting** – for an Introduction  
+[XILINX UG835] **Vivado Tcl Commands** – Complete Reference
+]
+
+[XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug894-vivado-tcl-commands.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug835-vivado-tcl-commands.pdf
+
+.F[:
+Navigating the design model is usually the first step to select one or more objects,
+which subsequently are accessed or modified.
+]
+
+---
+template: plain
+name: basics_of_design_navigation
+header: #### Basics of Design Navigation
+
+Navigating to objects in the design model is similar to navigating to files
+in a directory tree.
+
+* There is a *Top Level Object* …
+
+    * (much like the root directory of a file system)
+
+* … which may also be changed
+
+    * (much like the current working directory)
+
+.I[
+UG 894 → **Tcl Scripting in Vivado**  
+       → Accessing Design Objects  
+       → Getting By Name – Traversing the Design Hierarchy
+]
+
+---
+template: plain
+name: understanding_object_relations
+header: #### Understanding Object Relations
+
+Objects are inter-related via connections._[]
+
+*  which may also be used as a base for navigation
+
+* but first the relationships need to be understood
+
+.I[
+UG894 → **Tcl Scripting in Vivado**  
+       → Accessing Design Objects  
+       → Getting Objects by Relationship
+]
+
+.F[:
+For basic and even for moderately ambitious tasks it is fully sufficient
+to grasp the main relationships while ignoring the details. For the full
+picture see: *UG 835 → Ch. 1: Introduction → First Class Tcl Objects and
+Relationships  → Object Relationships*
+]
+
+---
+template: plain
+name: navigating_via_relations
+header: #### Navigating via Relations
+
+The general form is this:._[]
+
+* `get_`*`kind`* ` -of_objects ` *`which`*, where
+
+   * *`kind`* depends on the type of objects **to be** looked-up, and
+
+   * *`which`* is the type of objects **from which** the relation originates
+
+.N.center[
+**Not all combinations of *`kind`* and *`which`* are valid!**
+]
+
+Get accustomed to look-up proper usage in [XILINX UG835] or use the command with
+the `-help` option interactively.
+
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug835-vivado-tcl-commands.pdf
+
+.F[:
+Note that the syntax chosen seems to strive for being readable in natural language:  
+`get_pins -of_objects [get_nets -hier]`
+]
+
+---
+template: plain
+name: accessing_object_properties
+header: #### Filtering on Selection
+
+Many commands selecting objects have a `-filter` option
+
+* The required syntax deviates somewhat from Tcl style
+
+* Often it makes sense to put the whole selection in curly braces
+
+.N.center[
+**Be aware no variable substitution takes place in curly braces.**._[]
+]
+
+* [Quick Tcl → Variable (quickly)](quick-tcl.html#variables_quickly)
+
+.F[:
+Be aware of backslash substitutions (for `\n`, `\t`, etc.) if you use double
+quotes instead and be aware of word (and command) separation if you use no
+quoting at all.
+]
+
+---
+template: plain
+name: accessing_object_properties
+header: #### Accessing Object Properties
+
+Design objects generally have properties._[]
+
+* Some properties are common to all objects
+
+* Others vary with the type of object
+
+* (also filtering is based on properties)
+
+.I[
+For more information see:  
+[XILINX UG835] → Ch. 1: Introduction  
+               → First Class Tcl Objects and Relationships  
+               → Object Properties
+]
+
+* [XILINX UG835] → Ch. 3: Tcl Commands Listed Alphabetically →
+    * `get_property`
+    * `list_property`
+    * `report_property`  
+    * … (and others) …
+
+.F[:
+As this presentation could never be exhaustive without becoming a reference
+manual, no attempt into that direction is made at all: get accustomed to
+look-up relevant information in [XILINX UG835]. **Now!**
+]
+
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug835-vivado-tcl-commands.pdf
+
+---
+template: linkinfo
+graphic: VivadoDesignFlows
+name: from_design_model_to_bitstream
+header: ### From Design Model to Bitstream
+
+* The typical final goal of any design is the *Bitstream File*
+
+* Before this can happen the design usually needs some elaboration
+
+* (Thorough testing not shown here – though highly to recommend
+  before generating and using a bitstream file)
+
+
+.F[:
+Of course there are many reasons why a bitstream file might be never produced.
+E.g. a design could turn out to be inappropriate during elaboration or
+testing and is completely overturned. Or the goal is to just to test tools
+Vivado uses internally. Finally, the bitstream files eventually produced
+during this workshop are also not of much interest … (and will probably
+never be loaded to a concrete hardware).
+]
+
+---
+template: plain
+name: non_project_mode_outline
+header: #### Non-Project Mode Outline
+
+In *Non-Project Mode*
+
+* Files (Verilog/VHDL, Constraints, Simulation) need to explicitly loaded
+
+* Toos (Synthesis, Implementation/Optimizations) need to explicitly run
+
+.I[
+For an outline of a session in non-project mode see:  
+[XILINX UG888] → Lab 1: Using the Non-Project Design Flow
+]
+
+[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug888-vivado-tcl-commands.pdf
+
+---
+template: plain
+name: project_mode_outline
+header: #### Project Mode Outline
+
+In *Project Mode*
+
+* Vivado manages dependencies via *File Sets*
+
+* Arranges automatically for the adequate tools to run
+
+* Provides optimisation via *Strategies*
+
+.I[
+For an outline of a session in project mode see:
+[XLINX UG888]: → Lab 2: Using the Project Design Flow
+]
+
+[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug888-vivado-tcl-commands.pdf
+---
+
+template: plain
+header: # Begin of Workshop Part
+
+The solutions for the examples following are created together:
+
+* Starting with an initial *Proof of Concept* …
+
+* … which gets refined step by step …
+
+* … to the final *Production Version*.
+
+Depending on the number of participants you are free to chose yourself how many
+guidance you need or want.._[]
+
+.N.center[
+**You are welcome to contribute your own ideas  
+and propose modifications or extensions.**
+]
+
+.F[:
+If you want you may rather work on yourself and only call for assistance if
+you get stuck. Alternatively a tutor can create the solution in cooperation
+with you, in a "pair programming" style of work-sharing.
+]
+
+---
+
+template: plain
+name: retrieving_scripts_from_journals
+header: ## Retrieving Scripts from Journals
+
+------------------------------------------------------------------------------
+
+* Example: Saving a GUI Elaboration
+
+* Example: Re-Running the Elaboration
+
+* Example: Automating Variations
+
+------------------------------------------------------------------------------
+
+---
+template: plain
+name: processing_files_and_reports
+header: ## Processing Files and Reports
+
+------------------------------------------------------------------------------
+
+* Example: Scanning Directories
+
+* Example: Basic Text File Processing
+
+* Example: Selecting Sections in Reports
+
+* Example: Parsing Reports with Regular Expressions
+
+* Optional Example: Parsing XML-Files
+
+------------------------------------------------------------------------------
+
+---
+template: plain
+name: tcl_reusability
+header: ## Tcl from the Reusability Viewpoint
+
+------------------------------------------------------------------------------
+
+* Example: Moving Useful Stuff to Subroutines
+
+* Example: Sharing Subroutines via Files
+
+* Optional Example: Auto-Loading Files
+
+* Optional Example: The Package Facility
+
+------------------------------------------------------------------------------
+
+---
+template: plain
+name: maybe_some_tk
+header: ## Your Choice (or maybe some Tk?)
+
+------------------------------------------------------------------------------
+
+* Example: Remote Tracing and Debugging
+
+* Optional: Overview about Tcl Development Tools
+
+* (Anything else you would find interesting?)
+
+------------------------------------------------------------------------------
+
+
+</textarea>
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- ::::::::::::::::::::: )-: ereh TNETNOCLAER fo dne :::::::::::::::::::: -->
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+    <script src="remark.min.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      var slideshow = remark.create({ highlightLanguage: 'tcl', highlightStyle: 'docco' });
+    </script>
+  </body>
+</html>
