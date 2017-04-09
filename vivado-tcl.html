@@ -101,12 +101,11 @@ template: blank
 name: frontmatter
 
 .title[
-	Advanced Vivado-Tcl-Scripting._[]
+	Advanced Vivado-Scripting._[]
 ]
 
 .subtitle[
-	Controlling and Automating the  
-	Vivado Design Flow with Tcl-Scripts  
+	Controlling the Vivado Design Tool with Tcl-Scripts  
 ]
 .author.pull-left[
 	Durchführung  
@@ -199,23 +198,28 @@ header: ## Agenda
 
 ------------------------------------------------------------------------------
 
-* 2016-04-26
+* 2017-04-19
 
     * Part 1: [Tcl Quick Refresher](#tcl_quick_refresher)
 
-    * Part 2: [Tcl Vivado Integration](#tcl_vivado_integration)
+    * Part 2: [Retrieving Scripts from Journals](#retrieving_scripts_from_journals)
 
-* 2016-04-27 
 
-    * Part 3: [Retrieving Scripts from Journals](#retrieving_scripts_from_journals)
+* 2017-04-20 
+
+    * Part 3: [Tcl Vivado Integration](#tcl_vivado_integration)
 
     * Part 4: [Processing Files and Reports](#processing_files_and_reports)
 
-* 2016-04-28
+* 2017-04-21
 
-    * Part 5: [Tcl from the Reusablity Viewpoint](#tcl_reusability)
+    * Part 5: [Automating Systematic Variations](#automating_variations)
 
-    * Part 6: [Your Choice (or maybe some Tk?)](#maybe_some_tk)
+    * Part 6: [Tcl from the Reusablity Viewpoint](#tcl_reusability)
+
+* Optional Extras
+
+    * [Your Choice (maybe some Tk?)](#maybe_some_tk)
 
 ------------------------------------------------------------------------------
 
@@ -601,8 +605,250 @@ the time zone of the computer on which the command is executed.._[]
 
 .F[:
 Therefore in Germany the output will probably not be … `00:00:00` … but
-… `01:00:00` … (as the timepoint of the epoch). So you may want to add
+… `01:00:00` … (as the time-point of the epoch). So you may want to add
 `-timezone UTC` to the above.
+]
+
+---
+
+template: plain
+name: retrieving_scripts_from_journals
+header: ## Retrieving Scripts from Journals
+
+------------------------------------------------------------------------------
+* [Accessing the Vivado Design Suite](#accessing_the_vivado_design_suite]
+
+  * [Using the Vivado GUI](#using_the_vivado_gui)
+  * [Using Vivado Tcl Commands](#using_vivado_tcl_commands)
+------------------------------------------------------------------------------
+* [Accessing the Tool Command Language](#accessing_the_tool_command_language)
+
+  * [The Vivado Tcl-Console](#the_vivado_tcl_console)
+  * [Suspending the Vivado GUI](#suspending_the_vivado_gui)
+  * [Vivado Batch Script Mode](#vivado_batch_script_mode)
+------------------------------------------------------------------------------
+* [From Journal-Files to Automation](#from_journal_files_to_automation)
+
+  * [Turning Journals into Tcl-Scripts](#turning_journals_into_tcl_scripts)
+  * [Plain Use vs. Packaging in `proc`s](#plain_use_vs_packaging_in_procs)
+------------------------------------------------------------------------------
+* [Bring-in Your Own Design?](#bring_in_your_own_design)
+
+---
+template: plain
+name: from_journal_files_to_automation
+header: ### Form Journal Files to Automation
+
+To get an initial Tcl script for work-flow to automate, it is often easiest to
+
+* start an interactive (GUI) Vivado session,
+
+* run the typical (exemplary) steps by using GUI controls,
+
+* extract the Tcl commands actually run from the Journal File.._[]
+
+.N[
+The standard location where Vivado stores Journals (and Log-Files too) is
+usually in some way related to your "Home" directory.
+]
+
+If you have no idea where the files might be located, try a search for
+
+* `vivado*.jou` or
+* `vivado*.log`
+
+where files with a numeric part in their name are usually backups from older
+sessions and files without are from the most recent one.
+
+.F[:
+In principle the commands could also be extracted from the Log-File. But the
+latter is much more cluttered with additional information, which might only
+sometimes be useful. (E.g. if you did not run a particularly "clean" sequence
+of the commands you wanted to automate, but had a "long and winding" session
+from which you want to extract "just a few parts of special interest".
+]
+
+---
+template: plain
+name: turning_journals_into_tcl_scripts
+header: #### Turning Journals into Tcl-Scripts
+
+Turning a Journal into a (first version) of a Tcl command sequence stored in
+a file, can be as easy as to
+
+* remove the heading comments (all lines starting with `#`), then
+
+* remove the first command-line containing `start_gui`
+
+.N[
+Instead of removing the heading comments completely, you may rather decide to
+change it into something meaningful._[]
+]
+
+To provide some structure, you may also want to:
+
+* Insert blank lines between groups of logically related commands.
+
+* Add comments to commands (or command groups) of special interest.
+
+.F[:
+In other words: the point is to get rid of any content which is useless or even
+misleading to those who later look at the file and want to find out what it does
+and how its achieves important intermediate goals.
+]
+
+---
+template: plain
+name: journal_to_tcl_scripts_example_1
+header: ##### Example for Turning Journal into Tcl-Script (1)
+
+Beginning of original journal:
+```
+#-----------------------------------------------------------
+# Vivado v2016.4 (64-bit)
+# SW Build 1756540 on Mon Jan 23 19:11:19 MST 2017
+# IP Build 1755317 on Mon Jan 23 20:30:07 MST 2017
+# Start of session at: Sun Apr  9 16:41:38 2017
+# Process ID: 8490
+# Current directory: /home/martin
+# Command line: vivado
+# Log file: /home/martin/vivado.log
+# Journal file: /home/martin/vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project /home/martin/project_1/project_1.xpr
+reset_run synth_1
+…
+```
+
+---
+template: plain
+name: journal_to_tcl_scripts_example_2
+header: ##### Example for Turning Journal into Tcl-Script (2)
+
+Parts kept as Tcl-command sequence:
+```
+open_project /home/martin/project_1/project_1.xpr
+reset_run synth_1
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+open_run synth_1 -name synth_1
+launch_runs impl_1 -jobs 2
+wait_on_run impl_1
+close_design
+open_run impl_1
+open_run synth_1 -name synth_1
+report_timing_summary -delay_type min_max -report_unconstraineds
+ -check_timing_verbose -max_paths 10 -input_pins -name timing_1
+set_property STEPS.WRITE_BITSTREAM.ARGS.RAW_BITFILE true
+ [get_runs impl_1]
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+```
+
+.N.center[
+Lines shown indented by one space above actually form  
+**one single (long) line** in the Tcl-command script.
+]
+
+---
+template: plain
+name: journal_to_tcl_scripts_example_2
+header: ##### Example for Turning Journal into Tcl-Script (3)
+
+Tcl-command script with some un-wanted parts removed and re-formatted to
+improve readability:
+
+```
+# project to work with (has already been created manually)
+#
+open_project /home/martin/project_1/project_1.xpr
+
+# running synthesis and implementation (as separate steps)
+#
+launch_runs synth_1 -jobs 2
+wait_on_run synth_1
+launch_runs impl_1 -jobs 2
+wait_on_run impl_1
+
+# create a bitstream file as "raw" bitfile
+#
+set_property\
+    STEPS.WRITE_BITSTREAM.ARGS.RAW_BITFILE true\
+    [get_runs impl_1]
+launch_runs impl_1 -to_step write_bitstream -jobs 2
+wait_on_run impl_1
+```
+
+---
+template: plain
+name: plain_use_vs_packaging_in_procs
+header: ### Plain Use vs. Packaging in `proc`s
+
+When you finally have extracted the Tcl commands to be executed (maybe
+augmented by comments), there are two options:._[]
+
+* Just provide the command sequence in a file.
+
+* In addition wrap the command sequence in a Tcl `proc`.
+
+.pull-left[
+```
+# my fine design
+# (non-project mode)
+read_vhdl …
+read_xdc …
+…
+synth_design …
+opt_design …
+…
+write_bitstream …
+```
+]
+.pull-right[
+```
+proc my_fine_design {} {
+    read_vhdl …
+    read_xdc …
+    …
+    synth_design …
+    opt_design …
+    …
+    write_bitstream …
+}
+```
+]
+
+The second approach adds only little overhead but lends itself much
+better to later refinements. 
+
+.F[:
+In the first case, when the file is `source`-d, the commands are immediately
+executed.  In the second case only the subroutine `my_fine_design` is defined
+which then needs to be explicitly executed like any ordinary Tcl command.
+]
+
+---
+template: plain
+name: bring_in_your_own_design
+header: ### Bring-in Your Own Design?
+
+Up to this point, Vivado's Example Projects has been used, mostly as they are
+easily accessible.
+
+.N.center[
+Feel free to bring-in your own design – or parts of it.
+]
+
+As long as missing Tcl-knowledge is the gap to fill, the trainer will be happy
+to answer any questions based on a design you brought-in, or on examples you
+created yourself during the next days.
+
+.W[
+Make sure you do not accidentally disclose parts of your work your employer
+might want to be kept secret, as for technical and formal reasons it would be
+difficult to get a legally binding NDA between you, the trainer and all
+participants.
 ]
 
 ---
@@ -611,29 +857,22 @@ name: tcl_vivado_integration
 header: ## Tcl Vivado Integration
 
 ------------------------------------------------------------------------------
-
 * [Tcl and Vivado – The Big Picture](#tcl_vivado_big_picture)
 
     * [Non-Project- vs. Project Mode](#nonproject_vs_project_mode)
-
     * [Understanding Project Mode](#understanding_project_mode)
-
     * [Interaction of Design Model and Tcl](#design_model_and_tcl)
-
+------------------------------------------------------------------------------
 * [Vivado Command Conventions](#vivado_command_conventions)
 
     * [Tcl vs. Vivado Commands](#tcl_vs_vivado_commands)
-
     * [Necessity of Quoting](#necessity_of_quoting)
-
-    * [Storing Commands in Variables](#storing_commands_in_variables)
-
+    * [Storing Prepared Commands](#storing_prepared_commands)
+------------------------------------------------------------------------------
 * [Understanding the Design Model](#understanding_the_design_model)
 
     * [Basics of Design Navigation](#basics_of_design_navigation)
-
     * [Accessing Object Properties](#accessing_object_properties)
-
 ------------------------------------------------------------------------------
 
 ---
@@ -663,6 +902,109 @@ header: #### Non-Project vs. Project Mode
   GUI and how much with Tcl
 
 ---
+template: plain
+name: understanding_non_project_mode
+header: ##### General Activities
+
+From a general viewpoint activities in *Non-Project-* and *Project-Mode* are
+the same:
+
+1. Prepare the Design Model
+2. Elaborate the Design (may be minimal on first run through)
+3. Synthesize the Design (maybe go back to step 2)
+4. Implement the Design (maybe go back to step 2 or 3)
+5. Optimize the Design (maybe go back to step 2, 3, or 4)
+6. Generate a Bitstream
+
+.N[
+Decisions to branch back typically depend on various ways of "proofing._[]"
+the design as far as currently elaborated will work according to its
+specification on real hardware.
+]
+
+.F[:
+Note that the term "proof" is used here in a loose and broad meaning: it
+may range from visual inspections of reports and simulation run results to half or fully
+automated constraint checking that may cause a step to fail, thereby
+"blocking the road" to continue.
+]
+
+---
+template: plain
+name: understanding_non_project_mode
+header: ##### Representation of the Design Model
+
+.F[:
+In principle, the Design Model is just an internal data base representing all
+details of a design as interconnected "objects" of various "classes" in kind of
+an "in memory data base". The Vivado GUI provides various "views" to inspect
+and modify the contained objects in great detail, where modifications ranges
+from trivial (e.g. changing a single property of a single object) to extremely
+complex (e.g. generate an elaborated design from VHDL or Verilog source files).
+As the model is both, *accessible* and *modifiable* via the *Tcl*-commands,
+any kind of complex 
+]
+
+---
+template: plain
+name: understanding_non_project_mode
+header: #### Understanding Non-Project Mode
+
+
+
+---
+
+template: plain
+name:
+header: ##### Non-Project Mode Tcl Commands (Overview)
+
+TBD
+
+---
+
+template: plain
+name: understanding_non_project_mode
+header: ##### Tcl Command ...
+
+TBD
+
+
+---
+
+template: plain
+name:
+header: ##### Tcl Command ...
+
+TBD
+
+
+---
+
+template: plain
+name: 
+header:
+
+TBD
+
+
+---
+
+template: plain
+name: 
+header:
+
+TBD
+
+
+---
+
+template: plain
+name: 
+header:
+
+TBD
+
+---
 template: linkinfo
 graphic: VivadoProjectMode
 name: understanding_project_mode
@@ -675,6 +1017,58 @@ header: #### Understanding Project Mode
 
 * Also options for various optimisation runs are specified in a packaged
   form, called *Strategies*
+
+---
+
+template: plain
+name:
+header: ##### Project Mode Tcl Commands (Overview)
+
+TBD
+
+---
+
+template: plain
+name: understanding_non_project_mode
+header: ##### Tcl Command ...
+
+TBD
+
+
+---
+
+template: plain
+name:
+header: ##### Tcl Command ...
+
+TBD
+
+
+---
+
+template: plain
+name: 
+header:
+
+TBD
+
+
+---
+
+template: plain
+name: 
+header:
+
+TBD
+
+
+---
+
+template: plain
+name: 
+header:
+
+TBD
 
 ---
 template: plain
@@ -717,6 +1111,99 @@ header: #### Tcl vs. Vivado Commands
 * Beyond that slightly different styles become apparent
 
 ---
+template: linkinfo
+graphic: VivadoVsTclSyntax
+name: necessity_of_quoting
+header: #### Necessity of Quoting
+
+TBD
+
+---
+template: plain
+name: 
+header: #### Quoting Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: #### Quoting Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: #### Quoting Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: #### Quoting Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: #### Quoting Example ...
+
+TBD
+
+---
+template: linkinfo
+graphic: VivadoVsTclSyntax
+name: storing_prepared_commands
+header: #### Storing Commands in Variable
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
 template: plain
 name: understanding_the_design_model
 header: ### Understanding the Design Model
@@ -730,8 +1217,8 @@ For more information refer to:
 [XILINX UG835] **Vivado Tcl Commands** – Complete Reference
 ]
 
-[XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug894-vivado-tcl-commands.pdf
-[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug835-vivado-tcl-commands.pdf
+[XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug894-vivado-tcl-scripting.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
 .F[:
 Navigating the design model is usually the first step to select one or more objects,
@@ -755,10 +1242,12 @@ in a directory tree.
     * (much like the current working directory)
 
 .I[
-UG 894 → **Tcl Scripting in Vivado**  
-       → Accessing Design Objects  
-       → Getting By Name – Traversing the Design Hierarchy
+[XILINX UG894] → **Tcl Scripting in Vivado**  
+                → Accessing Design Objects  
+                → Getting By Name – Traversing the Design Hierarchy
 ]
+
+[XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug894-vivado-tcl-scripting.pdf
 
 ---
 template: plain
@@ -772,15 +1261,18 @@ Objects are inter-related via connections._[]
 * but first the relationships need to be understood
 
 .I[
-UG894 → **Tcl Scripting in Vivado**  
-       → Accessing Design Objects  
-       → Getting Objects by Relationship
+[XILINX UG894] → **Tcl Scripting in Vivado**  
+               → Accessing Design Objects  
+               → Getting Objects by Relationship
 ]
+
+[XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug894-vivado-tcl-scripting.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
 .F[:
 For basic and even for moderately ambitious tasks it is fully sufficient
 to grasp the main relationships while ignoring the details. For the full
-picture see: *UG 835 → Ch. 1: Introduction → First Class Tcl Objects and
+picture see: *[XILINX UG835] → Ch. 1: Introduction → First Class Tcl Objects and
 Relationships  → Object Relationships*
 ]
 
@@ -804,7 +1296,7 @@ The general form is this:._[]
 Get accustomed to look-up proper usage in [XILINX UG835] or use the command with
 the `-help` option interactively.
 
-[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug835-vivado-tcl-commands.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
 .F[:
 Note that the syntax chosen seems to strive for being readable in natural language:  
@@ -855,10 +1347,10 @@ For more information see:
 ]
 
 * [XILINX UG835] → Ch. 3: Tcl Commands Listed Alphabetically →
-    * `get_property`
-    * `list_property`
-    * `report_property`  
-    * … (and others) …
+  * `get_property`
+  * `list_property`
+  * `report_property`  
+  * … (and others) …
 
 .F[:
 As this presentation could never be exhaustive without becoming a reference
@@ -866,7 +1358,7 @@ manual, no attempt into that direction is made at all: get accustomed to
 look-up relevant information in [XILINX UG835]. **Now!**
 ]
 
-[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug835-vivado-tcl-commands.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
 ---
 template: linkinfo
@@ -907,7 +1399,7 @@ For an outline of a session in non-project mode see:
 [XILINX UG888] → Lab 1: Using the Non-Project Design Flow
 ]
 
-[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug888-vivado-tcl-commands.pdf
+[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
 
 ---
 template: plain
@@ -924,52 +1416,10 @@ In *Project Mode*
 
 .I[
 For an outline of a session in project mode see:
-[XLINX UG888]: → Lab 2: Using the Project Design Flow
+[XILINX UG888]: → Lab 2: Using the Project Design Flow
 ]
 
-[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_1/ug888-vivado-tcl-commands.pdf
----
-
-template: plain
-header: # Begin of Workshop Part
-
-The solutions for the examples following are created together:
-
-* Starting with an initial *Proof of Concept* …
-
-* … which gets refined step by step …
-
-* … to the final *Production Version*.
-
-Depending on the number of participants you are free to chose yourself how many
-guidance you need or want.._[]
-
-.N.center[
-**You are welcome to contribute your own ideas  
-and propose modifications or extensions.**
-]
-
-.F[:
-If you want you may rather work on yourself and only call for assistance if
-you get stuck. Alternatively a tutor can create the solution in cooperation
-with you, in a "pair programming" style of work-sharing.
-]
-
----
-
-template: plain
-name: retrieving_scripts_from_journals
-header: ## Retrieving Scripts from Journals
-
-------------------------------------------------------------------------------
-
-* Example: Saving a GUI Elaboration
-
-* Example: Re-Running the Elaboration
-
-* Example: Automating Variations
-
-------------------------------------------------------------------------------
+[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
 
 ---
 template: plain
@@ -978,17 +1428,64 @@ header: ## Processing Files and Reports
 
 ------------------------------------------------------------------------------
 
-* Example: Scanning Directories
+* Scanning Directories
 
-* Example: Basic Text File Processing
+* Basic Text File Processing
 
-* Example: Selecting Sections in Reports
+* Selecting Sections in Reports
 
-* Example: Parsing Reports with Regular Expressions
-
-* Optional Example: Parsing XML-Files
+* Parsing Reports with Regular Expressions
 
 ------------------------------------------------------------------------------
+
+---
+template: plain
+name: automating_variations
+header: ## Automatic Systematic Variations
+
+TBD
+
+---
+template: plain
+name: general_approach
+header: ### General Approach
+
+TBD
+
+---
+template: plain
+name: find_commonalities
+header: #### Find Commonalities
+
+TBD
+
+---
+template: plain
+name: parametrize_variations
+header: #### Parametrize Variations
+
+TBD
+
+---
+template: plain
+name: define_argument_sets
+header: #### Parametrize Variations
+
+TBD
+
+---
+template: plain
+name: orthogonal_combination
+header: #### Orthogonal Combination
+
+TBD
+
+---
+template: plain
+name: tree_based_combination
+header: #### Tree-Based Combination
+
+TBD
 
 ---
 template: plain
@@ -1010,7 +1507,7 @@ header: ## Tcl from the Reusability Viewpoint
 ---
 template: plain
 name: maybe_some_tk
-header: ## Your Choice (or maybe some Tk?)
+header: ## Your Choice (maybe some Tk?)
 
 ------------------------------------------------------------------------------
 
