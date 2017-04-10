@@ -32,7 +32,7 @@ Styled with [{{styling}}]({{styling}}) by {{styling-by}}
 layout: true
 name: plain
 copyright: (CC) BY-SA
-branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2016-04-26 … 2016-04-28
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2017-04-19 … 2017-04-21
 customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
 
 <!--
@@ -65,7 +65,7 @@ customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
 layout: true
 name: linkinfo
 copyright: (CC) BY-SA
-branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2016-04-26 … 2016-04-28
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2017-04-19 … 2017-04-21
 customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
 
 <!--
@@ -116,7 +116,7 @@ name: frontmatter
 ]
 .client.pull-right[
 	Open Training and Workshop  
-	2016-04-26 to 2016-04-28  
+	2017-04-19 to 2017-04-21  
 	Programming Logic Competence Center  
 	http://plc2.com
 ]
@@ -746,9 +746,14 @@ template: plain
 name: the_vivado_tcl_console
 header: ### The Vivado Tcl Console
 
-The Vivado GUI makes a *Tcl Console* available which can be used to
+The Vivado GUI makes a [Tcl Console](#vivado_tcl_console_details)
+available which is useful for
 
-* **find the equivalent Tcl command(s)** for actions invoked via the GUI, like
+* [Execute any Vivado Tcl Command](#vivado_tcl_console_commandline)
+
+* but just [Watching the Tcl Console Output](#vivado_tcl_console_output)
+  is also helpful to **learn the equivalent Tcl command(s)** for actions
+  invoked via the GUI, like
   * preparing the design model,
   * running synthesis or implementation,
   * generating reports, or
@@ -756,7 +761,6 @@ The Vivado GUI makes a *Tcl Console* available which can be used to
       * modifying design objects
   * as part of design elaboration,
   * writing bitstream-files, or just
-* execute any Tcl command from Vivado.
 
 .N[
 Watching the command equivalent for GUI actions in the Tcl console is an
@@ -772,11 +776,85 @@ as is discussed later.
 
 ---
 template: plain
+name: vivado_tcl_console_details
+header: #### Vivado Tcl Console Details
+
+The Vivado Tcl Console consists of two main parts:
+
+* An [Output Window](#vivado_tcl_console_output), showing
+
+  * commands executed together with
+  * output generated (on success) or
+  * error messages (on failure)
+
+* A [Command Line](#vivado_tcl_console_commandline), to
+
+  * enter commands via the keyboard,
+  * supporting
+    * command history
+    * command completion
+    * command editing
+  * and syntax highlighting
+
+---
+template: plain
+name: vivado_tcl_console_commandline
+header: #### Vivado Tcl Console Command Line
+
+The Tcl Console Command Line is located below the Output Window.
+
+.pull-left[
+![Tcl-Console-Commandline](Tcl-Console-Commandline.png)
+]
+.oull-right[
+The command line can be edited while typing with the usual means:
+
+* Try Cursor-Left and -Right, Backspace, Delete etc.
+
+It also makes previous commands available via its history feature:
+
+* Try Cursor-Up and -Down.
+
+Finally command completions are proposed from which one may be
+selected:._[]
+
+* Try TAB while a command typed-in is not yet complete.
+]
+
+.F[:
+As completions are as soon as the window looses focus, it can not be
+captured with the screen-grabbing utility.
+]
+
+---
+template: plain
+name: vivado_tcl_console_output
+header: #### Vivado Tcl Console Output Window
+
+Output of Tcl Commands is shown in the window **directly above** the command
+line, displaying
+
+* executed commands in blue, followed by
+* ordinary output in black, or
+* error messages in red (preceded by an exclamation mark).
+
+![Tcl-Console-Output](Tcl-Console-Output.png)
+
+Some more features may be clued from the tool buttons and decorators.._[]
+
+.F[:
+Take some time and try more things yourself, e.g. clearing all and folding all
+or parts of the output.
+]
+
+
+---
+template: plain
 name: suspending_the_vivado_gui
 header: ### Suspending the Vivado GUI
 
-After starting the Vivado GUI – which is the default when running by clicking on
-the icon or starting it from a *ix or Windows Shell …
+After starting the Vivado GUI – which is the default when running Vivado by
+clicking on its icon or from terminal (= shell command line) …
 
 .pull-left[
 … entering the Tcl command
@@ -793,7 +871,7 @@ will temporarily suspend the GUI and place Vivado in *Tcl Mode* …
 start_gui
 ```
 
-returns to the Vivado GUI.
+returns to the Vivado GUI.._[]
 ]
 
 In *Tcl Mode* you have all the commands available that you may use at the
@@ -801,8 +879,15 @@ command line of the *Tcl Console* in the Vivado GUI.
 
 .N[
 In most cases you will probably prefer the Vivado GUI, as it also has command
-completion and colorizing, two features helpful for novices to get the Tcl
-syntax right.
+history, editing, completion and colorizing.
+]
+
+.F[:
+If you have looked closely to the example showing an excerpt of what was
+displayed as [Tcl Console Output](#vivado_tcl_console_output) you may have
+noticed a `start_gui` command already there. It is kind of an artifact from
+Vivado Starting-Up, finally switching GUI mode (unless started in `-mode batch`
+`-mode tcl`).
 ]
 
 ---
@@ -823,12 +908,13 @@ It is equivalent to running Vivado in in *Tcl Mode* with
 vivado -mode tcl
 ```
 
-and then enter
+and then enter the command
 ```
 source my_script.tcl
 ```
 
-or to run the as Tcl console command after starting up the Vivado GUI.
+or to type this to the command line of the Tcl console command after starting
+up the Vivado GUI.
 
 .F[:
 Assumed here is that Vivado (i.e. the executable program name) is in your
@@ -843,14 +929,12 @@ header: ### Form Journal Files to Automation
 To get an initial Tcl script for work-flow to automate, it is often easiest to
 
 * start an interactive (GUI) Vivado session,
-
 * run the typical (exemplary) steps by using GUI controls,
-
-* extract the Tcl commands actually run from the Journal File.._[]
+* extract the Tcl commands actually run from the Journal File.
 
 .N[
-The standard location where Vivado stores Journals (and Log-Files too) is
-usually in some way related to your "Home" directory.
+The standard location where Vivado stores Journals and Log-Files._[] is usually
+in some way related to your "Home" directory.
 ]
 
 If you have no idea where the files might be located, try a search for
@@ -859,14 +943,15 @@ If you have no idea where the files might be located, try a search for
 * `vivado*.log`
 
 where files with a numeric part in their name are usually backups from older
-sessions and files without are from the most recent one.
+sessions and files without are from the most recent session.
 
 .F[:
-In principle the commands could also be extracted from the Log-File. But the
-latter is much more cluttered with additional information, which might only
-sometimes be useful. (E.g. if you did not run a particularly "clean" sequence
-of the commands you wanted to automate, but had a "long and winding" session
-from which you want to extract "just a few parts of special interest".
+In principle Tcl commands could be extracted from both, Journal or Log-Files.
+But the latter is much more cluttered with additional information which might
+only occasional be useful. (E.g. if you did not run a particularly "clean"
+sequence of the commands you wanted to automate, but instead had a "long and
+winding" session in which you want to locate and extract just a few parts of
+special interest.
 ]
 
 ---
@@ -1031,7 +1116,7 @@ better to later refinements.
 .F[:
 In the first case, when the file is `source`-d, the commands are immediately
 executed.  In the second case only the subroutine `my_fine_design` is defined
-which then needs to be explicitly executed like any ordinary Tcl command.
+which then needs to be explicitly executed.
 ]
 
 ---
@@ -1066,19 +1151,21 @@ header: ## Tcl Vivado Integration
 * [Tcl and Vivado – The Big Picture](#tcl_vivado_big_picture)
 
     * [Non-Project- vs. Project Mode](#nonproject_vs_project_mode)
-    * [Understanding Project Mode](#understanding_project_mode)
-    * [Interaction of Design Model and Tcl](#design_model_and_tcl)
-------------------------------------------------------------------------------
+    * [Interacting with the Design Model](#interacting_with_the_design_model)
+
 * [Vivado Command Conventions](#vivado_command_conventions)
 
     * [Tcl vs. Vivado Commands](#tcl_vs_vivado_commands)
     * [Necessity of Quoting](#necessity_of_quoting)
     * [Storing Prepared Commands](#storing_prepared_commands)
 ------------------------------------------------------------------------------
-* [Understanding the Design Model](#understanding_the_design_model)
+* [Diving Deeper Into Vivado …](#diving_deeper_into_vivado)
 
-    * [Basics of Design Navigation](#basics_of_design_navigation)
-    * [Accessing Object Properties](#accessing_object_properties)
+  * [Understanding Non-Project Mode](#understanding_non_project_mode)
+  * [Understanding Project Mode](#understanding_project_mode)
+  * [Understanding the Design Model](#understanding_the_design_model)
+     * [Basics of Design Navigation](#basics_of_design_navigation)
+     * [Accessing Object Properties](#accessing_object_properties)
 ------------------------------------------------------------------------------
 
 ---
@@ -1112,33 +1199,48 @@ template: plain
 name: general_design_activities
 header: ##### General Design Activities
 
-From a general viewpoint activities in *Non-Project-* and *Project-Mode* are
-the same:
+From a general viewpoint activities in *Non-Project-* **and** *Project-Mode* are:
 
 1. Prepare the Design Model
+
 2. Elaborate the Design (maybe minimal on first run through)
-3. Synthesize the Design (maybe go back to step 2)
-4. Implement the Design (maybe go back to step 2 or 3)
-5. Optimize the Design (maybe go back to step 2, 3, or 4)
-6. Generate a Bitstream
+
+3. Synthesize the Design – **maybe go back** to step 2
+
+4. Implement the Design – **maybe go back** to step 2 or 3
+
+5. Optimize the Design – **maybe go back** to step 2, 3, or 4
+
+6. Generate Bitstream Output
 
 .N[
-Decisions to branch back typically depend on various ways of "proofing._[]"
-the design as far as currently elaborated will work according to its
+Decisions to branch back typically depend on various ways of *proofing*._[]
+the design – as far as currently elaborated – will work according to its
 specification on real hardware.
 ]
 
 .F[:
-Note that the term "proof" is used here in a loose and broad meaning: it
-may range from visual inspections of reports and simulation run results to half or fully
-automated constraint checking that may cause a step to fail, thereby
-"blocking the road" to continue.
+The term "proof" is used here as well in a loose and also a broad meaning: it
+may range from visual inspections of reports and simulation run results to half
+or fully automated constraint checking that may cause a critical elaboration
+step to fail, thereby "blocking the road" to continue.
 ]
 
 ---
 template: plain
-name: understanding_non_project_mode
-header: ##### Representation of the Design Model
+name: interacting_with_the_design_model
+header: #### Interacting with the Design Model
+
+How to interact with the design model._[] depends on how it is easier to grasp
+
+* the information to extract while exploring the design, and
+
+* the actions to necessary to take for modifying the design.
+
+.N[
+Often the border-line is not clearly drawn, so familiarity with both, the
+Vivado GUI and its Tcl Command Language is worth while.
+]
 
 .F[:
 In principle, the Design Model is just an internal data base representing all
@@ -1149,6 +1251,410 @@ from trivial (e.g. changing a single property of a single object) to extremely
 complex (e.g. generate an elaborated design from VHDL or Verilog source files).
 As the model is both, *accessible* and *modifiable* via the *Tcl*-commands,
 any kind of complex 
+]
+
+---
+template: plain
+name: exploring_the_design_model_via_gui
+header: ##### Exploring the Design Model via GUI
+
+The various graphical representations of a design and ways to
+
+.center[
+*"zoom in and out"*
+]
+
+going from a broad design overview to its nitty-gritty
+details and back are too numerous to list here.
+
+**Noteworthy points are:**
+
+* The GUI may well be useful to
+  * get an overview over the various reports generated, and
+  * to display selected reports for "visual" consumption.
+
+* The actual **content** of most reports is a textual representation
+  * primarily intended to be inspected by a "human reader"._[], but
+  * may very well be processed by Tcl, e.g.
+     * to drill deeper to very specific information,
+     * difficult hard to spot by a cursory glance.
+
+.F[:
+Of course, reports generated may also have a long-term value to document
+attributes as part of a formal documentation to certify critical design goals
+have been met.
+]
+
+---
+template: plain
+name: exploring_the_design_model_via_tcl
+header: ##### Exploring the Design Model via Tcl
+
+By using Tcl as command language there are two basically different ways to
+explore the design model:
+
+* Using specific Tcl commands to
+  * [**first locate** the design object(s)](#basics_of_design_navigation)
+    of interest,	
+     * either simply by their name or class
+     * or also by tracing their connections
+       with each other,
+  * [**then query** the property](#accessing_object_properties)
+    of interest.
+
+* Generate some **Standard Report**
+  * then **further analyze** it
+  * with Tcl's **string processing** capabilities.
+
+.N.center[
+Especially Tcl's versatile *Regular Expressions* come in handy here.._[]
+]
+
+.F[:
+If you need some more motivation to gain experience with the Tcl language
+core, also understand that learning Tcl may be beneficial for more than
+improving your day-to-day work with Vivado. As Tcl is a stand-alone scripting
+language it has many more applications, from providing small tools for your own
+use or to distribute among colleagues, to implementing high-level control logic
+and other not too time critical parts like a GUI or web interface for the
+hardware solution you develop.
+]
+
+---
+template: plain
+name: modifying_the_design_model_via_gui
+header: ##### Modifying the Design Model via GUI
+
+Basically a large number of actions that
+
+* can be selected from a menu or
+* caused by pressing a button
+
+will result in a smaller or larger modification of the design model.._[]
+
+Depending on the currently open views of the design model such actions
+
+* may or may not give a **direct** visual feed back,
+
+* though Vivado usually goes to great lengths aiming to provide optimal user
+  experience by clearly indicating
+  * still ongoing operations, and
+  * failure or success when completed.
+
+* Furthermore often a choice of next actions to take is proposed when some
+  major step completes.
+
+
+.F[:
+This is especially true if the design model is understood in the broad way it
+is applied by vivado, i.e. not only for storing and manipulating "objects" with
+a concrete mapping to a physical device (LUTs, Ports, Wires, …), but also
+parameters of design runs, optimisation strategies, details for creating
+bitstream files … and much, **much**, **MUCH** more.
+]
+
+---
+template: plain
+name: modifying_the_design_model_via_tcl
+header: ##### Modifying the Design Model via Tcl
+
+For many of the prominent actions to be carried out via the Vivado GUI
+there are equivalent Tcl commands. As such actions are too many to list here,
+also the Tcl commands are.
+
+Besides via specific commands for some modifications of the design model a
+different route needs to be taken:
+
+* Use the specific Tcl commands to
+
+  * [**first locate** the design object(s)](#basics_of_design_navigation)
+    of interest,	
+     * either simply by their name or class
+     * or by tracing their connections with each other,
+  * [**then set** the property](#accessing_object_properties)
+    of interest as required.
+
+.N[
+Navigating through complex networks of design objects for finding the ones of
+interest may require understanding Tcl (slightly) beyond the level of simple
+list handling and `foreach`-loops.._[]
+]
+
+---
+template: plain
+name: vivado_command_conventions
+header: ### Vivado Command Conventions
+
+As already has been mentioned Tcl commands
+
+* evaluate their arguments themselves (each)
+
+* hence achieve "uniformity" by following conventions only
+
+* where *Tcl Style* and *Vivado Style* slightly differs
+
+.N.center[
+Differences are not quite from separate worlds but visible enough.
+]
+
+Therefore it pays to be aware of a command's origin – Tcl or Vivado …._[]
+
+.F[:
+… somewhat like being aware whether driving a gear-shifting car or a
+car with automatic transmission – Tcl is more on the gear-shifting side,
+Vivado more on the other (author's advice and personal opinion).  
+The reasons for the differences are manifold and partially speculative:
+(1) Tcl itself is not completely "as if made from one piece" and therefore
+not quite consistent. (2) There may have been the intent to be more
+"user friendly" in Vivado. (3) Scarce resources originally guiding some
+Tcl design decisions are no longer an issue today.
+]
+
+---
+template: linkinfo
+graphic: VivadoVsTclSyntax
+name: tcl_vs_vivado_commands
+header: #### Tcl vs. Vivado Commands
+
+* **Common** to Tcl and Vivado is Syntax Analysis only.
+
+* Beyond that slightly different styles between
+
+  * [Tcl Builtin Commands](#typical_builtin_tcl_command_style) and
+
+  * [Tcl Vivado Commands](#typical_tcl_vivado_command_style)
+
+become apparent.
+
+
+---
+template: plain
+name: typical_tcl_builtin_command_style
+header: ##### Typical Tcl Builtin Command Style
+
+* Most Tcl Builtin Commands._[] follow a few simple rules, e.g.
+     * options are indicated by a dash and a "keywords"
+     * and typically come first, then "ordinary" arguments
+
+* Error messages are terse and use kind of a meta-syntax, e.g. indicating
+     * optional parts by enclosing in quastion marks (`?`………`?`) or
+     * optional repetition by three dots (……… ` ...`)
+
+* There is no builtin help, e.g.
+  * if correct usage can not be gleaned from the (terse) error message given
+    for usage errors
+  * typically the (online) manual needs to be consulted.
+
+.F[:
+There are a few exceptions in "uniformity" caused by the growth of Tcl in the
+early days, leading to today's style of "command collections" with a "master
+command" and "sub-commands" like e.g. seen in the `string` or `file` commands.
+In contrary the (somewhat older) commands for list processing like `lindex`,
+`llength` etc. simply all have a lower case "ell" as their first letter.
+]
+
+---
+template: plain
+name: typical_tcl_vivado_command_style
+header: ##### Typical Tcl Vivado Command Style
+
+* Tcl Vivado Commands exhibit **a very high degree of uniformity**
+
+* and also often provide a rich set of options,
+  * some of which – just for convenience – support typical use cases,
+  * with an overall effect that could as well have been achieved by a simple
+    combination with one or more generic commands._[]
+
+* **All Tcl Vivado Commands** provide
+  * a detailed usage description when the option `-help` is specified
+  * which is also produced when the command is used as argument to the Vivado
+    Tcl Command `help`.
+
+.pull-left[
+Two ways to get a *Online Help* …
+* *`a_tcl_vivado_command`* **` -help`**
+]
+.pull-right[
+… for *`a_tcl_vivado_command`*:
+* **`help `** *`a_tcl_vivado_command`*
+]
+
+.F[:
+E.g. all reports Vivado can produce by using Tcl commands will be written as
+output onto the Tcl console by default, can alternatively be written to a file
+named via the `-file` option, or can be retrieved as command return value when
+the `-string` option is specified. In principle that last behavior would be
+fully sufficient, as Tcl allows to turn **any** return value easily into
+console output or – with only little more effort – write it to a file.
+]
+
+---
+template: plain
+name: necessity_of_quoting
+header: #### Necessity of Quoting
+
+The Tcl syntax has two peculiarities which may come to a surprise users who
+"extrapolate knowledge" gathered with different languages:
+
+* There is **no such thing** as a "string literal"  
+  (required to be enclosed in a particular kind of quotes).
+
+* White space is **syntactically significant** as argument separator for
+  commands, and
+
+* most commands are somewhat picky wrt. to the number of arguments they
+  accept.._[]
+
+.N[
+Furthermore the various steps of the syntax analysis are carried out
+sequentially, **which most often make perfect sense and is also very simple to
+remember**, but occasionally requires to request "a second round" which in turn
+may make extra quoting necessary.
+]
+
+.F[
+The most famous exceptions are the commands `expr`, `eval`, and `uplevel` which
+first concatenate all their arguments to one long string which is then
+interpreted according to an expression evaluation syntax (in case of `expr`) or
+(another round through) the Tcl command line syntax. (Also `subst` is somewhat
+similar to `eval` but substitutions can be enabled or disabled at a finer
+grained level.) ]
+
+---
+template: plain
+name: quoting_example_1
+header: ##### Quoting Example (1)
+
+To train your understanding how Tcl quoting works, defining the following
+command `=` makes sense, which **has no other effect** as to show you how a
+command line looks like
+
+* after Tcl has carried out syntax analysis,
+* including all requested substitutions,
+* while honoring quoting.
+
+.pull-left[
+First define a command with the peculiar name._[] "`=`" together with some more
+stuff to play with …
+```
+proc = {args} {
+    foreach x $args {
+        puts "([incr n]) $x"
+    }
+}
+set a xxx
+proc b { return zzz }
+```
+]
+.pull-right[
+… and use it for viewing the substituted form of the example commands below:
+```
+= puts a b c
+= puts "a b c"
+= puts {a b c}
+= puts $a  [b] c
+= puts "$a [b] c"
+= puts {$a [b] c}
+= puts \$a\ \[b]\ c
+```
+]
+
+.F[:
+The peculiar name is not the point here – the command might also be named
+`show_args` or whatever.
+]
+
+---
+template: plain
+name: quoting_example_2
+header: ##### Quoting Example (2)
+
+TBD
+
+---
+template: plain
+name: quoting_example_3
+header: ##### Quoting Example (3)
+
+TBD
+
+---
+template: plain
+name: quoting_example_4
+header: ##### Quoting Example (4)
+
+TBD
+
+---
+template: plain
+name: storing_prepared_commands
+header: #### Storing Commands in Variable
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: 
+header: ##### Stored Command Example ...
+
+TBD
+
+---
+template: plain
+name: diving_deeper_into_vivado
+header: ### Diving Deeper Into Vivado …
+
+From here be sure to follow the live examples as presented by the trainer.
+
+A purely "static presentation" (with screen shots etc.) will be of little
+value when compared to
+
+* trying out the examples yourself,
+
+* preferably not only as demonstrated, but
+
+  * also with small modifications,
+
+  * for which you try to predict the result.
+
+.N.center[
+Feel free to get help from the trainer  
+for any finding you cannot fully explain yourself.
 ]
 
 ---
@@ -1273,139 +1779,6 @@ TBD
 template: plain
 name: 
 header:
-
-TBD
-
----
-template: plain
-name: vivado_command_conventions
-header: ### Vivado Command Conventions
-
-As already has been mentioned Tcl commands
-
-* evaluate their arguments themselves (each)
-
-* hence achieve "uniformity" by following conventions only
-
-* where *Tcl Style* and *Vivado Style* slightly differs
-
-.N.center[
-Differences are not quite from separate worlds but visible enough.
-]
-
-Therefore it pays to be aware of a command's origin – Tcl or Vivado …._[]
-
-.F[:
-… somewhat like being aware whether driving a gear-shifting car or a
-car with automatic transmission – Tcl is more on the gear-shifting side,
-Vivado more on the other (author's advice and personal opinion).  
-The reasons for the differences are manifold and partially speculative:
-(1) Tcl itself is not completely "as if made from one piece" and therefore
-not quite consistent. (2) There may have been the intent to be more
-"user friendly" in Vivado. (3) Scarce resources originally guiding some
-Tcl design decisions are no longer an issue today.
-]
-
----
-template: linkinfo
-graphic: VivadoVsTclSyntax
-name: tcl_vs_vivado_commands
-header: #### Tcl vs. Vivado Commands
-
-* **Common** to Tcl and Vivado is Syntax Analysis only
-
-* Beyond that slightly different styles become apparent
-
----
-template: linkinfo
-graphic: VivadoVsTclSyntax
-name: necessity_of_quoting
-header: #### Necessity of Quoting
-
-TBD
-
----
-template: plain
-name: 
-header: #### Quoting Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: #### Quoting Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: #### Quoting Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: #### Quoting Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: #### Quoting Example ...
-
-TBD
-
----
-template: linkinfo
-graphic: VivadoVsTclSyntax
-name: storing_prepared_commands
-header: #### Storing Commands in Variable
-
-TBD
-
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
 
 TBD
 
