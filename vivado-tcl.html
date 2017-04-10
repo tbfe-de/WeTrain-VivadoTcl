@@ -635,6 +635,207 @@ header: ## Retrieving Scripts from Journals
 * [Bring-in Your Own Design?](#bring_in_your_own_design)
 
 ---
+template: linkinfo
+graphic: Tcl_Vivado_Integration
+name: accessing_the_vivado_design_suite
+header: ## Accessing the Vivado Design Suite
+
+There are two major ways to work with Vivado:
+
+* [Via GUI](#using_the_vivado_gui)
+
+* [Via Tcl Commands](#using_vivado_tcl_commands)
+
+The GUI is usually brought up first when Vivado is started
+
+* by clicking on its icon or
+* by specifying the path to its executable on the command line.._[]
+
+.F[:
+At the command line the option `-mode tcl` or `-mode batch` may be used which
+would not show the GUI immediately but only when requested.
+]
+
+---
+template: plain
+name: using_the_vivado_gui
+header: ### Using the Vivado GUI
+
+For many first-time users Vivado may appear to be a GUI based tool, accessed
+in well-known ways:
+
+* Present *State Information* in various "Graphical Views", which the user can
+  open and close, resize and arrange on the screen.
+
+* *Initiate Actions* by choosing from *Menus* or pressing *Buttons* provided
+  in a Toolbars …
+
+* … eventually prompting for action-specific details in *Pop-Up Dialogues*.
+
+.N.center[
+Participants of this training are assumed to be more or less familiar  
+with using Vivado via the GUI.
+]
+
+---
+template: plain
+name: using_vivado_tcl_commands
+header: ### Using Vivado Tcl Commands
+
+Besides preparing and elaborating a Design Model via the Vivado GUI there is
+also a Programming Language Interface.
+
+.N.center[
+Using Vivado via that interface is at the center of this training.
+]
+
+Though in general everything that can be achieved via the Programming Language
+Interface can also be achieved via the GUI (and vice versa._[]), some deeper
+knowledge of the former will pay for
+
+* automating systematic and repeated tasks,
+
+* including decisions what to do next.
+
+.F[:
+Though, some specific tasks may be easier in one of the two ways, and also both
+approaches may intersect by assigning a sequence of Tcl commands to a GUI menu
+or button.
+]
+
+---
+template: plain
+name: accessing_the_tool_command_language
+header: ### Accessing the Tool Command Language
+
+Technically most of the Vivado GUI is
+
+* just an interface to an underlying data base – called the *Design Model*
+* which can also be accessed – i.e. inspected and modified – via a
+  *Command Language*.
+
+More precisely, *Tcl* once developed by John Ousterhout in the mid 90s, has
+been chosen as *Tool Command Language* for Vivado.
+
+.pull-left[
+Tcl is known for its
+* terse,
+* minimal,
+* "shell"-like syntax …._[]
+]
+.pull-right[
+… and providing core features like
+* variables and data structures,
+* sub-routines and flow-control,
+* access to OS-services etc.
+]
+
+As a **Tool Command Language for Vivado** *Tcl* is extended with many new
+commands and application specific internal data types.
+
+.F[:
+Compared more recent language developments Tcl's syntax may sometimes surprise
+rather by simplicity than by complexity but with its straight forward approach
+it lends itself very good for the job. The rich command set added by Vivado is
+recognizably modelled following a slightly different "style" than the native
+Tcl commands, which has its pro's and con's.
+]
+
+---
+template: plain
+name: the_vivado_tcl_console
+header: ### The Vivado Tcl Console
+
+The Vivado GUI makes a *Tcl Console* available which can be used to
+
+* **find the equivalent Tcl command(s)** for actions invoked via the GUI, like
+  * preparing the design model,
+  * running synthesis or implementation,
+  * generating reports, or
+      * for viewing or
+      * modifying design objects
+  * as part of design elaboration,
+  * writing bitstream-files, or just
+* execute any Tcl command from Vivado.
+
+.N[
+Watching the command equivalent for GUI actions in the Tcl console is an
+extremely useful approach._[] if you want to find out which commands are
+necessary to automate a systematic task.
+]
+
+.F[:
+Besides
+[Extracting Tcl Commands from a Journal](#from_journal_files_to_automation)
+as is discussed later.
+]
+
+---
+template: plain
+name: suspending_the_vivado_gui
+header: ### Suspending the Vivado GUI
+
+After starting the Vivado GUI – which is the default when running by clicking on
+the icon or starting it from a *ix or Windows Shell …
+
+.pull-left[
+… entering the Tcl command
+```
+stop_gui
+```
+
+will temporarily suspend the GUI and place Vivado in *Tcl Mode* …
+]
+.pull-right[
+… i.e. now you work with a raw *Tcl Shell*, from which the command
+
+```
+start_gui
+```
+
+returns to the Vivado GUI.
+]
+
+In *Tcl Mode* you have all the commands available that you may use at the
+command line of the *Tcl Console* in the Vivado GUI.
+
+.N[
+In most cases you will probably prefer the Vivado GUI, as it also has command
+completion and colorizing, two features helpful for novices to get the Tcl
+syntax right.
+]
+
+---
+template: plain
+name: vivado_batch_script_mode
+header: ### Vivado Batch Script Mode
+
+If the only thing to run in a Vivado session is a script with (prepared) Tcl
+commands, another option is to use *Tcl Batch Script Mode*.
+
+The following will just run `my_script.tcl`:._[]
+```
+vivado -mode batch -source my_script.tcl
+```
+
+It is equivalent to running Vivado in in *Tcl Mode* with
+```
+vivado -mode tcl
+```
+
+and then enter
+```
+source my_script.tcl
+```
+
+or to run the as Tcl console command after starting up the Vivado GUI.
+
+.F[:
+Assumed here is that Vivado (i.e. the executable program name) is in your
+command search path so that the command `vivado` runs the design suite.
+]
+
+---
 template: plain
 name: from_journal_files_to_automation
 header: ### Form Journal Files to Automation
@@ -756,15 +957,14 @@ template: plain
 name: journal_to_tcl_scripts_example_2
 header: ##### Example for Turning Journal into Tcl-Script (3)
 
-Tcl-command script with some un-wanted parts removed and re-formatted to
-improve readability:
+Tcl script with some parts removed and re-formatted for readability:._[]
 
 ```
-# project to work with (has already been created manually)
+# project to work with (has been created manually before)
 #
 open_project /home/martin/project_1/project_1.xpr
 
-# running synthesis and implementation (as separate steps)
+# run synthesis and implementation (as separate steps)
 #
 launch_runs synth_1 -jobs 2
 wait_on_run synth_1
@@ -779,6 +979,12 @@ set_property\
 launch_runs impl_1 -to_step write_bitstream -jobs 2
 wait_on_run impl_1
 ```
+
+.F[:
+For the moment, do not waste too many thoughts on the exact the content of the
+example: it is only meant to demonstrate that the Tcl commands extracted from
+the journal may not be used as found – "1:1" – but in a modified form.
+]
 
 ---
 template: plain
@@ -903,14 +1109,14 @@ header: #### Non-Project vs. Project Mode
 
 ---
 template: plain
-name: understanding_non_project_mode
-header: ##### General Activities
+name: general_design_activities
+header: ##### General Design Activities
 
 From a general viewpoint activities in *Non-Project-* and *Project-Mode* are
 the same:
 
 1. Prepare the Design Model
-2. Elaborate the Design (may be minimal on first run through)
+2. Elaborate the Design (maybe minimal on first run through)
 3. Synthesize the Design (maybe go back to step 2)
 4. Implement the Design (maybe go back to step 2 or 3)
 5. Optimize the Design (maybe go back to step 2, 3, or 4)
