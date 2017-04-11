@@ -1157,7 +1157,7 @@ header: ## Tcl Vivado Integration
 
     * [Tcl vs. Vivado Commands](#tcl_vs_vivado_commands)
     * [Necessity of Quoting](#necessity_of_quoting)
-    * [Storing Prepared Commands](#storing_prepared_commands)
+    * [Storing Command Parameters](#storing_command_parameters)
 ------------------------------------------------------------------------------
 * [Diving Deeper Into Vivado …](#diving_deeper_into_vivado)
 
@@ -1539,7 +1539,7 @@ stuff to play with …
 ```
 proc = {args} {
     foreach x $args {
-        puts "([incr n]) $x"
+        puts "([incr n]) >$x<"
     }
 }
 set a xxx
@@ -1547,7 +1547,7 @@ proc b { return zzz }
 ```
 ]
 .pull-right[
-… and use it for viewing the substituted form of the example commands below:
+… and use it to view the substituted form of the example commands below:
 ```
 = puts a b c
 = puts "a b c"
@@ -1569,70 +1569,277 @@ template: plain
 name: quoting_example_2
 header: ##### Quoting Example (2)
 
-TBD
+As shown so far, quoting is necessary if a standard substitution of the Tcl
+syntax needs to be disabled.
+
+.pull-left[
+Within double quotes there is
+* **no word separation** and
+* **no command separation**,
+* but still substitution of
+  * variable content
+  * function return values
+  * escape sequences for  
+    non-printing characters
+* also contained curly braces are taken verbatim (not as "nested quoting")
+]
+.pull-right[
+```
+= "abc    def ... xyz"
+= "$a [b]         xyz"
+= "$a [b]"    ... xyz
+= "\$a \[b]" ...\ xyz
+= "abc \"def\"... xyz"
+= "\\abc\\def\\...\\xyz"
+= "\\abc\\def\\...\\xyz\""
+= "\\abc\\def\\...\\xyz\\"
+= "$a [b]\" \"... xyz"
+= "abc { [b] }"
+= "} a{b c}d {"
+= "} a" {b c} "d {"
+= "} a" "{b c}" "d {"
+```
+]
+
+(On that base, try to predict the output of the above examples.._[])
+
+.F[:
+Beware that some might not be valid syntax!
+]
+
 
 ---
 template: plain
 name: quoting_example_3
 header: ##### Quoting Example (3)
 
-TBD
+Meanwhile it may have become clear that the tricky part sometimes is to
+understand how quoting mechanism mutually protect each other.
+
+.pull-left[
+Within curly braces
+* **all content** is taken verbatim
+* though
+  * opening and closing braces are counted …
+  * … to find the closing brace that **matches** the initial opening brace
+* a backslash prior to a contained curly brace
+  * **only disables counting** but
+  * **is still taken verbatim**
+]
+.pull-right[
+```
+= {abc    def ... xyz}
+= {$a [b]         xyz}
+= {$a [b]}    ... xyz
+= {abc {def ghi}  xyz}
+= {abc  { ... }   xyz}
+= {abc \{ ... \}  xyz}
+= {abc \{ ...     xyz}
+= {abc    ... \}  xyz}
+= {abc \{ ... }   xyz}
+= {abc  { ... \}  xyz}
+= {\abc\def\...\xyz}
+= {\\abc\\def\\...\\xyz}
+= {\\abc\\def\\...\\xyz\\}
+= {\abc\def\...\xyz\}
+```
+]
+
+(On that base, try to predict the output of the above examples.._[])
+
+.F[:
+Beware that some might not be valid syntax!
+]
 
 ---
 template: plain
 name: quoting_example_4
 header: ##### Quoting Example (4)
 
-TBD
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+
+In case the prior pages seemed rather "theoretical" with little practical
+relevance, consider the following two examples taken from
+[XILINX UG835]
+ → *Ch.1 → General Tcl Syntax Guidelines*
+ → *Using Special Characters*:
+
+.pull-left[
+Correctly quote the *Verilog Identifier* `\my sig\` (that contains a space and
+begins and ends with a single backslash):
+```
+add_wave \\my\ sig\\
+```
+]
+.pull-right[
+Also try the "`=`" command on it to show the effect of the original quoting and
+some variations:._[]
+```
+= add_wave \\my\ sig\\
+= add_wave \\my\  sig\\
+= add_wave \\my\\ sig\\
+= add_wave "\\my sig\\"
+= add_wave {\\my sig\\}
+= add_wave {\my sig\}
+
+```
+]
+
+Correctly quote a filter expressions, containing spaces:
+```
+get_cells * -hierarchical -filter { lib_cell == FD* && loc != "" }
+```
+
+.F[:
+Beware that some might not be valid syntax!
+]
 
 ---
 template: plain
-name: storing_prepared_commands
-header: #### Storing Commands in Variable
+name: quoting_example_5
+header: ##### Quoting Example (5)
 
-TBD
+The last example gets even more challenging if some parts of the comparison are
+coming from a variable content.
 
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
+To more clearly see the problem, first try with the "`=`" command:
+```
+= get_cells * -hierarchical -filter { lib_cell =~ FD* && loc != "" }
+```
 
-TBD
+Now assume the string which `lib_cell` should match is stored in a variable and
+predict how the Tcl syntax interprets the following:._[]
+```
+set fdcells "FD*"
+= get_cells ... { lib_cell =~ $fdcells && loc != "" }
+= get_cells ... " lib_cell =~ $fdcells && loc != "" "
+= get_cells ... " lib_cell =~ $fdcells && loc != \"\" "
+```
 
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
+To understand the final variation you may want to look up the description of
+the [Tcl command `concat`]:
+```
+= get_cells ... [concat lib_cell =~ $fdcells && loc != {""}]
+```
 
-TBD
+[Tcl command `concat`]: https://www.tcl.tk/man/tcl8.4/TclCmd/concat.htm
 
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
 
-TBD
-
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
-
-TBD
-
----
-template: plain
-name: 
-header: ##### Stored Command Example ...
-
-TBD
+.F[:
+Beware that some lines might not be valid syntax!
+]
 
 ---
 template: plain
-name: 
-header: ##### Stored Command Example ...
+name: storing_command_parameters
+header: #### Storing Command Parameters
 
-TBD
+[XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug894-vivado-tcl-scripting.pdf
+
+Also the next example is clearly a practical one, in this case taken from
+[XILINX UG894]
+ → *Tcl Scripting in Vivado*
+ → *Writing a Tcl Script*:
+```
+proc reportWorstViolations {nbrPaths args} {
+    eval report_timing -max_paths $nbrPaths $args
+}
+```
+
+The problem which is intended to be solved with the [Tcl command `eval`] is
+that a call syntax like follows shall be supported:._[]
+```
+reportWorstViolations 10 -delay_type min_max -nworst 2
+```
+
+.N[
+Now inside the procedure `args` represents a list of all call arguments
+following the first one but this lists gets expanded as space-separated words
+**only after** word separators have already been evaluated.
+]
+
+.F[:
+To make the problem clearly visible, replace the body of the procedure with:
+```
+    = report_timing -max_paths $nbrPaths $args
+    = eval report_timing -max_paths $nbrPaths $args
+```
+]
+
+[Tcl command `eval`]: https://www.tcl.tk/man/tcl8.4/TclCmd/eval.htm
+
+---
+template: plain
+name: quoting_example_6
+header: ##### Quoting Example (6)
+
+The use of `eval` with variables of unknown content should always raise a
+mental warning signal.
+
+The "solution" with `eval` will fail badly in the following case:._[]
+
+* The actual value specified for the first (`nbrPaths`) argument
+
+  * contains anything usually evaluated by Tcl's syntax analysis **before**
+    variable content gets inserted
+
+  * **and** in the call of `report_max_timings` was correctly quoted.
+
+.F[:
+More concretely, consider the following:
+```
+reportWorstViolations "1 2" -delay_type min_max -nworst 2
+```
+
+In this specific case it may be argued that `nbrPaths` should be a plain
+(integral) number and will never have anything like spaces embedded, so if its
+content were different, `report_timing` would have failed anyway. But even then
+the approach is to reject on the base it issues a misleading error message.
+
+If you generally strive for robustness, you should also be aware that careless
+use of `eval` (and also `uplevel` and some more culprits) might allow a caller
+to trick a subroutine into executing any arbitrary code, which malevolent users
+might use to achieve unexpected or undesired effects. Try this:
+```
+reportWorstViolations 1\;= -delay_type min_max -nworst 2
+```
+
+]
+
+---
+template: plain
+name: quoting_example_7
+header: ##### Quoting Example (7)
+
+As a precautionary means, for each and every use of the `eval` command, go with
+this fine rule:
+
+.N[
+If some parts of the whole `eval` command line are not under strict control,
+**especially if they are taken from a subroutine argument**, use quoting to
+avoid it undergoes two rounds of syntax analysis.
+]
+
+The preferable quoting mechanism in this case is the [Tcl command `list`]:._[]
+```
+proc reportWorstViolations {nbrPaths args} {
+    eval report_timing -max_paths [list $nbrPaths] $args
+}
+```
+
+[Tcl command `list`]: https://www.tcl.tk/man/tcl8.4/TclCmd/list.htm
+
+.F[:
+In case you want to do a more detailed analysis when and how `list` kicks in,
+simply change the body code of `reportWorstViolations` to:
+```
+    = eval report_timing -max_paths [list $nbrPaths] $args
+```
+
+However hard you try, you will probably notice it is practically impossible to
+outsmart the quoting added by `list` – `nbrPaths` always stays the one single
+argument the caller handed over.
+]
 
 ---
 template: plain
@@ -1644,16 +1851,18 @@ From here be sure to follow the live examples as presented by the trainer.
 A purely "static presentation" (with screen shots etc.) will be of little
 value when compared to
 
-* trying out the examples yourself,
+* watch the "live" output of the examples given,
+
+* also trying them out yourself,
 
 * preferably not only as demonstrated, but
 
-  * also with small modifications,
+  * with small modifications,
 
   * for which you try to predict the result.
 
 .N.center[
-Feel free to get help from the trainer  
+Feel free to get help from the trainer at any time and  
 for any finding you cannot fully explain yourself.
 ]
 
@@ -1662,7 +1871,30 @@ template: plain
 name: understanding_non_project_mode
 header: #### Understanding Non-Project Mode
 
+Compared to Project Mode, Non-Project mode gives more **direct** control over
 
+* Which and especially when HDL source files gets compiled.
+
+* The sequence in which tools are used for
+
+  * synthesis,
+  * implementation,
+  * routing, etc.
+
+* The various optimization steps executed (or skipped) and how they are
+  parametrized in detail.
+
+Also generating the bitstream file is an explicit step but this is not that
+much different from [Project Mode](#understanding_project_mode)
+where the bitstream file is generate as part of a *Run* launched with the
+option `-to bitstream`.
+
+.N[
+If you are lacking any experience with Vivado's Non-Project Mode it is
+suggested to work through [XILINX UG888] → *Lab 1*.
+]
+
+[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
 
 ---
 
@@ -1670,51 +1902,287 @@ template: plain
 name:
 header: ##### Non-Project Mode Tcl Commands (Overview)
 
-TBD
+Non-Project Mode Commands can be roughly categorized into:
+
+* Preparing Elaboration from HDL file and other (re-) sources
+  * using various `read_`-commands
+  * resulting in the content of the files are made part of the in-memory
+    design.
+
+* Synthesizing Design
+  * using `synth_design` which also
+  * opens the design for inspection and further elaboration.._[]
+
+* Implementing the Design
+  * using `opt_design`, `place_design`, `phys_opt_design`
+  * and finally `write_bitstream`
+
+.F[:
+Actually elaborating the design by generating and reviewing reports, running
+simulations etc. is not that different from [Project Mode].
+]
 
 ---
-
 template: plain
-name: understanding_non_project_mode
-header: ##### Tcl Command ...
+header: ##### Non-Project Mode Commands to Prepare Elaboration
 
-TBD
+There are a number of commands to process various kinds input (source) files,
+like
+.pull-left[
+* `read_verilog`
+* `read_vhdl`
+* `read_ip`
+* `read_bd`
+* `read_xdc`
+* `read_edif`
+]
+.pull-right[
+.N.center[
+With all these commands be sure to understand that  
+**backslashes basically still are a Tcl mechanism for quoting and substituting
+non-printable characters**.
+]
+]
 
+Therefore prefer forward slashes as path name separators.._[]
+
+-------------------------------------------------------------------------------
+
+Besides the above there are other `read_`-commands with a more specialized
+purpose.
+
+.F[:
+In Tcl forward slashes equally work as path name separators for all Operating
+Systems, i.e. Microsoft Windows **and** Linux (and any OS with a file system
+in the U*ix tradition).
+]
 
 ---
-
 template: plain
-name:
-header: ##### Tcl Command ...
+header: ##### More Non-Project Mode Commands To Prepare Elaboration
 
-TBD
+Other commands that are possibly relevant for preparing design elaboration are:
 
+* `read_checkpoint` – to (re-) start from a design state saved with  
+  `write_checkpoint`
+* `set_param` and `set_property` (e.g. to set design tool options)
+* `link_design`
+
+.I[
+For further information in overview style see
+[XILINX UG892]
+ → *Ch. 4*
+ → *Reading Design Sources*.  
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
 ---
-
 template: plain
-name: 
-header:
+header: ##### Synthesizing a Design in Non-Project Mode
 
-TBD
+There is exactly one command for that purpose:._[]
 
+* `synth_design`
+
+There are many options to control many details of logic synthesis.
+
+.I[
+For further information in overview style see
+[XILINX UG892]
+ → *Ch. 4*
+ → *Running Logic Synthesis and Implementation*
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+
+.F[:
+Note that this command will also be used in Project Mode, but not directly then,
+instead as part of pre-defined *Runs*.
+]
 
 ---
-
 template: plain
-name: 
-header:
+header: ##### Implementing a Design in Non-Project Mode
 
-TBD
+There are several commands for that purpose:._[]
 
+.pull-left[
+* `opt_design`
+* `place_design`
+* `phys_opt_design`
+* `route_design`
+
+(usually run in the shown order)
+]
+.pull-right[
+* `power_opt_design`
+
+(may be optionally inserted before or after `place_design` – less efficient but
+preserving timing in the latter case)
+]
+
+It may also make sense to [safe the current state](#using_checkpoints) of an
+elaboration between individual steps so that it can be easily restored.
+
+.I[
+For further information in overview style see
+[XILINX UG892]
+ → *Ch. 4*
+ → *Running Logic Synthesis and Implementation*
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+
+.F[:
+Note that these commands will also be used in Project Mode, but not directly
+then, instead as part of pre-defined *Runs*.
+]
 
 ---
-
 template: plain
-name: 
-header:
+header: ##### Generating Reports
 
-TBD
+There are more that 50 commands to generate reports:
+.pull-left[
+* `report_bps`
+* `report_bus_skew`
+* …
+* `report_timing`
+* `report_timing_summary`
+* …
+* `report_utilization`
+* `rport_values`
+]
+.pull-right[
+To get an overview is left to the each participant.
+
+(Including how each report-generating command can be controlled at a
+fine-grained level for the amount of information contained in that report.)
+]
+
+Reports may also serve as a base to
+[extract more specific information](#further_processing_of_reports).
+
+.I[
+For further information in overview style see
+[XILINX UG892]
+ → *Ch. 4*
+ → *Generating Reports*  
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+
+---
+template: plain
+name: further_processing_reports
+header: ##### Further Processing Reports
+
+A common feature of all `report_*`-commands is that their output is
+
+* sent to the Tcl Console per default;
+* sent to a named file (…) with the option `-file …`;
+* appended to a named file (…) with the option `-append …`;
+* returned as result with the option `-return_string`.
+
+There are two basic approaches:
+
+* Store the report in a file, then read it back into main memory.
+
+* Directly store the report in a variable, in main memory.
+
+.N.center[
+As these techniques are of interest in both,  
+*Non-Project* and *Project Mode*,  
+they will be discussed in chapter of their own (TBD).
+]
+
+---
+template: plain
+name: using_checkpoints
+header: ##### Using Check-Points
+
+After any individual step the current state of the in-memory design …
+
+.pull-left[
+… can be saved to a file:
+
+* `write_checkpoint`
+]
+.pull-left[
+… may be restored from a file:
+
+* `read_checkpoint`
+]
+
+Checkpointing may be especially advantageous if
+
+* many different optimization are tried
+* with a step-wise refinement strategy
+
+and some turn out to be dead-ends.._[]
+
+.I[
+For further information in overview style see
+[XILINX UG892]
+ → *Ch. 4*
+ → *Using Design Checkpoints*  
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+
+.F[:
+Of course, on the long run, this approach just **calls** for being further
+automated by Tcl scripting.
+]
+
+---
+template: plain
+header: ##### Writing a Bitstream-File
+
+This is done with the command
+
+* `write_bitstream`
+
+For its direct use in Non-Project Mode._[] there are options to control some details
+of its behavior.
+
+.I[
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+
+
+
+.F[:
+Note that this commands will also be used in Project Mode, but not directly
+then, instead as part of pre-defined *Runs*.
+]
+
 
 ---
 template: linkinfo
