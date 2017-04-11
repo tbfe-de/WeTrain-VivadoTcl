@@ -410,8 +410,9 @@ string. Therefore a (native Tcl) list can be "heterogeneous" with respect
 to the contained elements. Contrary, in Vivado, when a lists contains
 elements that represent specific elements of the *Internal Design Model*,
 it must be homogeneous. Accessing a single list element keeps it type
-(as some object of the design model), **but using it in a string context
-strips away anything and keeps (as string value) just the *name* property.
+(as some object of the in memory design model), **but using it in a string
+context strips away anything and keeps (as string value) just the *name*
+property.
 ]
 
 ---
@@ -754,7 +755,7 @@ available which is useful for
 * but just [Watching the Tcl Console Output](#vivado_tcl_console_output)
   is also helpful to **learn the equivalent Tcl command(s)** for actions
   invoked via the GUI, like
-  * preparing the design model,
+  * preparing the in-memory design model,
   * running synthesis or implementation,
   * generating reports, or
       * for viewing or
@@ -846,7 +847,6 @@ Some more features may be clued from the tool buttons and decorators.._[]
 Take some time and try more things yourself, e.g. clearing all and folding all
 or parts of the output.
 ]
-
 
 ---
 template: plain
@@ -1231,7 +1231,8 @@ template: plain
 name: interacting_with_the_design_model
 header: #### Interacting with the Design Model
 
-How to interact with the design model._[] depends on how it is easier to grasp
+How to interact with the in-memory design model._[] depends on how it is easier
+to grasp
 
 * the information to extract while exploring the design, and
 
@@ -1291,7 +1292,7 @@ name: exploring_the_design_model_via_tcl
 header: ##### Exploring the Design Model via Tcl
 
 By using Tcl as command language there are two basically different ways to
-explore the design model:
+explore the in-memory design model:
 
 * Using specific Tcl commands to
   * [**first locate** the design object(s)](#basics_of_design_navigation)
@@ -1330,9 +1331,10 @@ Basically a large number of actions that
 * can be selected from a menu or
 * caused by pressing a button
 
-will result in a smaller or larger modification of the design model.._[]
+will result in a smaller or larger modification of the in-memory design
+model.._[]
 
-Depending on the currently open views of the design model such actions
+Depending on the currently open views such actions
 
 * may or may not give a **direct** visual feed back,
 
@@ -1346,11 +1348,11 @@ Depending on the currently open views of the design model such actions
 
 
 .F[:
-This is especially true if the design model is understood in the broad way it
-is applied by vivado, i.e. not only for storing and manipulating "objects" with
-a concrete mapping to a physical device (LUTs, Ports, Wires, …), but also
-parameters of design runs, optimisation strategies, details for creating
-bitstream files … and much, **much**, **MUCH** more.
+This is especially true if the in-memory design model is understood in the
+broad way it is applied by Vivado, i.e. not only for storing and manipulating
+"objects" with a concrete mapping to a physical device (LUTs, Ports, Wires,
+…), but also parameters of design runs, optimisation strategies, details for
+creating bitstream files … and much, **much**, **MUCH** more.
 ]
 
 ---
@@ -1899,7 +1901,6 @@ suggested to work through [XILINX UG888] → *Lab 1*.
 ---
 
 template: plain
-name:
 header: ##### Non-Project Mode Tcl Commands (Overview)
 
 Non-Project Mode Commands can be roughly categorized into:
@@ -1983,7 +1984,8 @@ For a detailed description see
 
 ---
 template: plain
-header: ##### Synthesizing a Design in Non-Project Mode
+name: synthesizing_a_design
+header: ##### Synthesizing a Design (in Non-Project Mode)
 
 There is exactly one command for that purpose:._[]
 
@@ -2011,7 +2013,8 @@ instead as part of pre-defined *Runs*.
 
 ---
 template: plain
-header: ##### Implementing a Design in Non-Project Mode
+name: implementing_a_design
+header: ##### Implementing a Design (in Non-Project Mode)
 
 There are several commands for that purpose:._[]
 
@@ -2064,7 +2067,7 @@ There are more that 50 commands to generate reports:
 * `report_timing_summary`
 * …
 * `report_utilization`
-* `rport_values`
+* `report_values`
 ]
 .pull-right[
 To get an overview is left to the each participant.
@@ -2176,8 +2179,6 @@ For a detailed description see
 [XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
 [XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
-
-
 .F[:
 Note that this commands will also be used in Project Mode, but not directly
 then, instead as part of pre-defined *Runs*.
@@ -2201,62 +2202,280 @@ header: #### Understanding Project Mode
 ---
 
 template: plain
-name:
 header: ##### Project Mode Tcl Commands (Overview)
 
-TBD
+In Project Mode
+
+* first a project must be *created* (once)
+
+* to which then HDL sources are *added* and
+
+* for which *Runs* will be defined, that
+
+* can then be *launched*.
+
+.N[
+If you are lacking any experience with Vivado's Project Mode it is
+suggested to work through [XILINX UG888] → *Lab 2*.
+]
+
+[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
 
 ---
 
 template: plain
-name: understanding_non_project_mode
-header: ##### Tcl Command ...
+header: ##### Creating New Projects
 
-TBD
+.pull-left[
+New projects are either created from scratch using …
 
+* `create_project`
+]
+.pull-right[
+… or may be imported:
+
+* `import_synplify`
+* `import_xise`
+* `import_xst`
+]
+
+Projects are usually associated with files in non-volatile memory._[], i.e.  they are persistent between separate Vivado sessions.
+
+.I[
+For further information in overview style see
+[XILINX UG892]
+ → *Ch. 3*
+ → *Creating Projects* and  
+ → *Ch. 3*
+ → *Creating Projects*
+ → *Different Types of Projects*  
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+
+.F[:
+With the exception of projects that are created with the `-in_memory` option,
+for which the documentation hints they may be useful for in a mixed
+*Project-/Non-Project* Design Flow, but discourages from using this option
+at the same time.
+]
+
+---
+template: plain
+header: ##### Preparing a Project for Elaboration
+
+Vivado may have several projects open at the same time.
+
+.N.center[
+But only one project can be the **current project**.
+]
+
+Related commands are:
+
+* `open_project` – create an in-memory representation for an existing project
+  (from an `*.xpr` or `*.lpr` file)
+* `close_project` – remove the in-memory representation of a project._[]
+* `current_project` – query or set the current project
+* `get_property` – access and
+* `set_property` – modify details of a project
+
+.I[
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+
+.F[:
+By adding the option `-delete` also the `*.xpr` or `*.lpr` file will be removed.
+]
+
+---
+template: plain
+header: ##### Adding Source Files to a Project
+
+Source files belonging to some project are managed via *File Sets*.
+
+.N[
+There are several file sets for different purpose, like HDL sources,
+simulation sources, constraints, or IP Subsystems.
+]
+
+Related commands are:
+
+* `add_file` – add one or more files to a file set  
+  (only references the file location in the project)
+* `import_file` – add one or more files to a file set and  
+   **copy that file into the project's directory structure**
+* `import_ip` – import IP Subsystem
+
+.I[
+For further information in overview style see
+[XILINX UG892]
+ → *Ch. 3*
+ → *Managing Source Files in Project Mode*  
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+---
+template: plain
+header: ##### Archiving and Recreating Projects
+
+There are two ways to copy a project:
+
+* `archive_project` – basically saving the project's directory structure into
+  a ZIP-file
+* `write_project` – creating a Tcl script to re-generate the project in its
+  current state (of course including the content of all source files)
+
+.N[
+As the documentation points out, the Tcl script created by `write_project` may
+be checked-in into version control system.
+]
+
+Then, at any time later, the project with all its state at that moment can be
+restored, e.g. to branch-out a version for making bug fixes.
+
+.I[
+For further information in overview style see
+[XILINX UG892]
+ → *Ch. 3*
+ → *Managing Source Files in Project Mode*
+ → *Archiving Projects* + *Creating a Tcl Script to Recreate Projects*  
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
 ---
 
 template: plain
-name:
-header: ##### Tcl Command ...
+header: ##### Defining and Launching Runs
 
-TBD
+In Project Mode
 
+* Defining *Runs* that can
+* then be *launched*
 
----
+replace the explicit use of the respective Non-Project Mode commands for
+[Synthesizing](#synthesizing_a_design) and
+[Implementing](#implementing_a_design) a Design.
 
-template: plain
-name: 
-header:
+.I[
+For further information in overview style see
+[XILINX UG892]
+ → *Ch. 3*
+ → *Running Logic Synthesis and Implementation*  
+]
 
-TBD
-
-
----
-
-template: plain
-name: 
-header:
-
-TBD
-
+[XILINX UG892]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug892-vivado-design-flows-overview.pdf
 
 ---
-
 template: plain
-name: 
-header:
+name: defining_runs_with_tcl_commands
+header: ##### Defining Runs with Tcl Commands
 
-TBD
+Besides using the Vivado GUI there are also Tcl commands to define *Runs*:
+
+* `create_run` – will define a new Design Tool *Run*,
+   * either for a *Synthesis Tool*
+   * or for (a set of) *Implementation Tool(s)*
+* `current_run` – query or set the current run
+* `get_property` – access and
+* `set_property` – modify details of a run
+
+.N.center[
+Whether a *Run* is created as *Synthesis* or *Implementation*  
+is determined by its `-flow` and `-parent` options.._[]
+]
+
+Runs with a *Parent* are *Implementation Runs*, which – via the *Parent Run* –
+are related to the respective *Synthesis Run* (that itself has no parent).
+
+.I[
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+
+.F[:
+The documentation is not very enlightening in this respect but seems to
+indicate the `-flow` option allows two pre-defined values only.
+]
+
+---
+template: plain
+name: launching_runs_with_tcl_commands
+header: ##### Launching Runs with Tcl Commands
+
+Besides using the Vivado GUI there are also Tcl commands for launching
+(and further controlling) *Runs*:
+
+* `launch_runs` – launch one or more runs
+* `wait_on_run` – wait for a specific run to terminate
+
+.N.center[
+When launching a *Run* the target specified, i.e.  
+up to achieving which "goal" the tools should be run.
+]
+
+Vivado in *Project Mode* is capable to organize *Incremental Compiles* by (re-)
+starting from intermediate checkpoints.
+
+.I[
+For a detailed description see
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+]
+
+[
+XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+---
+template: plain
+name: organizing_optimizations_via_strategies
+header: ##### Organizing Optimizations via Strategies
+
+Compared to the *Non-Project Design Flow*, where especially the various
+optimisation steps are called explicitly in a (mostly) fixed order,
+*Project Mode* takes a slightly different approach.
+
+* For the optimization steps typical *Parameter Collections* are defined.
+* These collections are descriptively named and selected name.
+
+In Vivado's GUI Mode Strategies are part of and can be modified per
+*Implementation Run*.
+
+With regard to the Vivado's Tcl Language Interface this is reflected into
+modifying properties of a *Implementation Run* object.
+
+.I[
+Compared to most other aspects of controlling Vivado via Tcl this is not so
+well documented but some clues about the general approach can be taken from
+[XILINX UG835]
+ → *Ch. 3: Tcl Commands Listed Alphabetically*
+ → `launch_runs`
+ → Examples (last paragraph of section)
+]
 
 ---
 template: plain
 name: understanding_the_design_model
 header: ### Understanding the Design Model
 
-Prior to navigating._[] within the design using Tcl commands there needs to be a basic
-understanding the model itself.
+Prior to navigating._[] within the design using Tcl commands there needs to be
+a basic understanding of the model itself.
 
 .I[
 For more information refer to:  
@@ -2268,17 +2487,38 @@ For more information refer to:
 [XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
 .F[:
-Navigating the design model is usually the first step to select one or more objects,
-which subsequently are accessed or modified.
+Navigating the in-memory design model is usually the first step to select one
+or more objects, which subsequently are accessed or modified.
 ]
+
+---
+template: plain
+name: understanding_design_objects
+header: #### Understanding Design Objects
+
+TBD
+
+---
+template: plain
+name: design_objects_and_classes
+header: ##### Design Objects and Classes
+
+TBD
+
+---
+template: plain
+name: design_objects_and_classes
+header: ##### Design Object Properties
+
+TBD
 
 ---
 template: plain
 name: basics_of_design_navigation
 header: #### Basics of Design Navigation
 
-Navigating to objects in the design model is similar to navigating to files
-in a directory tree.
+Navigating to objects in the in-memory design model is similar to navigating
+to files in a directory tree.
 
 * There is a *Top Level Object* …
 
@@ -2290,11 +2530,35 @@ in a directory tree.
 
 .I[
 [XILINX UG894] → **Tcl Scripting in Vivado**  
-                → Accessing Design Objects  
-                → Getting By Name – Traversing the Design Hierarchy
+ → Accessing Design Objects  
+ → Getting By Name – Traversing the Design Hierarchy
 ]
 
 [XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug894-vivado-tcl-scripting.pdf
+
+---
+template: plain
+header: ##### Selecting Objects by Name
+
+TBD
+
+---
+template: plain
+header: ##### Selecting Objects by Name Pattern
+
+TBD
+
+---
+template: plain
+header: ##### Navigating Through Object Hierarchies
+
+TBD
+
+---
+template: plain
+header: ##### Selecting Objects with Regular Expressions
+
+TBD
 
 ---
 template: plain
@@ -2352,8 +2616,7 @@ Note that the syntax chosen seems to strive for being readable in natural langua
 
 ---
 template: plain
-name: accessing_object_properties
-header: #### Filtering on Selection
+header: #### Filtering Result Lists on Object Properties
 
 Many commands selecting objects have a `-filter` option
 
@@ -2432,58 +2695,69 @@ never be loaded to a concrete hardware).
 
 ---
 template: plain
-name: non_project_mode_outline
-header: #### Non-Project Mode Outline
-
-In *Non-Project Mode*
-
-* Files (Verilog/VHDL, Constraints, Simulation) need to explicitly loaded
-
-* Toos (Synthesis, Implementation/Optimizations) need to explicitly run
-
-.I[
-For an outline of a session in non-project mode see:  
-[XILINX UG888] → Lab 1: Using the Non-Project Design Flow
-]
-
-[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
-
----
-template: plain
-name: project_mode_outline
-header: #### Project Mode Outline
-
-In *Project Mode*
-
-* Vivado manages dependencies via *File Sets*
-
-* Arranges automatically for the adequate tools to run
-
-* Provides optimisation via *Strategies*
-
-.I[
-For an outline of a session in project mode see:
-[XILINX UG888]: → Lab 2: Using the Project Design Flow
-]
-
-[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
-
----
-template: plain
 name: processing_files_and_reports
 header: ## Processing Files and Reports
 
 ------------------------------------------------------------------------------
 
-* Scanning Directories
+* [Scanning Directories](#scanning_directories)
 
-* Basic Text File Processing
+* [Basic (Text) File Processing](#basic_file_processing)
 
-* Selecting Sections in Reports
+* [Basic String Processing](#basic_string_processing)
 
-* Parsing Reports with Regular Expressions
+* [Selecting Parts of Reports](#selecting_parts_of_reports)
+
+* [Working with Regular Expressions](#working_with_regular_expressions)
 
 ------------------------------------------------------------------------------
+
+---
+template: plain
+name: scanning_directories
+header: ### Scanning Directories
+
+[Tcl command `glob`]: https://www.tcl.tk/man/tcl8.4/TclCmd/glob.htm
+[Tcl command `cd`]: https://www.tcl.tk/man/tcl8.4/TclCmd/cd.htm
+[Tcl command `pwd`]: https://www.tcl.tk/man/tcl8.4/TclCmd/pwd.htm
+[Tcl command `file`]: https://www.tcl.tk/man/tcl8.4/TclCmd/file.htm
+
+TBD
+
+---
+template: plain
+name: basic_file_processing
+header: ### Basic (Text) File Processing
+
+[Tcl command `open`]: https://www.tcl.tk/man/tcl8.4/TclCmd/open.htm
+[Tcl command `read`]: https://www.tcl.tk/man/tcl8.4/TclCmd/read.htm
+[Tcl command `gets`]: https://www.tcl.tk/man/tcl8.4/TclCmd/gets.htm
+[Tcl command `close`]: https://www.tcl.tk/man/tcl8.4/TclCmd/close.htm
+[Tcl command `catch`]: https://www.tcl.tk/man/tcl8.4/TclCmd/catch.htm
+
+TBD
+
+---
+template: plain
+name: cutting_out_parts_of_reports
+header: ### Selecting Parts of Reports
+
+[Tcl command `split`]: https://www.tcl.tk/man/tcl8.4/TclCmd/split.htm
+[Tcl command `join`]: https://www.tcl.tk/man/tcl8.4/TclCmd/join.htm
+[Tcl command `lindex`]: https://www.tcl.tk/man/tcl8.4/TclCmd/lindex.htm
+[Tcl command `foreach`]: https://www.tcl.tk/man/tcl8.4/TclCmd/foreach.htm
+
+TBD
+
+---
+template: plain
+name: parsing_with_regular_expressions
+header: ### Working with Regular Expressions
+
+[Tcl command `regexp`]: https://www.tcl.tk/man/tcl8.4/TclCmd/regexp.htm
+[Tcl command `regsub`]: https://www.tcl.tk/man/tcl8.4/TclCmd/regsub.htm
+
+TBD
 
 ---
 template: plain
@@ -2516,7 +2790,7 @@ TBD
 ---
 template: plain
 name: define_argument_sets
-header: #### Parametrize Variations
+header: #### Define Argument Sets
 
 TBD
 
@@ -2541,30 +2815,54 @@ header: ## Tcl from the Reusability Viewpoint
 
 ------------------------------------------------------------------------------
 
-* Example: Moving Useful Stuff to Subroutines
+* [Moving Stuff to Subroutines](#moving_stuff_to_subroutines)
 
-* Example: Sharing Subroutines via Files
+* [Sharing Subroutines via Files](#sharing_subroutines_via_files)
 
-* Optional Example: Auto-Loading Files
+* [Auto-Loading Subroutines](#autoloading_subroutines)
 
-* Optional Example: The Package Facility
+* Optional: [The Package Facility](#the_package_facility)
+
+* Optional: [The XILINX Tcl Store](#the_xilinx_tcl_store)
 
 ------------------------------------------------------------------------------
 
 ---
 template: plain
-name: maybe_some_tk
-header: ## Your Choice (maybe some Tk?)
+name: moving_stuff_to_subroutines
+header: ### Moving Stuff to Subroutines
 
-------------------------------------------------------------------------------
+TBD
 
-* Example: Remote Tracing and Debugging
+---
+template: plain
+name: sharing_subroutines_via_files
+header: ### Sharing Subroutines via Files
 
-* Optional: Overview about Tcl Development Tools
+[Tcl command `source`]: https://www.tcl.tk/man/tcl8.4/TclCmd/source.htm
 
-* (Anything else you would find interesting?)
+---
+template: plain
+name: autoloading_subroutines
+header: ### Autoloading Subroutines
 
-------------------------------------------------------------------------------
+TBD
+
+---
+template: plain
+name: the_package_facility
+header: ### The Package Facility
+
+[Tcl command `package`]: https://www.tcl.tk/man/tcl8.4/TclCmd/package.htm
+
+TBD
+
+---
+template: plain
+name: the_xilinx_tcl_store
+header: ### The XILINX Tcl Store
+
+TBD
 
 
 </textarea>
