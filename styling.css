@@ -586,8 +586,8 @@ div.linkpage span.X {
 	}
 }
 @page {
-	/*size: A/
-	margin: 10;
+	size: A4;
+	margin-left: 2cm;
 }
 
 /*

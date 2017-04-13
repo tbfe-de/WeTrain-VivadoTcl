@@ -217,15 +217,7 @@ header: ## Agenda
 
     * Part 6: [Tcl from the Reusablity Viewpoint](#tcl_reusability)
 
-* Optional Extras
-
-    * [Your Choice (maybe some Tk?)](#maybe_some_tk)
-
 ------------------------------------------------------------------------------
-
-Each part consists of some "theory" or background information and is enhanced
-by practical demonstrations, followed by a work-shop style phase to be used for
-solving practical problems, which **YOU** are welcome to contribute.
 
 ---
 template: plain
@@ -312,6 +304,23 @@ may or may not have another masked line-ending itself).
 template: plain
 name: tcl_variable_and_command_subst
 header: #### Variable and Command Substitution
+
+The Tcl syntax looks up
+
+* `$`-signs followed by a valid variable name  
+  – for substitution by the variable content
+
+* parts of a command line enclosed in `[` … `]`  
+  – for substitution by the return value of the enclosed command (…)
+
+.N[
+In Vivado Tcl's syntax analysis is modified so that command substitution does
+**not** take place when the square brackets contain a single integral number,
+two integral numbers separated by a colon, or an asterisk.
+]
+
+* [Quick-Tcl → Command Separation](quick-tcl.html#variables_quickly)
+* [Quick-Tcl → Word Separation](quick-tcl.html#using_command_substitution)
 
 ---
 template: plain
@@ -426,15 +435,12 @@ Tcl Syntax does **not** know about
 * Basic arithmetic, logic, and relational expressions
 
     * plus, minus, multiplies, …
-
     * equals/unequals, less, less-or-equal, …
-
     * negate, and, or, shift
 
-* Mathematic Functions
+* Mathematical Functions
 
     * classic trigonometric and their inverses
-
     * powers and logarithms, …
 
 .N.center[
@@ -521,20 +527,17 @@ header: #### Regular Expressions
 
 Originating in the Unix tradition, Tcl **of course** supports REs._[] for:
 
-* Flexible comparisons, e.g.
+* Flexible comparisons, e.g.  
+  –  `regexp {[+-][0-9]+([.][0-9]*)?} $num`
 
-    * … `regexp {[+-][0-9]+([.][0-9]*)?} $num` …
+* Parsing, e.g.  
+  – `regexp {(\d{1,3}(?:\.\d{3})*),(\d{2}) Euro} $ec - eur cnt`
 
-* Parsing, e.g.
-
-   * `regexp {(\d{1,3}(?:\.\d{3})*),(\d{2}) Euro} $ec - euro cent`
-
-* Substitutions, e.g.
-
-    * `regsub {^[ \t]*(.*[^ \t])[ \t]*$) $line {\1} line`
+* Substitutions, e.g.  
+  – `regsub {^[ \t]*(.*[^ \t])[ \t]*$) $line {\1} line`
 
 .N.center[
-Clearly, the above is does not strive to introduce REs from ground-up :-).
+Clearly, the above is does not strive to introduce REs from ground-up! :-)
 ]
 
 * [Quick Tcl → Using Regular Expressions](quick-tcl.html#regular_expressions)
@@ -559,12 +562,10 @@ File handling is part of Tcl in two forms:
 
    * most operations as `file` subcommands._[]
 
-* Handling the **content** a files with a C-style API._[]
+* Handling the **content** a files with a C-style API
 
    * `open` returns a "magic cookie" (called *channel*) …
-
    * … serving as handle for other commands (`read`, `puts` …) …
- 
    * … which must finally be `close`-d
 
 .N[
@@ -617,7 +618,7 @@ name: retrieving_scripts_from_journals
 header: ## Retrieving Scripts from Journals
 
 ------------------------------------------------------------------------------
-* [Accessing the Vivado Design Suite](#accessing_the_vivado_design_suite]
+* [Accessing the Vivado Design Suite](#accessing_the_vivado_design_suite)
 
   * [Using the Vivado GUI](#using_the_vivado_gui)
   * [Using Vivado Tcl Commands](#using_vivado_tcl_commands)
@@ -1184,6 +1185,29 @@ header: ### Tcl and Vivado – The Big Picture
 
 ---
 template: linkinfo
+graphic: VivadoDesignFlows
+name: from_design_model_to_bitstream
+header: #### From Design Model to Bitstream
+
+* The typical final goal of any design is the *Bitstream File*
+
+* Before this can happen the design usually needs some elaboration
+
+* (Thorough testing not shown here – though highly to recommend
+  before generating and using a bitstream file)
+
+
+.F[:
+Of course there are many reasons why a bitstream file might be never produced.
+E.g. a design could turn out to be inappropriate during elaboration or
+testing and is completely overturned. Or the goal is to just to test tools
+Vivado uses internally. Finally, the bitstream files eventually produced
+during this workshop are also not of much interest … (and will probably
+never be loaded to a concrete hardware).
+]
+
+---
+template: linkinfo
 graphic: VivadoModesAndTcl
 name: nonproject_vs_project_mode
 header: #### Non-Project vs. Project Mode
@@ -1303,9 +1327,10 @@ explore the in-memory design model:
   * [**then query** the property](#accessing_object_properties)
     of interest.
 
-* Generate some **Standard Report**
-  * then **further analyze** it
-  * with Tcl's **string processing** capabilities.
+* Generate some [Standard Report](#generating_standard_reports)
+  * then [**further analyze** it](#selecting_parts_of_reports)
+  * with [Tcl's String Processing](#basic_string_processing) or
+    [Regular Expression](#working_with_regular_expressions) capabilities.
 
 .N.center[
 Especially Tcl's versatile *Regular Expressions* come in handy here.._[]
@@ -1331,8 +1356,7 @@ Basically a large number of actions that
 * can be selected from a menu or
 * caused by pressing a button
 
-will result in a smaller or larger modification of the in-memory design
-model.._[]
+will result in a modification of the in-memory design model.._[]
 
 Depending on the currently open views such actions
 
@@ -1348,11 +1372,11 @@ Depending on the currently open views such actions
 
 
 .F[:
-This is especially true if the in-memory design model is understood in the
-broad way it is applied by Vivado, i.e. not only for storing and manipulating
-"objects" with a concrete mapping to a physical device (LUTs, Ports, Wires,
-…), but also parameters of design runs, optimisation strategies, details for
-creating bitstream files … and much, **much**, **MUCH** more.
+This is especially true if that design model representation is understood in
+the broad way it is applied by Vivado, i.e. not only for storing and
+manipulating "objects" with a concrete mapping to a physical device (LUTs,
+Ports, Wires, …), but also parameters of design runs, optimisation strategies,
+details for creating bitstream files … and much, **much**, **MUCH** more.
 ]
 
 ---
@@ -1399,12 +1423,12 @@ As already has been mentioned Tcl commands
 Differences are not quite from separate worlds but visible enough.
 ]
 
-Therefore it pays to be aware of a command's origin – Tcl or Vivado …._[]
+Therefore it may pay to be aware of a command's origin – Tcl or Vivado.._[]
 
 .F[:
-… somewhat like being aware whether driving a gear-shifting car or a
-car with automatic transmission – Tcl is more on the gear-shifting side,
-Vivado more on the other (author's advice and personal opinion).  
+Similar to being aware whether driving a gear-shifting car or a car with
+automatic transmission – Tcl is more on the gear-shifting side, Vivado more
+on the other (author's advice and personal opinion).  
 The reasons for the differences are manifold and partially speculative:
 (1) Tcl itself is not completely "as if made from one piece" and therefore
 not quite consistent. (2) There may have been the intent to be more
@@ -1420,10 +1444,9 @@ header: #### Tcl vs. Vivado Commands
 
 * **Common** to Tcl and Vivado is Syntax Analysis only.
 
-* Beyond that slightly different styles between
+* Beyond that, slightly different styles between
 
-  * [Tcl Builtin Commands](#typical_builtin_tcl_command_style) and
-
+  * [Tcl Builtin Commands](#typical_tcl_builtin_command_style) and
   * [Tcl Vivado Commands](#typical_tcl_vivado_command_style)
 
 become apparent.
@@ -1439,8 +1462,8 @@ header: ##### Typical Tcl Builtin Command Style
      * and typically come first, then "ordinary" arguments
 
 * Error messages are terse and use kind of a meta-syntax, e.g. indicating
-     * optional parts by enclosing in quastion marks (`?`………`?`) or
-     * optional repetition by three dots (……… ` ...`)
+     * optional parts by enclosing in question marks (`?`……`?`) or
+     * optional repetition by three dots (…… ` ...`)
 
 * There is no builtin help, e.g.
   * if correct usage can not be gleaned from the (terse) error message given
@@ -1482,12 +1505,13 @@ Two ways to get a *Online Help* …
 ]
 
 .F[:
-E.g. all reports Vivado can produce by using Tcl commands will be written as
-output onto the Tcl console by default, can alternatively be written to a file
-named via the `-file` option, or can be retrieved as command return value when
-the `-string` option is specified. In principle that last behavior would be
-fully sufficient, as Tcl allows to turn **any** return value easily into
-console output or – with only little more effort – write it to a file.
+E.g. all reports Vivado which can be generated by using Tcl commands will be
+written as output onto the Tcl console by default, can alternatively be written
+to a file named via the `-file` option, or can be retrieved as command return
+value when the `-return_string` option is specified. In principle that last
+behavior would be fully sufficient, as Tcl allows to turn **any** return value
+easily into console output or – with only little more effort – write it to a
+file.
 ]
 
 ---
@@ -2024,13 +2048,13 @@ There are several commands for that purpose:._[]
 * `phys_opt_design`
 * `route_design`
 
-(usually run in the shown order)
+The tools above must be run  
+**in the order shown**.
 ]
 .pull-right[
-* `power_opt_design`
+The tool below may be be inserted **before or after** `place_design`:
 
-(may be optionally inserted before or after `place_design` – less efficient but
-preserving timing in the latter case)
+* `power_opt_design`
 ]
 
 It may also make sense to [safe the current state](#using_checkpoints) of an
@@ -2056,7 +2080,8 @@ then, instead as part of pre-defined *Runs*.
 
 ---
 template: plain
-header: ##### Generating Reports
+name: generating_standard_reports
+header: ##### Generating Standard Reports
 
 There are more that 50 commands to generate reports:
 .pull-left[
@@ -2077,7 +2102,7 @@ fine-grained level for the amount of information contained in that report.)
 ]
 
 Reports may also serve as a base to
-[extract more specific information](#further_processing_of_reports).
+[extract more specific information](#further_processing_reports).
 
 .I[
 For further information in overview style see
@@ -2113,7 +2138,8 @@ There are two basic approaches:
 .N.center[
 As these techniques are of interest in both,  
 *Non-Project* and *Project Mode*,  
-they will be discussed in chapter of their own (TBD).
+they will be discussed later in a
+[chapter of their own](#processing_files_and_reports)
 ]
 
 ---
@@ -2328,16 +2354,18 @@ For a detailed description see
 template: plain
 header: ##### Archiving and Recreating Projects
 
-There are two ways to copy a project:
+There are several ways to copy a project:
 
 * `archive_project` – basically saving the project's directory structure into
   a ZIP-file
 * `write_project` – creating a Tcl script to re-generate the project in its
   current state (of course including the content of all source files)
+* `save_project-as` – writes (clones) the current project (`*.xpr` or `*.lpr`
+  file) at a different new location
 
 .N[
 As the documentation points out, the Tcl script created by `write_project` may
-be checked-in into version control system.
+be checked-in into a version control system.
 ]
 
 Then, at any time later, the project with all its state at that moment can be
@@ -2477,13 +2505,21 @@ header: ### Understanding the Design Model
 Prior to navigating._[] within the design using Tcl commands there needs to be
 a basic understanding of the model itself.
 
+This requires to
+
+* [Understandig Design Objects](#understanding_design_objects) and
+
+* Understanding the [Basics of Design Navigation](#basics_of_design_navigation)
+
 .I[
 For more information refer to:  
 [XILINX UG894] **Using Tcl Scripting** – for an Introduction  
+[XILINX UG912] **Properties Reference Guide** – More Details  
 [XILINX UG835] **Vivado Tcl Commands** – Complete Reference
 ]
 
 [XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug894-vivado-tcl-scripting.pdf
+[XILINX UG912]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2014_4/ug912-vivado-properties.pdf
 [XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
 .F[:
@@ -2496,21 +2532,41 @@ template: plain
 name: understanding_design_objects
 header: #### Understanding Design Objects
 
-TBD
+*Design Objects* are Data Entities._[] used internally in Vivado for various
+purposes.
+
+As such they hold
+
+* a set of data values – called properties – that can be accessed for
+  reading, and
+
+* most of which can also be modified.
+
+.I[
+For further introduction see also Appendix [Design Object Overview],
+reproducing some relevant chapters from [XILINX UG912].
+]
+
+[Design Object Overview]: file:PDF/ug912_part-design_object_overview.pdf
+[XILINX UG912]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2014_4/ug912-vivado-properties.pdf
+
+.F[:
+Compared to the traditional meaning of the term *Object* in OOP-Languages the
+*Design Objects* as used in Vivado are missing *Methods*.
+]
 
 ---
 template: plain
-name: design_objects_and_classes
-header: ##### Design Objects and Classes
+name: design_objects_example_commands
+header: ##### Design Objects Example Commands
 
-TBD
-
----
-template: plain
-name: design_objects_and_classes
-header: ##### Design Object Properties
-
-TBD
+Assuming `$obj` already holds a valid design object, some useful commands to
+further inspect that object are:
+```
+report_property $obj
+get_property NAME $obj
+get_property CLASS $obj
+```
 
 ---
 template: plain
@@ -2518,179 +2574,84 @@ name: basics_of_design_navigation
 header: #### Basics of Design Navigation
 
 Navigating to objects in the in-memory design model is similar to navigating
-to files in a directory tree.
+to files in a directory tree, i.e.
 
-* There is a *Top Level Object* …
+* many of the important design objects have structured names,
 
-    * (much like the root directory of a file system)
+* which is referred-to relative to the current top (element)
 
-* … which may also be changed
-
-    * (much like the current working directory)
+* or by navigation from related objects via `-of_object`._[]
 
 .I[
-[XILINX UG894] → **Tcl Scripting in Vivado**  
- → Accessing Design Objects  
- → Getting By Name – Traversing the Design Hierarchy
+For further introduction see also Appendix [Design Object Navigation],
+reproducing some relevant chapters from [XILINX UG894].
 ]
 
-[XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug894-vivado-tcl-scripting.pdf
-
----
-template: plain
-header: ##### Selecting Objects by Name
-
-TBD
-
----
-template: plain
-header: ##### Selecting Objects by Name Pattern
-
-TBD
-
----
-template: plain
-header: ##### Navigating Through Object Hierarchies
-
-TBD
-
----
-template: plain
-header: ##### Selecting Objects with Regular Expressions
-
-TBD
-
----
-template: plain
-name: understanding_object_relations
-header: #### Understanding Object Relations
-
-Objects are inter-related via connections._[]
-
-*  which may also be used as a base for navigation
-
-* but first the relationships need to be understood
-
-.I[
-[XILINX UG894] → **Tcl Scripting in Vivado**  
-               → Accessing Design Objects  
-               → Getting Objects by Relationship
-]
+[Design Object Navigation]: file:PDF/ug894_part-design_object_navigation.pdf
 
 [XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug894-vivado-tcl-scripting.pdf
 [XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
 
 .F[:
-For basic and even for moderately ambitious tasks it is fully sufficient
-to grasp the main relationships while ignoring the details. For the full
+For basic and even for moderately ambitious tasks it is fully sufficient to
+grasp the main relationships while ignoring the details. For the full
 picture see: *[XILINX UG835] → Ch. 1: Introduction → First Class Tcl Objects and
 Relationships  → Object Relationships*
 ]
 
 ---
 template: plain
-name: navigating_via_relations
-header: #### Navigating via Relations
+name: design_navigation_example_commands
+header: ##### Design Navigation Example Commands
 
-The general form is this:._[]
-
-* `get_`*`kind`* ` -of_objects ` *`which`*, where
-
-   * *`kind`* depends on the type of objects **to be** looked-up, and
-
-   * *`which`* is the type of objects **from which** the relation originates
+Assuming a synthesized design is already open, the following examples
+demonstrate various ways to navigate to single object or through object lists.
 
 .N.center[
-**Not all combinations of *`kind`* and *`which`* are valid!**
-]
-
-Get accustomed to look-up proper usage in [XILINX UG835] or use the command with
-the `-help` option interactively.
-
-[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
-
-.F[:
-Note that the syntax chosen seems to strive for being readable in natural language:  
-`get_pins -of_objects [get_nets -hier]`
+A Demonstration will be given live.
 ]
 
 ---
 template: plain
 header: #### Filtering Result Lists on Object Properties
 
-Many commands selecting objects have a `-filter` option
-
-* The required syntax deviates somewhat from Tcl style
-
-* Often it makes sense to put the whole selection in curly braces
+Object lists returned._[] when looking-up navigating through design objects may
+be also filtered to only contain objects adhering to a filter specification:
 
 .N.center[
-**Be aware no variable substitution takes place in curly braces.**._[]
+A Demonstration will be given live.
 ]
-
-* [Quick Tcl → Variable (quickly)](quick-tcl.html#variables_quickly)
 
 .F[:
-Be aware of backslash substitutions (for `\n`, `\t`, etc.) if you use double
-quotes instead and be aware of word (and command) separation if you use no
-quoting at all.
+Be sure to understand that object list can only contain objects of the same
+class – objects of different classes need to be held in separate lists.
 ]
+
 
 ---
 template: plain
 name: accessing_object_properties
 header: #### Accessing Object Properties
 
-Design objects generally have properties._[]
+Design object properties are generally accessed with
 
-* Some properties are common to all objects
+* `get_property` to get the current value, and
 
-* Others vary with the type of object
+* `set_property` to modify the current value
 
-* (also filtering is based on properties)
-
-.I[
-For more information see:  
-[XILINX UG835] → Ch. 1: Introduction  
-               → First Class Tcl Objects and Relationships  
-               → Object Properties
+.pull-left[
+Retrieving property `XXX` of a **single object** held by `$obj`, storing its
+value in variable `v`:
+```
+set v [get_property XXX $obj]
+```
 ]
-
-* [XILINX UG835] → Ch. 3: Tcl Commands Listed Alphabetically →
-  * `get_property`
-  * `list_property`
-  * `report_property`  
-  * … (and others) …
-
-.F[:
-As this presentation could never be exhaustive without becoming a reference
-manual, no attempt into that direction is made at all: get accustomed to
-look-up relevant information in [XILINX UG835]. **Now!**
-]
-
-[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
-
----
-template: linkinfo
-graphic: VivadoDesignFlows
-name: from_design_model_to_bitstream
-header: ### From Design Model to Bitstream
-
-* The typical final goal of any design is the *Bitstream File*
-
-* Before this can happen the design usually needs some elaboration
-
-* (Thorough testing not shown here – though highly to recommend
-  before generating and using a bitstream file)
-
-
-.F[:
-Of course there are many reasons why a bitstream file might be never produced.
-E.g. a design could turn out to be inappropriate during elaboration or
-testing and is completely overturned. Or the goal is to just to test tools
-Vivado uses internally. Finally, the bitstream files eventually produced
-during this workshop are also not of much interest … (and will probably
-never be loaded to a concrete hardware).
+.pull-right[
+Modifying property `XXX` assume the new value `nval` for **one or more**
+objects held by `$objs`:
+```
+set_property XXX nval $objs
+```
 ]
 
 ---
@@ -2722,7 +2683,21 @@ header: ### Scanning Directories
 [Tcl command `pwd`]: https://www.tcl.tk/man/tcl8.4/TclCmd/pwd.htm
 [Tcl command `file`]: https://www.tcl.tk/man/tcl8.4/TclCmd/file.htm
 
-TBD
+* The [Tcl command `glob`] is the basic way to scan a directory for the entries
+  it contains.
+
+* Recursively descending into subdirectories can be achieved with the
+  [Tcl command `cd`] …
+
+* … while the [Tcl command `pwd`] might be used to store the current working
+  directory to return to it later.
+
+* While scanning directory entries the command `file` may sometimes be useful
+  as it provides typical operations with whole files.
+
+.N.center[
+A Demonstration will be given live.
+]
 
 ---
 template: plain
@@ -2730,24 +2705,71 @@ name: basic_file_processing
 header: ### Basic (Text) File Processing
 
 [Tcl command `open`]: https://www.tcl.tk/man/tcl8.4/TclCmd/open.htm
-[Tcl command `read`]: https://www.tcl.tk/man/tcl8.4/TclCmd/read.htm
-[Tcl command `gets`]: https://www.tcl.tk/man/tcl8.4/TclCmd/gets.htm
 [Tcl command `close`]: https://www.tcl.tk/man/tcl8.4/TclCmd/close.htm
 [Tcl command `catch`]: https://www.tcl.tk/man/tcl8.4/TclCmd/catch.htm
+[Tcl command `read`]: https://www.tcl.tk/man/tcl8.4/TclCmd/read.htm
+[Tcl command `gets`]: https://www.tcl.tk/man/tcl8.4/TclCmd/gets.htm
 
-TBD
+* The [Tcl command `open`] provides basic to the current content of a file
+  (when opened for reading) or to replace its content or append to it.
+
+* With the [Tcl command `catch`] adequate error handling can – and should – be
+  added around opening a file.
+
+* To free resources no longer used the [Tcl command `close`] should be used
+  when access to some file is no longer required.
+
+* With the [Tcl command `read`] the content of a file can be read into main
+  memory, entirely or partially.
+
+* The [Tcl command `gets`] is for processing of a file "line by line".
+
+.N.center[
+A Demonstration will be given live.
+]
 
 ---
 template: plain
-name: cutting_out_parts_of_reports
+name: basic_string_processing
+header: ### Basic String Processing
+
+[Tcl command `string`]: https://www.tcl.tk/man/tcl8.4/TclCmd/string.htm
+
+* The [Tcl command `string`] provides various sub-commands for typical string
+  operations.
+
+.N.center[
+A Demonstration will be given live.
+]
+
+---
+template: plain
+name: selecting_parts_of_reports
 header: ### Selecting Parts of Reports
 
 [Tcl command `split`]: https://www.tcl.tk/man/tcl8.4/TclCmd/split.htm
-[Tcl command `join`]: https://www.tcl.tk/man/tcl8.4/TclCmd/join.htm
 [Tcl command `lindex`]: https://www.tcl.tk/man/tcl8.4/TclCmd/lindex.htm
 [Tcl command `foreach`]: https://www.tcl.tk/man/tcl8.4/TclCmd/foreach.htm
+[Tcl command `join`]: https://www.tcl.tk/man/tcl8.4/TclCmd/join.htm
 
-TBD
+* The [Tcl command `split`] is useful to create a list from a (long) string
+  with a specific used for separation logical parts.
+
+.N.center[
+Such "long strings" may consists of be all the lines of a file that was read
+in its entirety, separated by "`\n`".
+]
+
+* The [Tcl command `lindex`] provides access to a single element of a list.
+
+* The [Tcl command `foreach`] runs a loop over all elements of a list.
+
+* The [Tcl command `join`] turns elements of a list into a (long) string (i.e.
+  it can undo what `split` did).
+
+.N.center[
+A Demonstration will be given live.
+]
 
 ---
 template: plain
@@ -2757,56 +2779,181 @@ header: ### Working with Regular Expressions
 [Tcl command `regexp`]: https://www.tcl.tk/man/tcl8.4/TclCmd/regexp.htm
 [Tcl command `regsub`]: https://www.tcl.tk/man/tcl8.4/TclCmd/regsub.htm
 
-TBD
+* The [Tcl command `regexp`] compares a string based on a regular expression,
+  potentially also parsing-out selected parts.
+
+* The [Tcl command `regsub`] carries out systematic substitutions in a string,
+  based on a regular expression.
+
+.N.center[
+A Demonstration will be given live.
+]
 
 ---
 template: plain
 name: automating_variations
-header: ## Automatic Systematic Variations
+header: ## Automating Variations
 
-TBD
+Often it is not clear in advance which of several optimizations will have the
+best effect or offer the best trade-off between competing goals.
+
+* With Tcl Scripting systematic combinations may be easily tried.
+
+* The resulting script may run in the background or over the night.
 
 ---
 template: plain
 name: general_approach
 header: ### General Approach
 
-TBD
+To automate variations the general approach should be:
+
+* Package what needs to be done in a sub-routine.
+
+* Via parameters specify those parts of the contained commands for which
+  different values should be tried systematically.
+
+* Determine the set of actual values the parameters should take.
+
+.N.center[
+Note that the following pages outline the approach rather "schematically" than
+with concrete Vivado commands.
+]
+
+The reason is that this technique as such is very general and this should not be
+obscured by using a too specific examples.
 
 ---
 template: plain
 name: find_commonalities
 header: #### Find Commonalities
 
-TBD
+Assume from two GUI sessions journals are extracted, with some differences but
+also many obvious commonalities:
+
+.pull-left[
+```
+proc separate_flow_1 {} {
+    = abc def G xyz
+    = abc def z
+    = abc H ijk
+    = qqq G H z
+}
+```
+]
+.pull-right[
+```
+proc separate_flow_2 {} {
+    = abc def U xyz
+    = abc def z
+    = abc V ijk
+    = qqq U V z
+}
+```
+]
+
+(To help spotting the commonalities, they are shown in lower case above.)
+
+.N.center[
+Of course, commonalities are not always that easy to recognize.._[]
+]
+
+.F[:
+It may e.g. also be the case that some the differences require additional
+commands, to be left out n other cases … what can be easily handled with the
+[Tcl command `if`].
+]
+
+[Tcl command `if`]: https://www.tcl.tk/man/tcl8.4/TclCmd/if.htm
 
 ---
 template: plain
 name: parametrize_variations
 header: #### Parametrize Variations
 
-TBD
+Factoring-out the commonalities leads to:
+```
+proc parametrized_flow {arg1 arg2} {
+    = abc def $arg1 xyz
+    = abc def z
+    = abc $arg1 ijk
+    = qqq $arg1 $arg2 z
+}
+```
+
+.pull-left[
+The effect of `separate_flow_1` can be produced with:
+```
+parametrized_flow G H
+```
+]
+.pull-right[
+The effect of `separate_flow_2` can be produced with:
+```
+parametrized_flow U V
+```
+]
 
 ---
 template: plain
 name: define_argument_sets
 header: #### Define Argument Sets
 
-TBD
+Further analysing what may determine that valid argument sets are:
+
+* `arg1` could take the values `G`, `H`, and `I`, while
+
+* `arg2` could take the values `U`, `V`, `W`, `X`, and `Y`.
+
+These could be represented as two lists:
+
+```
+set argset_1 [list G H I]
+set argset_2 [list U V W X Y]
+```
 
 ---
 template: plain
 name: orthogonal_combination
 header: #### Orthogonal Combination
 
-TBD
+All (orthogonally) possible variations may now be generated with:
+```
+foreach x $argset_1 {
+    foreach y $argset_2 {
+        parametrized_flow $x $y
+    
+}
+```
 
 ---
 template: plain
 name: tree_based_combination
 header: #### Tree-Based Combination
 
-TBD
+Alternatively it may be the case that not all possible combinations make
+sense, only the following:
+
+* `G` may be combined with `U`, `V`, `W`
+* `H` may be combined with `U` and `X`
+* `I` may be combined with `W`, `X`, and `Y`.
+
+This may be specified in a nested-list style as follows …
+```
+set argset_tree {G {U V W    }
+                 H {U     X  }
+                 I {    W X Y}
+                }
+```
+
+… to be used with the following processing loop:
+```
+foreach {x1 args2} $argset_tree {
+    foreach x2 $argset_2{
+        parametrized_flow $x1 $x2
+    }
+}
+```
 
 ---
 template: plain
@@ -2832,12 +2979,30 @@ template: plain
 name: moving_stuff_to_subroutines
 header: ### Moving Stuff to Subroutines
 
-TBD
+Structuring programs into subroutines usually makes sense anyway, but
+often one special motivation is to increase the potential for reuse.
+
+Tcl has a number of ways to organize subroutines for re-use, which get a
+cursory review on the next pages.
+
+.N.center[
+Feel free to ask the trainer for live demonstrations.
+]
 
 ---
 template: plain
 name: sharing_subroutines_via_files
 header: ### Sharing Subroutines via Files
+
+As long as a collection of subroutines occasionally or frequently used
+is small, they can be put into an initialisation file which Vivado
+reads on startup (= *Startup Script*).
+
+Alternatively each subroutine or groups of subroutines may
+
+* be put into a file of their own
+
+* to be included in the Startup-Script with the [Tcl command `source`].
 
 [Tcl command `source`]: https://www.tcl.tk/man/tcl8.4/TclCmd/source.htm
 
@@ -2846,7 +3011,23 @@ template: plain
 name: autoloading_subroutines
 header: ### Autoloading Subroutines
 
-TBD
+If – with time – the *Library of Subroutines* grows, it may be time to
+consider using Tcl's feature for *Auto-Loading*.
+
+Basically it requires two simple steps:
+
+* In any directory storing files with common subroutine definitions create
+  an *Index File* with the [Tcl command `auto_mkindex`].
+
+* Add the path to these directories to the [Tcl Global Variable `auto_path`].._[]
+
+[Tcl Global Variable `auto_path`]: https://www.tcl.tk/man/tcl8.4/TclCmd/library.htm#M24
+[Tcl command `auto_mkindex`]: https://www.tcl.tk/man/tcl8.4/TclCmd/library.htm#M9
+
+.F[:
+This then is the only necessary change to the Tcl initialization
+file processed by Vivado on Start-Up.
+]
 
 ---
 template: plain
@@ -2855,14 +3036,30 @@ header: ### The Package Facility
 
 [Tcl command `package`]: https://www.tcl.tk/man/tcl8.4/TclCmd/package.htm
 
-TBD
+The [Tcl command `package`] requires only little more effort to manage libraries
+with re-usable subroutines.
+
+.N[
+Its main advantage is the option to keep different version of subroutines
+available at the same time and let the client code choose which version it
+requires.
+]
 
 ---
 template: plain
 name: the_xilinx_tcl_store
 header: ### The XILINX Tcl Store
 
-TBD
+The [XILINX Tcl Store] is public repository made available for Vivado Users to
+share Tcl extensions with each other.
+
+* Uploaded Tcl packages need to
+  [follow specific rules and conventions](https://github.com/Xilinx/XilinxTclStore/wiki/Adding-a-New-App-to-the-Repository#how-to-contribute-a-new-app)
+  and
+
+* can then be installed into Vivado by means of a few mouse clicks.
+
+[Xilinx Tcl Store]: https://www.xilinx.com/products/design-tools/vivado/Tcl-store.html
 
 
 </textarea>

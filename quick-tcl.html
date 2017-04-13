@@ -1000,7 +1000,7 @@ puts $x   ;# calling subroutine 'puts' with an argument that is the
 
 ---
 template: plain
-name: predefined_subroutines
+name: using_command_substitution
 header: #### Using Command Substitution
 
 To know what command substitution (`[ … ]`) inserts for pre-defined (standard)
@@ -4000,8 +4000,7 @@ variable name via the command [`global`](#global_variables).
 .F[:
 There are global variables for many more purposes, like checking for the
 version of Tcl (`tcl_version`) or Tk (`tk_version`).
-d
-
+]
 
 ---
 template: plain
@@ -4590,7 +4589,7 @@ Therefore the recommended solution is this:
 **Use double quotes and write all contained back-slashes twice.**
 ]
 
-.F[
+.F[:
 Though the trailing backslash will not be touched, the closing square bracket
 is not recognized as it is now exempt from brace counting.
 ]

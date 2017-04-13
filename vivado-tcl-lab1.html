@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LAB 1: Vivado Tcl</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- when changing the stylesheet file please see also remark below -->
+    <link rel="stylesheet" type="text/css" href="styling.css" />
+  </head>
+  <body>
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- :::::::::: template pages come first ... skip to REALCONTENT ::::::::: -->
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<textarea id="source">
+
+layout: true
+name: blank
+styling: styling.css
+styling-by: Martin Weitzel
+
+<!--
+  *****************************************************************************
+  Template used for title page (only)
+  *****************************************************************************
+  Please change the 'styling-by:' attribute if you change the style-sheet.
+-->
+
+.stylehint[
+Styled with [{{styling}}]({{styling}}) by {{styling-by}}
+]
+
+---
+layout: true
+name: plain
+copyright: (CC) BY-SA
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; LAB 1: Vivado Tcl
+customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
+
+<!--
+  *****************************************************************************
+  Template used for for pages NOT referring to any Info-Graphic
+  *****************************************************************************
+  The following attributes are mandatory FOR THE TEMPLATE PAGE and should
+  simply be left empty if not meaningful.
+
+  copyright: will be reproduced in each page footer first
+  branding: will reproduced in each page footer next
+  customer: will be reproduced in each page footer last
+
+  As the above attributes are part of several page templates a global replace
+  should be used for consistent changes.
+
+  On pages USING THIS TEMPLATE the following attributes must be set:
+
+  header: ## and header text (i.e. including the markdown formatting indicator)
+
+-->
+
+{{header}}
+
+.pagefooter[
+{{copyright}}: {{branding}} .plc2-logo[{{customer}}]
+]
+
+---
+layout: true
+name: linkinfo
+copyright: (CC) BY-SA
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; LAB 1: Vivado Tcl
+customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
+
+<!--
+  *****************************************************************************
+  Template used for for pages INTRODUCING to a new Info-Graphic
+  *****************************************************************************
+  On this kind of pages a size-reduced version of the whole info graphic will
+  be reproduced and occupies approximately 2/3 of the page width. So only add
+  little information, preferably links to later pages dealing with single
+  sections of the info graphic.
+
+  On pages USING THIS TEMPLATE the following attributes must be set:
+
+  graphic: file path to of the infographic EXCLUDING the suffix.
+  header: ## and header text (i.e. including the markdown formatting indicator)
+
+-->
+
+{{header}}
+
+.infographic[
+[![Info-Grafik](InfoGraphics/{{graphic}}.png)](InfoGraphics/{{graphic}}.png
+                "Click to open – add [CTRL+] SHIFT for new [tabbed] window")
+]
+
+.pagefooter[
+{{copyright}}: {{branding}} {{customer}} .plc2-logo[]
+]
+
+---
+layout: false
+template: blank
+name: frontmatter
+
+.title[
+	LAB 1: Vivado Advanced Tcl Scripting._[]
+]
+
+.subtitle[
+	Tcl Primer / Refresher  
+	(Using Vivado as Tcl-Shell)
+]
+
+.F[:
+In the Online Version of this Lab you can access additional help as part of
+the *Presenters Notes* – just hit the `P`-key once …
+]
+
+???
+
+(use +/- above to adjust the font size for convenient reading)
+
+If you want to keep the electronic version of this lab **only**, there is also
+the option to open this file in an editor and take notes.
+
+To return to the normal view, now press the P-key once more.
+
+<!--
+If you want to put in meta-annotations, i.e. text that is not even shown
+after pressing the P-key, simply use HTML comments, like it is done here.
+-->
+
+---
+template:plain
+header: ## Part 1: Using Vivado as Tcl-Shell
+
+.N.center[
+**All parts of this Lab** are *Pure Tcl* – nothing is Vivado specific.
+]
+
+Nevertheless sse Vivado as Tcl-Shell in one of the following ways:
+
+* Start *Vivado in GUI Mode* and use the *Tcl Console* to:
+  * Enter Tcl commands in its *Command line*
+  * View the result in its *Output Window*
+
+* **Or:** Start Vivado in GUI mode, then:
+  * Enter `stop_gui` at the *Tcl Console Command Line*
+  * Continue to work in with *Vivado in Tcl Mode*
+  * (How would you terminate your Tcl session then?)
+
+* **Or:** Directly start *Vivado in Tcl Mode*:
+  * (When done with everything, enter `exit` as command.)
+
+---
+template: plain
+header: ## Part 2: Some Simple Tcl Commands
+
+.N.center[
+Directly type-in the commands (as interactive input).
+]
+
+.pull-left[
+Print a greet:
+```
+puts "hello, world"
+```
+
+As before, but in two lines:
+```
+puts "hello\nworld"
+```
+
+Just a comment:
+```
+# just a comment
+```
+
+Show Tcl version:
+```
+puts $tcl_version
+```
+]
+.pull-right[
+Value of PI:
+```
+expr 2*acos(0.0)
+```
+
+Files in working dirctory:
+```
+glob *
+```
+
+Current time:
+```
+clock seconds
+```
+
+Explain this:
+```
+set tcl_version
+```
+]
+
+---
+template: plain
+header: ## Part 2: Using Tcl Variables
+
+.N[
+Note that once set, a variable keeps its value until it is `unset`.
+]
+
+.pull-left[
+```
+set greet "hello, world"
+puts $greet
+```
+
+Playing games with `expr`:
+```
+set PI_half acos(0.0)
+puts $PI_half
+expr $PI_half
+expr 2*$PI_half
+set PI 2*$PI_half
+expr $PI
+puts $PI
+```
+
+Environment Variables:
+```
+puts $env(PATH)
+puts $env(HOME)
+```
+]
+.pull-right[
+Predefined Variables:
+```
+array get env
+info vars
+info vars tcl_* 
+array get tcl_platform
+info vars a*
+```
+Looking around in the file system:
+```
+pwd
+cd ..
+pwd
+glob *
+glob * -type directory
+file stat $env(HOME) attrs
+array get attrs
+info vars a*
+```
+]
+
+---
+template: plain
+header: ## Part 3: Tcl Command Return Values
+
+.pull-left[
+First, understand this!._[]
+```
+expr 1+1
+puts [expr 1+1]
+expr 6*7
+puts [expr 6*7]
+expr 1+1;expr 6*7
+puts [expr 1+1];puts [expr 6*7]
+```
+
+PI again:
+```
+# same, same, but different
+set PI_half [expr acos(0.0)]
+set PI [expr 2*$PI]
+puts $PI_half; puts $PI
+```
+]
+.pull-right[
+And still counting …
+```
+# the hard way
+set x 1; puts $x
+set x [expr $x+1]; puts $x
+
+# and the easy one
+puts [set x 42]
+puts [incr x]
+puts [incr x -10]
+```
+
+(No) More Time:
+```
+set now [clock seconds]
+format [clock format $now]
+```
+]
+
+.F[:
+When interactively working with a Tcl Shell – as a service – the **return
+value of the last command** is displayed. In you put two or more commands in
+one line (separated with a semicolon) you will only see the return value of
+the **last** command.  
+The situation changes when `puts` **generates explicit output**.
+Then – of course – nothing will be silently swept under the carpet if there
+are several `puts` commands in one line.
+]
+
+---
+template: plain
+header: ## Part 4: Tcl Simple Flow Control
+
+.N.center[
+Hint: Copy long command lines from here and paste into the Tcl Shell.
+]
+
+.pull-left[
+Counting down to zero:
+```
+set x 10
+while {$x} {puts [incr x -1]}
+```
+]
+.pull-right[
+Colourful counting:
+```
+set colours {RED GREEN BLUE}
+foreach c $colours {puts $c}
+```
+]
+
+Be aware of white space – its use is sometime syntactically significant!._[]
+```
+for {set x 10} {$x > 0} {incr x -1} {puts $x}
+for {set i 0} {$i <= 10} {incr i} {puts $i}
+puts "x=$x, i=$i" ;# just being curious
+```
+
+Ready for some (inter-) action?
+```
+puts -nonewline "your name? "
+if {[gets stdin name] > 0} { puts "hi $name, have a nice day!" }
+```
+
+.F[:
+If you didn't use *Copy&Paste* or command execution failed, use it now.
+]
+
+---
+template: plain
+header: ## Part 5: Tcl Errors and Recovery
+
+.N[
+From here on, maybe put the examples in small files – say `x1.tcl`,
+`x2.tcl`, … – and run the files in the Tcl Shell using `source x1.tcl`
+etc.._[]
+]
+
+.pull-left[
+Wanna do some math?
+```
+while {[gets stdin x] > 0} {
+    puts "$x ==> [expr $x]"
+}
+```
+
+But what happens if the math expression typed-in has an error?
+]
+.pull-right[
+Better be a bit more tolerant:
+```
+while {[gets stdin x] > 0} {
+    catch {
+        set result [expr $x]
+        puts "$x ==> $result"
+    }
+}
+```
+]
+
+Even more perfect, let the user know what exactly went wrong:
+```
+while {[gets stdin x] > 0} {
+    if {[catch {expr $x} result]} { puts "ERROR: $result" }\
+    else                          { puts "$x ==> $result" }
+}
+```
+
+.F[:
+Consider this approach especially if you also want to try small variations.
+]
+
+---
+template: plain
+header: ## Part 6: Defining Tcl Subroutines
+
+Any code of substantial length should be rather written as sub-routine.
+```
+proc evaluate_math_expression {} {
+    while {[gets stdin x] > 0} {
+        if {[catch {expr $x} result]} { puts "ERROR: $result" }\
+        } else                        { puts "$x ==> $result" }
+    }
+}
+```
+
+This subroutine then needs to be executed:
+```
+evaluate_math_expression
+```
+(Of course, this can also be done more than once.._[])
+
+.F[:
+When you started working with your Tcl code in a separate file, only **put the
+subroutine definition** in the file, and make an explicit call after its has
+been source. Especially if you sub-routines with arguments and return values
+this makes testing easier.
+]
+
+---
+template: plain
+header: ## Part 7: Tcl Subroutine Arguments
+
+.pull-left[
+```
+proc math_expression {x vr} {
+    upvar $vr result
+    if {[catch {expr $x} z]} {
+        set result "ERROR: $z"
+    } else {
+        set result "$x ==> $z"
+    }
+}
+```
+Test this **first** with calls like:
+```
+math_expression 3+4 r; puts $r
+```
+Change the first argument to supply different test input.
+]
+.pull-right[
+```
+proc evaluation_loop {fh} {
+    set n 1
+    while {[gets fh x] > 0} {
+        math_expression $x res
+        puts "($n) $res"
+        incr n
+    }
+}
+```
+Test this **second** with the call:
+```
+evaluation_loop stdin
+```
+Supply different test input interactively.
+]
+
+Make sure to understand how parameter values and variables are handed forth
+and back between the subroutines and their calls.._[]
+
+.F[:
+Optional: Change communicating the result back from `math_expression` to use 
+the return.
+]
+
+---
+template: plain
+header: ## Part 8: Tcl Subroutine Return Values
+
+.N.center[
+This is also the solution for the change suggested in Footnote of Part 7.
+]
+
+.pull-left[
+```
+proc math_expression {x} {
+    if {[catch {expr $x} z]} {
+        return "ERROR: $z"
+    } else {
+        return "$x ==> $z"
+    }
+}
+```
+Test this **first** with calls like:
+```
+math_expression 3+4
+```
+Change the first argument to supply different test input.
+]
+.pull-right[
+```
+proc evaluation_loop {fh} {
+    set n 0
+    while {[gets $fh x] > 0} {
+        set res [
+            math_expression $x
+        ]
+        puts "([incr n]) $res"
+    }
+}
+```
+Test this **second** (as in Part 7) and also compare with the
+previous version:
+
+* What exactly was changed?._[]
+]
+
+.F[:
+Were there also changes **unrelated** to the communication between the
+two functions?
+]
+
+---
+template: plain
+header: ## Tcl List Handling
+
+---
+template: plain
+header: ## Optional: Tcl String Handling
+
+---
+template: plain
+header: ## Optional: Tcl File Handling
+
+---
+template: plain
+header: ## Optional: Tcl Regular Expressions
+
+Associate the list of descriptions in the forst section with the
+Regular Expressions in the second section.
+
+(A) An integral number with no leading zeroes and an optional
+    minus sign, either before of after the number.
+	
+	GOOD: 123
+	      -4
+		  50-
+	BAD:  023
+	      34 -
+		  +1
+	
+	
+(B) A floating point number with no sign and an optionally empty
+    fractional part, but the decimal point always visible
+	
+	GOOD: 3.1415
+	      3.14
+		  3.
+	BAD:  .34
+		  3,4
+	
+(C) An "IP Number" witten in dotted form (though with NO complete
+    checks of the contained parts for the valid range 0..255).
+	
+	GOOD: 192.148.144.123
+	      0.0.0.1
+		  253.254.255.256 (though not a valid IP)
+	BAD:  1.2.34
+	      1..234
+	
+(D) An identifier as typically used in programming languages, i.e.
+    beginning with an underscor or letter, followed by any number
+	of underscores, letters or digit.
+	
+	GOOD: var
+	      a
+		  _x12
+	BAD:  12x
+	
+(E) A string of any characters, surrounded by double quotes, but
+    not CONTAINING double quotes.
+	
+	GOOD: "hello, world"
+	      "what's up"
+		  ""
+	BAD:  'hello, world'
+	      "how "nice" is this?"
+	
+(F) A "variable" - "value" assignment, i.e. an identifier followed
+    by an equals sign followed by either an "integral value" with
+	optional leading minus sign, or a "string" in double quotes.
+	
+	GOOD my_number = 10
+	     x = 10
+		 x= 10
+		 x    =10
+		 y = "hello"
+	BAD: y := "hi!"
+	     pi = 3.14
+	     x = u
+		 7 = 12
+		 
+	
+(G) A hexadecimal number, A..F only allowed in upper case, and
+    written grouped in pairs of two, separated either by space
+	or minus signs.
+	
+	GOOD: 6A 35 A7 00
+	      6A-35-A7-00
+	      6A-35 A7-00
+		  1A CA FE
+	BAD:  1a Ca-fe
+	      12 -34- 77
+	
+		
+(H) A phone number with an optional area code in parentheses to
+    the left, digits written in pairs of two, with with either
+	one or two digits only in the left-most part
+	
+	GOOD: 12 34 56
+	      1 23 45 67
+		  (1 23) 45 67 89
+	BAD:  0171 54 81 764
+		  0171 5481 764
+	      (0171) 5 48 17 64
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Note: The following regular expressions would usually go into curly
+braces if used in a Tcl script.
+
+(1) "[^"]*"
+
+(2) \d+\.\d*
+
+(3) -[1-9]\d*|[1-9]\d*-
+
+(4) \d{1,3}([.]\d{1,3}){3}
+
+(5) [_a-zA-Z][_a-zA-Z0-9]*
+
+(6) (\(\d?\d( \d\d)*\) )?\d?\d( \d\d)*
+
+(7) [ a-zA-Z]+ *= *(\d+|"[^"]*")
+
+(8) [a-fA-F0-9]{2}([- ][a-fA-F0-9]{2})*
+
+</textarea>
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- ::::::::::::::::::::: )-: ereh TNETNOCLAER fo dne :::::::::::::::::::: -->
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+    <script src="remark.min.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      var slideshow = remark.create({ highlightLanguage: 'tcl', highlightStyle: 'docco' });
+    </script>
+  </body>
+</html>
