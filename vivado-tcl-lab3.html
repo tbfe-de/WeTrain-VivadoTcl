@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LAB 3: Vivado Tcl</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- when changing the stylesheet file please see also remark below -->
+    <link rel="stylesheet" type="text/css" href="styling.css" />
+  </head>
+  <body>
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- :::::::::: template pages come first ... skip to REALCONTENT ::::::::: -->
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<textarea id="source">
+
+layout: true
+name: blank
+styling: styling.css
+styling-by: Martin Weitzel
+
+<!--
+  *****************************************************************************
+  Template used for title page (only)
+  *****************************************************************************
+  Please change the 'styling-by:' attribute if you change the style-sheet.
+-->
+
+.stylehint[
+Styled with [{{styling}}]({{styling}}) by {{styling-by}}
+]
+
+---
+layout: true
+name: plain
+copyright: (CC) BY-SA
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; LAB 3: Vivado Tcl
+customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
+
+<!--
+  *****************************************************************************
+  Template used for for pages NOT referring to any Info-Graphic
+  *****************************************************************************
+  The following attributes are mandatory FOR THE TEMPLATE PAGE and should
+  simply be left empty if not meaningful.
+
+  copyright: will be reproduced in each page footer first
+  branding: will reproduced in each page footer next
+  customer: will be reproduced in each page footer last
+
+  As the above attributes are part of several page templates a global replace
+  should be used for consistent changes.
+
+  On pages USING THIS TEMPLATE the following attributes must be set:
+
+  header: ## and header text (i.e. including the markdown formatting indicator)
+
+-->
+
+{{header}}
+
+.pagefooter[
+{{copyright}}: {{branding}} .plc2-logo[{{customer}}]
+]
+
+---
+layout: true
+name: linkinfo
+copyright: (CC) BY-SA
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; LAB 3: Vivado Tcl
+customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
+
+<!--
+  *****************************************************************************
+  Template used for for pages INTRODUCING to a new Info-Graphic
+  *****************************************************************************
+  On this kind of pages a size-reduced version of the whole info graphic will
+  be reproduced and occupies approximately 2/3 of the page width. So only add
+  little information, preferably links to later pages dealing with single
+  sections of the info graphic.
+
+  On pages USING THIS TEMPLATE the following attributes must be set:
+
+  graphic: file path to of the infographic EXCLUDING the suffix.
+  header: ## and header text (i.e. including the markdown formatting indicator)
+
+-->
+
+{{header}}
+
+.infographic[
+[![Info-Grafik](InfoGraphics/{{graphic}}.png)](InfoGraphics/{{graphic}}.png
+                "Click to open – add [CTRL+] SHIFT for new [tabbed] window")
+]
+
+.pagefooter[
+{{copyright}}: {{branding}} {{customer}} .plc2-logo[]
+]
+
+---
+layout: false
+template: blank
+name: frontmatter
+
+.title[
+	LAB 3: Vivado  
+	Advanced Tcl Scripting._[]
+]
+
+.subtitle[
+	From Vivado GUI-Sessions  
+	to Vivado Tcl Scripts
+]
+
+.F[:
+In the Online Version of this Lab you can access additional help as part of
+the *Presenters Notes* – just hit the `P`-key once …
+]
+
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
+
+???
+
+(use +/- above to adjust the font size for convenient reading)
+
+If you want to keep the electronic version of this lab **only**, there is also
+the option to open this file in an editor and take notes.
+
+To return to the normal view, now press the P-key once more.
+
+<!--
+If you want to put in meta-annotations, i.e. text that is not even shown
+after pressing the P-key, simply use HTML comments, like it is done here.
+-->
+
+---
+template:plain
+header: ## Part 1: Project Mode Filesets
+
+.N.center[
+Start Vivado and create the Vivado Example Project `Wavegen`.
+]
+
+* Use `wavegen_1` (instead of `project_1`) as project name and for the moment
+  do not (yet) run any other step (like *Synthesis* etc.)
+
+* How can you easily determine which Vivado Tcl Commands have been executed?
+
+  * Where does the project name appear as part of that commands?
+  * The directory to store the project files?
+  * The XILINX part?
+
+* Where is the same information (project name, directory, XILINX part) located
+  in the Vivado GUI?
+
+---
+template:plain
+header: ### Part 1 / Step 1: Working with Filesets
+
+Execute the following commands from the Vivado Tcl Console:
+.pull-left[
+```
+get_project
+current_fileset
+current_fileset -constr
+```
+]
+.pull-right[
+Watch the Tcl Console Output for the return values and determine where that
+information is provided in the Vivado GUI too.
+]
+
+What kind of fileset is created with the following command?
+.pull-left[
+```
+create_fileset my_fileset
+```
+]
+.pull-right[
+And where shows it up in the GUI?
+]
+
+Execute the following commands one by one._[] and track via the GUI:
+```
+set s [get_property TARGET_CONSTRS_FILE [get_filesets constrs_1]]
+set_property TARGET_CONSTRS_FILE $s [get_filesets my_fileset]
+delete_fileset my_fileset
+```
+
+.F[:
+To avoid typos consider to *Copy&Paste* the commands from this document.
+]
+
+---
+template:plain
+header: ### Part 1 / Step 2: Design Objects vs. Names
+
+Run the commands from the previous step again with a small variation:
+```
+create_fileset my_fileset
+set s [get_property TARGET_CONSTRS_FILE constrs_1]
+set_property TARGET_CONSTRS_FILE $s my_fileset
+delete_fileset my_fileset
+```
+
+Which commands do fail now – and why?
+
+Make sure `my_fileset` is removed and try again as follows:
+```
+set f [create_fileset my_fileset]
+set s [get_property TARGET_CONSTRS_FILE [get_filesets constrs_1]]
+set_property TARGET_CONSTRS_FILE $s $f
+delete_fileset $f
+```
+
+Do you recognize the difference between a Fileset *Object* and its *Name*?._[]
+
+.F[:
+If so, you should be able to identify which of the above commands needs a
+*Fileset Name*, which one **absolutely* requires a *Fileset Object*, and which
+can work with both.
+]
+
+---
+template:plain
+header: ### Part 1 / Step 3: File Objects
+
+Predict the output to the Tcl Console for the following command:._[]
+.pull-left[
+```
+set files [get_files *.v]
+foreach f $files {puts $f}
+```
+]
+.pull-right[
+(Setting the variable `files` is also important for what follows below.)
+]
+
+First guess then try out to determine the effect of these commands:
+.pull-left[
+```
+set f [lindex $files 0]
+get_property IS_ENABLED $f
+```
+]
+.pull-right[
+Disable the file via the GUI and repeat to verify.
+]
+
+Now re-enable the file with the following Tcl Command …
+.pull-left[
+```
+set_property IS_ENABLED TRUE $f
+```
+]
+.pull-right[
+… and use the GUI to verify.
+]
+
+.F[:
+Simply printing the file names can also be achieved in a different way but be
+sure to understand that the "object-nes" of the files gets removed by it:
+`puts -nonewline [join [get_files *.v] \n]`
+]
+
+---
+template:plain
+header: ### Part 1 / Step 3: File Objects (cont.)
+
+When creating a list of objects it is often better to filter early but late.
+
+Compare the following:
+```
+set files [list]
+foreach f [get_files *.v] {
+    if {![get_property IS_ENABLED $f]} {
+        lappend list $f
+    }
+}
+```
+
+And the alternative:
+```
+set files [get_files *.v -filter {!IS_ENABLED}
+```
+
+* Which option needs to be added in the second case to get **exactly** the same
+effect from both commands?
+
+---
+template:plain
+header: ### Part 1 / Optional Tcl Challenge
+
+With respect to the *Source File Set* of a project you will find that
+
+* Vivado obviously **knows** about the modification time of each file as it is
+  displayed with the *General File Proerties* …
+
+* … but if you look Properties of a *File Object* you will find nothing that
+  corresponds to it.
+
+.N.center[
+So how to produce a list of file names is sorted by modification time?
+]
+
+You may now
+
+* either try to solve this yourself
+* or review the solution on the next page.
+
+---
+template:plain
+header: ### Part 1 / Tcl Challenge Solved
+
+Here is a possible solution for the Tcl Challenge on the previous page:
+```
+proc files_by_decreasing_mtime {names} {
+    foreach fn $names {
+        lappend fn_mt [list $fn [file mtime $fn]]
+    }
+    foreach ft [lsort -decreasing -index 1 -integer $fn_mt] {
+        lassign $ft fn mt
+        set ts [clock format $mt -format "%Y-%m-%d %H:%M:%S"]
+        puts "$ts - $fn"
+    }
+}
+```
+
+The intended usage is like this:
+```
+files_by_decreasing_mtime [get_files *.v -filter {IS_ENABLED}]
+```
+
+---
+template:plain
+header: ## Part 2: Navigating Design Objects
+
+.N.center[
+Open the Elaborated Design of the Vivado Example Project `Wavegen`.
+]
+
+This part focusses on
+
+* **By Name Navigation** through
+
+* *Hierarchical Design Objects*.
+
+It is similar to navigating hierarchical objects of a *Block Design* and
+therefor the topic will receive further coverage there.
+
+---
+template:plain
+header: ### Part 2 / Step 1: Naming Hierarchical Design Objects
+
+For the following two commands, explain the difference in their output:._[]
+.pull-left[
+```
+llength [get_cells *]
+```
+]
+.pull-right[
+```
+llength [get_cells -hier *]
+```
+]
+
+Can you predict the **limits** inside which the result (i.e. number of cells
+returned) for following Vivado Tcl Command should be?
+.pull-left[
+```
+llength [get_cells */*]
+```
+]
+.pull-right[
+```
+llength [get_cells */*/*]
+```
+]
+
+Does it make sense to add more and more wild-cards like in
+```
+llength [get_cells */*/*/*/*/*/*/*/*]
+```
+or is there a sensible limit (depending on the depth of nesting)?
+
+.F[:
+As usual – RTFM whenever you need additional informations! This course will
+"show you around" to places that might be of interest, but for any detailed
+information you are on your own (of course, with the trainer around to offer
+a helping hand if you request it).
+]
+
+---
+template:plain
+header: ### Part 2 / Step 2: Navigating Hierarchical Design Objects
+
+.N.center[
+In the *Schematic* (Diagram) locate the top-level cell `uart_rx_i0`.
+]
+
+* Zoom the diagram so that you can open the cell and expand its elements.
+
+* One by one run the following Vivado Tcl Commands and watch their effect:
+```
+highlight_objects [get_cells uart_rx_i0/*]
+current_top uart_rx_0
+unhighlight_objects *
+```
+* Watch and explain the effects of these commands on (some of) the objects
+  displayed in the Vivado GUI.
+
+  * What still has **permanently** changed?
+  * How would you undo it?
+
+---
+template:plain
+header: ### Part 2 / Optional Tcl Challenge
+
+As it (hopefully) has become obvious, leaf-cells may be located in different
+depths.
+
+.N.center[
+How would you write a Tcl subroutine to return all leaf-cells?._[]
+]
+
+.F[:
+Note that while RTFM often pays, `get_cells * -hierarchical` is **not** the
+solution as it includes **all** cells, **not only** the leaf cells!
+]
+
+---
+template:plain
+header: ### Part 2 / Tcl Challenge Solved
+
+TBD
+
+---
+template:plain
+header: ## Part 3: Navigating via Connections
+
+TBD
+
+---
+template:plain
+header: ## Part 4: Working with Block Designs
+
+TBD
+
+
+</textarea>
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- ::::::::::::::::::::: )-: ereh TNETNOCLAER fo dne :::::::::::::::::::: -->
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+    <script src="remark.min.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      var slideshow = remark.create({ highlightLanguage: 'tcl', highlightStyle: 'docco' });
+    </script>
+  </body>
+</html>

@@ -454,13 +454,13 @@ feel free to
 
 ---
 template: plain
-header: ### Optional Part 3: Restructure a Tcl Script
+header: ### Optional Part 3 / Step 1: Restructure a Vivado Tcl Script
 
-For one or both of the scripts derived from
-* `create_bft_kintex7_batch.tcl`
+For one or both of the two scripts derived from
 
-(as is part of [XILINX UG888] Lab 1 and 2), while working through this
-*this* LAB (*Part 1 / Step 6* and *Part 2 / Step*):
+* `create_bft_kintex7_batch.tcl` (as part of [XILINX UG888])
+
+while working through this *this* LAB *Part 1 / Step 6* and *Part 2 / Step*:
 
 * Wrap Tcl sub-routines around its main parts to
   * set up the design sources,
@@ -469,17 +469,37 @@ For one or both of the scripts derived from
   * generate reports, and
   * write the bitstream file
 
-* Call the above subroutines in their proper order from another "master"
-  subroutine.
+* Call the above subroutines in their proper order from an additional
+  another ("master") subroutine.
 
-* Do **not write any direct call** to a subroutines in the Tcl script.._[]
+* But do **not place any direct call** to a subroutines in the Tcl script.._[]
 
 .F[:
-Instead expect the user will `source` the script with the subroutine
-definitions from the Vivado Tcl Console and then either execute all of them
-in the predefined, or alternatively individually in any order, maybe with
-repetitions.
+Instead expect from the Vivado Tcl Console the user will `source` the script to
+get the subroutine definitions first, then either execute all of them in the
+sequence predefined by the master subroutine, or alternatively run each step
+individually, maybe with intervening actions via the Vivado GUI.
 ]
+
+---
+template: plain
+header: ### Optional Part 3 / Step 2: Restructure a Vivado Tcl Script
+
+* In the script identify parts of commands that are candidates for variation
+  * the names of the reports or their destination,
+  * details of the optimization steps,
+  * …
+
+* Accordingly parametrize
+  * the subroutine(s) carrying out that step(s);
+  * the master subroutine sequentially executing the steps.
+
+* To the master subroutine add a `-help` option describing
+  * its general purpose and
+  * the parameterization.
+
+
+
 
 </textarea>
 <!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
