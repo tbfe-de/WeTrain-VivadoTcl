@@ -359,22 +359,25 @@ header: ### Part 2 / Step 1: Creating a Project
 In [XILINX UG888] → *Lab 2* advance to *Step 1* (Page 22)
 ]
 
-* Create the project as described in Sub-Steps 1-1 to 1-7.
+* Create the project as described in Sub-Steps 1-1 to 1-22.
 
 * Watch the Tcl Console Output for the actually executed Tcl Commands.
-  * Look-up the description of at least some of these commands in
+  * If have not yet experience with Vivado's Tcl Commands for Project Mode,
+    also look-up the description for at least some of these commands in
     [XILINX UG835].
-  * especially if have not yet much experience with Vivado's Tcl Commands for
-    Project Mode.
 
 * After Sub-Step 1-22, check the files the project knows about:
   * Look-up the description of the Vivado Tcl Command `get_files` in
     [XILINX UG835].
-  * Determine the total number of files known **with** and **without**
-    "internal" files  
-     * (Command Option Hint: `-all`)
-  * Determine the total number of HDL files (Verilog or VHDL, as determined by
-    the suffix).
+  * What is the total number of files **with** and **without** internal._[]
+    files?
+  * What is the total number of HDL files (Verilog or VHDL, as determined by
+    the suffix)?
+
+.F[:
+In case you need a hint: In the description of `get_files` look for the option
+`-all`.
+]
 
 ---
 template: plain
@@ -433,9 +436,7 @@ new things or just recapitulated existing knowledge.
 If Vivado Tcl Scripting is rather new to you, now you should
 
 * have a basic understanding how GUI actions relate to Tcl Commands
-
 * in both, *Non-Project Mode* and *Project Mode*, and
-
 * how to create initial version of a Tcl Script from a GUI session.
 ]
 .pull-right[
@@ -443,11 +444,41 @@ If you had already prior knowledge of Vivado Tcl Scripting **and time allows**,
 feel free to
 
 * return to individual steps of this Lab,
-
 * repeat them trying more variations, and
-
 * use the tutor's presence to ask any question that may arise.
+]
 
+.center[
+(There is also an optional third part to which you may advance now …)
+]
+
+---
+template: plain
+header: ### Optional Part 3: Restructure a Tcl Script
+
+For one or both of the scripts derived from
+* `create_bft_kintex7_batch.tcl`
+
+(as is part of [XILINX UG888] Lab 1 and 2), while working through this
+*this* LAB (*Part 1 / Step 6* and *Part 2 / Step*):
+
+* Wrap Tcl sub-routines around its main parts to
+  * set up the design sources,
+  * run the synthesis,
+  * run the implementation (placement, optimizations),
+  * generate reports, and
+  * write the bitstream file
+
+* Call the above subroutines in their proper order from another "master"
+  subroutine.
+
+* Do **not write any direct call** to a subroutines in the Tcl script.._[]
+
+.F[:
+Instead expect the user will `source` the script with the subroutine
+definitions from the Vivado Tcl Console and then either execute all of them
+in the predefined, or alternatively individually in any order, maybe with
+repetitions.
 ]
 
 </textarea>
