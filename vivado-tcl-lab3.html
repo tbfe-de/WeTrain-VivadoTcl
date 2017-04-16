@@ -116,7 +116,9 @@ the *Presenters Notes* – just hit the `P`-key once …
 ]
 
 [XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+[XILINX UG894]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug894-vivado-tcl-scripting.pdf
 [XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
+[XILINX UG912]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug912-vivado-properties.pdf
 
 ???
 
@@ -340,12 +342,12 @@ Open the Elaborated Design of the Vivado Example Project `Wavegen`.
 
 This part focusses on
 
-* **By Name Navigation** through
+* **Navigation by Name** through
 
-* *Hierarchical Design Objects*.
+* *Hierarchically Related Design Objects*.
 
 It is similar to navigating hierarchical objects of a *Block Design* and
-therefor the topic will receive further coverage there.
+therefore the topic will receive further coverage there.
 
 ---
 template:plain
@@ -480,8 +482,8 @@ You may now
 template:plain
 header: ### Part 2 / Tcl Challenge Solved
 
-The following._[] combines selection by `NAME` and the `IS_PRIMITIVE` property
-in the filter expression:
+The following subroutine._[] combines selection by `NAME` and the `IS_PRIMITIVE`
+property in the filter expression:
 ```
 proc show_leaf_cells {n} {
     foreach c [get_cells * -hier\
@@ -497,7 +499,7 @@ in double quotes, not curly braces.
 ]
 
 .F[:
-Here'e another one, avoiding the explicit loop altogether (but probably less readable):
+Here's another one, avoiding the explicit loop altogether (but probably less readable):
 ```
 proc show_leaf_cells {n} {
     puts -nonewline [join [get_cells * -hier -filter "NAME =~ $n/* && IS_PRIMITIVE"] '\n']
@@ -509,7 +511,52 @@ proc show_leaf_cells {n} {
 template:plain
 header: ## Part 3: Navigating via Connections
 
-TBD
+.N.center[
+Open or continue with the Elaborated Design of Example `Wavegen`.
+]
+
+This part focusses on
+
+* **Navigation By Relationship**
+
+through connected Design Objects.._[]
+
+.I[
+For an overview diagram see [XILINX UG894]  
+→ … → *Getting Objects by Relationships* (Page 46);  
+for a more complete diagram see [XILINX UG835]  
+→ … → *Object Relationships* (Page 15);  
+for two even more detailed (but still partial) diagrams see  
+[XILINX UG912] → … → *Netlist and Device Objects* (Page 9) and  
+[XILINX UG912] → … → *Block Design Objects* (Page 12),
+followed by exhaustive excerpts of a full diagram in subsequent sections.
+]
+
+.F[:
+The term "connected" is used here for both, physical and logical connections.
+]
+
+---
+template:plain
+header: ### Part 3 / Step 1: From Ports to Cells to Nets …
+
+Enter the following commands one by one and predict what will happen:
+
+```
+highlight_objects [set p [get_ports]]
+highlight_objects [set n1 [get_nets -of_objects $p]]
+highlight_objects [set c1 [get_cells -of_objects $n1]]
+highlight_objects [set n2 [get_nets -of_objects $c1]]
+highlight_objects [set c2 [get_cells -of_objects $n2]]
+```
+
+---
+template:plain
+header: ## Part 3 / Step 2: From Ports to Cells to Nets …
+
+In the *Schematic View* of the example design locate `uart_rx_i0`
+
+* Visually track all outgoing connections and the nets they constitute
 
 ---
 template:plain
