@@ -402,7 +402,7 @@ In the *Schematic* (Diagram) locate the top-level cell `uart_rx_i0`.
 * One by one run the following Vivado Tcl Commands and watch their effect:
 ```
 highlight_objects [get_cells uart_rx_i0/*]
-current_top uart_rx_0
+current_instance uart_rx_0
 unhighlight_objects *
 ```
 * Watch and explain the effects of these commands on (some of) the objects
@@ -415,23 +415,95 @@ unhighlight_objects *
 template:plain
 header: ### Part 2 / Optional Tcl Challenge
 
-As it (hopefully) has become obvious, leaf-cells may be located in different
-depths.
+Review the following Tcl subroutine and determine what it does:._[]
+```
+proc show_leaf_cells {n {p ""}} {
+    if {[catch {current_instance $n}]} {
+        puts "$p$n"
+    } else {
+        foreach c [get_cells *] {
+            set cs [split $c /]
+            show_leaf_cell [lindex $cs end]\
+                           [join [lreplace $cs end end] /]/
+        }
+        current_instance -quiet ..
+    }
+}
+```
 
-.N.center[
-How would you write a Tcl subroutine to return all leaf-cells?._[]
+.pull-left[
+* By trying like shown right.
+* By guessing from the name.
+* By analyzing its body.
+]
+.pull-right[
+```
+show_leaf_cells uart_rx_i0
+```
 ]
 
 .F[:
-Note that while RTFM often pays, `get_cells * -hierarchical` is **not** the
-solution as it includes **all** cells, **not only** the leaf cells!
+Assuming you have the *Wavegen Example Project* still open you may *Copy&Paste*
+the code from here to the Tcl Console (as input).
 ]
+
+---
+template:plain
+header: ### Part 2 / Optional Tcl Challenge (cont.)
+
+Discuss the pro's and con's of the solution from the previous page to the
+following approach:
+```
+proc show_leaf_cells {n} {
+    current_instance $n
+    foreach c [get_cells * -hier -filter IS_PRIMITIVE] {
+        puts $c
+    }
+    current_instance -quiet ..
+}   
+```
+
+* Which draw-backs of the original solution have been solved.
+* Are there still short-comings – obvious ones or less obvious ones.
+* Any ideas how those might be overcome?
+
+.N.center[
+Especially how to avoid the temporary change to `current_instance`?
+]
+
+You may now
+
+* either try to solve this yourself
+* or review the solution on the next page.
 
 ---
 template:plain
 header: ### Part 2 / Tcl Challenge Solved
 
-TBD
+The following._[] combines selection by `NAME` and the `IS_PRIMITIVE` property
+in the filter expression:
+```
+proc show_leaf_cells {n} {
+    foreach c [get_cells * -hier\
+               -filter "NAME =~ $n/* && IS_PRIMITIVE"] {
+        puts $c
+    }
+}
+```
+
+.N.center[
+Be sure to understand why the filter expression needs to be  
+in double quotes, not curly braces.
+]
+
+.F[:
+Here'e another one, avoiding the explicit loop altogether (but probably less readable):
+```
+proc show_leaf_cells {n} {
+    puts -nonewline [join [get_cells * -hier -filter "NAME =~ $n/* && IS_PRIMITIVE"] '\n']
+}
+```
+]
 
 ---
 template:plain
