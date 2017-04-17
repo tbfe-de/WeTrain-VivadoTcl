@@ -521,42 +521,132 @@ This part focusses on
 
 through connected Design Objects.._[]
 
-.I[
-For an overview diagram see [XILINX UG894]  
-→ … → *Getting Objects by Relationships* (Page 46);  
-for a more complete diagram see [XILINX UG835]  
-→ … → *Object Relationships* (Page 15);  
-for two even more detailed (but still partial) diagrams see  
-[XILINX UG912] → … → *Netlist and Device Objects* (Page 9) and  
-[XILINX UG912] → … → *Block Design Objects* (Page 12),
-followed by exhaustive excerpts of a full diagram in subsequent sections.
+.F[:
+The term "connected" is used here for both, physical and logical connections.  
+For an overview diagram see: [XILINX UG894] → … → *Getting Objects by Relationships* (Page 46);  
+a more complete diagram is in: [XILINX UG835] → … → *Object Relationships* (Page 15);  
+two even more detailed (but still partial) diagrams are in [XILINX UG912] → … →  
+*Netlist and Device Objects* (Page 9) and *Block Design Objects* (Page 12),  
+followed by excerpts of an exhaustive diagram in subsequent sections.
+]
+
+---
+template:plain
+header: ### Part 3 / Step 1: From Ports to Nets to Pins …
+
+Open the *Schematic*, bring element `rxd_pin` (top/left) to the center, and
+enter the following commands (one by one)._[],
+
+.pull-left[
+```
+set p [get_ports rxd_pin]
+highlight_objects $p
+set n [get_nets -of_objects $p]
+highlight_objects $n
+```
+]
+.pull-right[
+For each step try to predict what will happen and compare with what happens
+(maybe zooming-in and -out as necessary).
+]
+
+Continue with:
+```
+unhighlight_object $p
+set p [get_pins -of_objects $n -filter { Direction == In }]
+highlight_objects $p
+```
+
+.F[:
+It is recommended to *Copy&Paste* the commands from the online version of this
+Lab to the command line of the *Vivado Tcl Console*.
+]
+
+---
+template:plain
+header: ### Part 3 / Step 2: From Pins to Cells to Pins to Nets …
+
+Continue with:
+```
+unhighlight_objects $n
+set n [get_cells -of_objects $p]
+highlight_objects $n
+unhighlight_object $p
+set p [get_pins -of_objects $n -filter { Direction == Out }]
+highlight_objects $p
+```
+
+With respect to highlighting, does the schematic currently look **exactly** how
+would have predicted it?
+* If YES, run the next step.
+* If NO, run the next step.
+```
+unhighlight_objects $n
+```
+* Now OK?
+* Or not OK?
+
+---
+template:plain
+header: ### Part 3 / Step 3: From Nets to Cells (… to Nets again …)
+
+Run the following commands, first individually or as a group …
+```
+highlight_objects [set n [get_nets -of $p]]
+unhighlight_object $p
+highlight_objects [set p [get_pins -of $n -filter Direction==In]]
+unhighlight_objects $n
+highlight_objects [set n [get_cells -of $p]]
+unhighlight_object $p
+highlight_objects [set p [get_pins -of $n -filter Direction==Out]]
+```
+
+.pull-left[
+```
+unhighlight_objects $n
+…
+```
+]
+.pull-right[
+After an initial un-highlighting, repeat the above commands.._[]
 ]
 
 .F[:
-The term "connected" is used here for both, physical and logical connections.
+For comparison and/or easy *Cut&Paste*, here's the full sequence once more,
+slightly re-formatted:
+```
+unhighlight_objects $n
+highlight_objects [set n [get_nets -of_objects $p]]
+unhighlight_object $p
+highlight_objects [set p [get_pins -of_objects $n -filter { Direction == In }]]
+after 1000 ;# delay for a second here
+unhighlight_objects $n
+highlight_objects [set n [get_cells -of_objects $p]]
+unhighlight_object $p
+highlight_objects [set p [get_pins -of_objects $n -filter { Direction == Out }]]
+```
 ]
 
 ---
 template:plain
-header: ### Part 3 / Step 1: From Ports to Cells to Nets …
+header: ### Part 3 / Optional Tcl Challenge
 
-Enter the following commands one by one and predict what will happen:
-
+Review and explain the following code …
 ```
-highlight_objects [set p [get_ports]]
-highlight_objects [set n1 [get_nets -of_objects $p]]
-highlight_objects [set c1 [get_cells -of_objects $n1]]
-highlight_objects [set n2 [get_nets -of_objects $c1]]
-highlight_objects [set c2 [get_cells -of_objects $n2]]
+proc set_highlighted {key {objs {}}} {
+    global highlighted
+    if {[info exists highlighted($key)]\
+     && [llength $highlighted($key)] > 0} {
+        unhighlight_objects $objs
+    }
+    if {[llength $objs] > 0} {
+        highlight_objects $objs
+    }
+    set highlighted($key) $objs
+}
 ```
 
----
-template:plain
-header: ## Part 3 / Step 2: From Ports to Cells to Nets …
-
-In the *Schematic View* of the example design locate `uart_rx_i0`
-
-* Visually track all outgoing connections and the nets they constitute
+… then *Copy&Paste* it to the *Vivado Tcl Console* and try the following:
 
 ---
 template:plain
