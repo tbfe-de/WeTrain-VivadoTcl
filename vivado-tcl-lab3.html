@@ -637,7 +637,7 @@ proc set_highlighted {key {objs {}}} {
     global highlighted
     if {[info exists highlighted($key)]\
      && [llength $highlighted($key)] > 0} {
-        unhighlight_objects $objs
+        unhighlight_objects $highlighted($key)
     }
     if {[llength $objs] > 0} {
         highlight_objects $objs
@@ -647,13 +647,276 @@ proc set_highlighted {key {objs {}}} {
 ```
 
 … then *Copy&Paste* it to the *Vivado Tcl Console* and try the following:
+```
+set_highlighted my_cells [get_cells]        ; after 1000
+set_highlighted my_nets [set n [get_nets]]  ; after 1000
+set_highlighted my_nets [lreplace $n 5 end] ; after 1000
+set_highlighted my_cells                    ; after 1000
+```
+
+(How would you un-highlight the remaining nets?)
 
 ---
 template:plain
 header: ## Part 4: Working with Block Designs
 
-TBD
+.N[
+This part centers around a trivial Block Design.
+]
 
+The goals are two-fold:._[]
+
+A. Understand how
+   * creating a *Vivado Block Design*
+   * relates to *Vivado Tcl Commands.
+
+B. Make available a
+   * close to trivial *Hierarchical Design* which then can be used to
+   * to train your understanding for *Naming Objects* in hierarchies.
+
+.F[:
+There is no prepared project for it but if you are mostly interested in the
+part B you may locate the script resulting from part A and simply run it before
+starting with part B.
+]
+
+---
+template: plain
+header: ### Part 4 / Step 1: Create a Block Design
+
+Create a fresh project._[]
+* using the defaults as proposed for
+  * Project Name
+    * Check "Do not add Sources" …
+  * Project Location
+  * XILINX Part
+
+Create a Block Design
+* Locate IP-Integrator in the Flow Navigator
+  * if necessary, click so that sub-items are shownD)
+* Click *Create Block Design*
+
+.F[:
+If you plan to review the steps in the *Vivado Session Journal* at a later
+time, you may also consider to *Clear the Tcl Console* and maybe before
+each of the following steps enter a line like:
+```
+############################### STEP xx
+```
+]
+---
+template: plain
+header: ### Part 4 / Step 2: Create a Block Design Components
+
+In the *Diagram* (canvas)
+
+* *Right Click* and (in the pop-up menu) chose *Add IP*
+  * *Double Click* on *Adder/Subtracter*
+
+* *Right Click* once more and chose *Add IP*
+  * *Double Click* on *Constant*
+
+* *Click* on the *Constant* (just created), to make it selected
+  * then in the *Block Properties* Window
+     * (if not already active) select Tab *General*
+         * set its *Name* to `v1`
+     * select Tab *Properties*
+        * expand entry *CONFIG*
+           * set *WIDTH* to *3*
+           * and *VAL* to *5*
+
+Review the changes just made to the *Constant* (now) named `v1`.
+
+---
+template: plain
+header: ### Part 4 / Step 3: Copy Paste and Reconfigure Elements
+
+In the *Diagram* (canvas)
+
+* Click into *Constant* `v1` (to make it selected)
+  * *Copy* (CTRL-C) and
+  * *Paste* (CTRL-V) it
+
+**Note that this automatically sets the name to `v2`.**
+
+* Display the *Block Properties* of
+  * the *Constant* `v2`
+     * (maybe change its *Value*)
+  * the *Adder/Subtracter*
+     * change its name to `adder`
+
+On the *Diagram* review the changes just made.
+
+-------------------------------------------------------------------------------
+
+Optionally continue with …
+* *Right-Click* into the *Diagram* and chose *Regenerate Layout*
+* then from Vivado's main menu bar chose *Edit* → *Undo* …
+
+… and review the related commands in the *Vivado Tcl Console Output*.
+
+---
+template: plain
+header: ### Part 4 / Step 4: Connect Components
+
+In the *Diagram*
+
+* Move the mouse pointer `v1/dout[2:0]`  
+  (changing its shape to a pencil),
+  * then draw a connection to `adder/A[14:0]`
+  * and do the same for `v2` and `adder` input `B`
+* Move the mouse pointer over `v1`  
+  (changing its shape to a hand)
+  * then drag `v1` to the left of `adder`
+  * same for `v2` (place it below `v1`)
+
+If the diagram looks convoluted (or anyway, just out of curiosity)
+
+* *Right-Click* and chose *Regenerate Layout*._[]
+
+.F[:
+If there are still crossed-over connections as `v2` has been placed higher as
+`v1`, you may have a hard-time now, as if you manually move `v1` higher as
+`v2` Vivado now chooses to cross-over the connection twice. As work-around you
+may try a brute-force solution: delete both connections (while `v1` is placed
+higher than `v2`) and reconnect to `adder/A` and `adder/B`.
+]
+
+---
+template: plain
+header: ### Part 4 / Step 5: Create Hierarchies
+
+In the *Diagram*
+
+* *Right-Click* and chose *Create Hierarchy*
+  * set its *Name* to `inputs` (*Click OK*)
+* drag `v1` and `v2` inside `inputs` and
+* if necessary expand it (*Click* on [+] in the top-left corner)
+
+Select **both**, `inputs` **and** `adder`._[]
+* *Right-Click* and (from the pop-up menu) choose *Create Hierarchy*
+  * set *Cell Name* to `BD` and
+  * verify *Move selected blocks to hierarchy* is checked (*Click OK*)
+* *Right-Click* and choose *Create Port*
+  * set *Port name* to `sum`
+  * and *Direction* to `output`,
+  * check *Create Vector* and
+  * set *from:to* to `3:0` (*Click OK*)
+* Connect `sum[3:0]` with `BD/adder/S[14:0]`
+
+.F[:
+To do so hold the CTRL-key down while *Click*-ing on the 2<sup>nd</sup>.
+]
+---
+template: plain
+header: ### Part 4 / Step 6: Reconfigure Block Design Elements
+
+In the *Diagram*
+
+* *Right-Click* on the `adder` and choose *Customize Block*
+  * change *Input Type* and *Width* for *A* and *B* to `Unsigned` and `3`
+  * change *Output Width* to `4` (*Click OK*)
+
+**Observe that pin `BD/S[14:0]` did not change.**
+
+* Select `BD/S[14:0]` and
+  * in *Block Pin Properties*
+     * select Tab *Properties* …
+     * … only to find:
+
+**Properties *LEFT* and *RIGHT* are read-only!**
+
+* So, to fix this you need to
+  * **completely remove** the connection
+  * (including `BD/S[3:0]`)
+  * **and reconnect** `BD/adder/S[3:0]` with `sum[3:0]`
+
+-------------------------------------------------------------------------------
+
+Maybe – if you like – finally *Right Click* and chose *Regenerate Layout*.
+
+
+---
+template: plain
+header: ### Part 4 / Optional: Create a Tcl Script
+
+You may now
+
+* close your *Vivado Session* together with the *Block Design*._[] and
+
+* review the *Session Journal* and use it as base for a Tcl Script.
+
+.N.center[
+END PART A  
+
+[– Click here to view the extracted Tcl Script –](Lab3_Part3.tcl)
+
+-----------------------------------------------------------------------
+[– Click here to view the current Block-Design –](Lab3_Part3.pdf)
+
+BEGIN PART B
+]
+
+The remaining steps are
+
+* meant to improve your understanding for using
+
+* hierarchical names to denote design elements.
+
+.F[:
+Of course, you may also chose to use the *Vivado Tcl Command* `write_bd_tcl` …
+(see [XILINX UG835]).
+]
+
+---
+template: plain
+header: ### Part 4 / Step 7: Naming Elements at Each Level
+
+.pull-left[
+Assign the following commands to name design elements …
+```
+get_bd_cells BD
+get_bd_cells BD/*
+get_bd_cells */*/v*
+get_bd_cells */*/v1
+get_bd_cells v* -hier
+get_bd_cells */v1 -hier
+```
+
+And for the sequence:
+```
+current_bd_instance BD
+get_bd_cells */v1
+get_bd_cells */v1 -hier
+get_bd_cells v1 
+```
+]
+.pull-right[
+… to their outputs – of course not in the same (proper) order here.
+```
+/BD
+/BD/adder /BD/inputs
+/BD/inputs/v1
+/BD/inputs/v1 /BD/inputs/v2
+```
+
+Note that some examples will also produce an empty list._[]
+
+.N.center[
+You are strongly encouraged to try many more examples!
+]
+
+And also look-up *nets*, *pins*, *ports*, etc. … (not only *cells*).
+]
+
+.F[:
+Resulting in a warning on the *Vivado Tcl Console Output*, unless the option `-quiet` is
+specified.
+]
+
+---
+template: plain
+header: ### Part 4 / Step 8: Naming with Regular Expressions
 
 </textarea>
 <!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
