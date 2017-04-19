@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LAB 4: Vivado Tcl</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- when changing the stylesheet file please see also remark below -->
+    <link rel="stylesheet" type="text/css" href="styling.css" />
+  </head>
+  <body>
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- :::::::::: template pages come first ... skip to REALCONTENT ::::::::: -->
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<textarea id="source">
+
+layout: true
+name: blank
+styling: styling.css
+styling-by: Martin Weitzel
+
+<!--
+  *****************************************************************************
+  Template used for title page (only)
+  *****************************************************************************
+  Please change the 'styling-by:' attribute if you change the style-sheet.
+-->
+
+.stylehint[
+Styled with [{{styling}}]({{styling}}) by {{styling-by}}
+]
+
+---
+layout: true
+name: plain
+copyright: (CC) BY-SA
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; LAB 4: Vivado Tcl
+customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
+
+<!--
+  *****************************************************************************
+  Template used for for pages NOT referring to any Info-Graphic
+  *****************************************************************************
+  The following attributes are mandatory FOR THE TEMPLATE PAGE and should
+  simply be left empty if not meaningful.
+
+  copyright: will be reproduced in each page footer first
+  branding: will reproduced in each page footer next
+  customer: will be reproduced in each page footer last
+
+  As the above attributes are part of several page templates a global replace
+  should be used for consistent changes.
+
+  On pages USING THIS TEMPLATE the following attributes must be set:
+
+  header: ## and header text (i.e. including the markdown formatting indicator)
+
+-->
+
+{{header}}
+
+.pagefooter[
+{{copyright}}: {{branding}} .plc2-logo[{{customer}}]
+]
+
+---
+layout: true
+name: linkinfo
+copyright: (CC) BY-SA
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; LAB 4: Vivado Tcl
+customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
+
+<!--
+  *****************************************************************************
+  Template used for for pages INTRODUCING to a new Info-Graphic
+  *****************************************************************************
+  On this kind of pages a size-reduced version of the whole info graphic will
+  be reproduced and occupies approximately 2/3 of the page width. So only add
+  little information, preferably links to later pages dealing with single
+  sections of the info graphic.
+
+  On pages USING THIS TEMPLATE the following attributes must be set:
+
+  graphic: file path to of the infographic EXCLUDING the suffix.
+  header: ## and header text (i.e. including the markdown formatting indicator)
+
+-->
+
+{{header}}
+
+.infographic[
+[![Info-Grafik](InfoGraphics/{{graphic}}.png)](InfoGraphics/{{graphic}}.png
+                "Click to open – add [CTRL+] SHIFT for new [tabbed] window")
+]
+
+.pagefooter[
+{{copyright}}: {{branding}} {{customer}} .plc2-logo[]
+]
+
+---
+layout: false
+template: blank
+name: frontmatter
+
+.title[
+	LAB 4: Vivado  
+	Advanced Tcl Scripting._[]
+]
+
+.subtitle[
+	Diving-Down into Reports
+]
+
+.F[:
+In the Online Version of this Lab you can access additional help as part of
+the *Presenters Notes* – just hit the `P`-key once …
+]
+
+[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
+[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
+
+???
+
+(use +/- above to adjust the font size for convenient reading)
+
+If you want to keep the electronic version of this lab **only**, there is also
+the option to open this file in an editor and take notes.
+
+To return to the normal view, now press the P-key once more.
+
+<!--
+If you want to put in meta-annotations, i.e. text that is not even shown
+after pressing the P-key, simply use HTML comments, like it is done here.
+-->
+
+---
+template:plain
+header: ## Part 1: Processing (Report) Files
+
+.N.center[
+The following is mainly based on [XILINX UG888] → *LAB 1*  
+but centers around the *Report Generation Step*.
+]
+
+As further preparation you may want to look-up the description of the
+Tcl Commands
+
+* [`glob`] `-dir …`  
+  – to determine which files are present in a directory;
+* [`file`] `mtime  …`  
+   – mainly to access some properties of file
+* [`clock`] `format … -format …`  
+   – to turn an internal time stamps into the usual (human readable)
+   date-time representation.
+  
+[`glob`]: https://www.tcl.tk/man/tcl8.4/TclCmd/glob.htm
+[`file`]: https://www.tcl.tk/man/tcl8.4/TclCmd/file.htm
+[`clock`]: https://www.tcl.tk/man/tcl8.4/TclCmd/clock.htm
+
+---
+template: plain
+header: ### Part 1 / Step 1 : Adapting Reports in Various Ways
+
+.N.center[
+In [XILINX UG888] → *Lab 1* advance to *Step 3* (Page 11)
+]
+
+For some of._[] Vivado's Tcl `report_`-commands used here look-up their
+description in [XILINX UG835].
+  
+* To which of the following targets can you redirect a report:
+  * To a file?
+  * To a variable?
+  * To a special window?
+  * (Try out any of the above that is possible!)
+
+* How can you limit the content of a report?
+
+.F[:
+For the purpose of determining how a report may be re-directed to various
+destinations, it is actually fully sufficient to look-up the description of
+just one such command as representative example, as the relevant options are
+exactly the same for all such commands.
+]
+
+---
+template: plain
+header: ### Part 1 / Step 2: Determine Modification Time of Files
+
+Use the Tcl commands [`file`] and [`clock`] to get the modification time
+of **all** the generated reports stored in files, according to the original
+Lab (i.e. [XILINX UG835] → *Lab 1* → *Step 3*).
+	
+* How can you decide which one is the newest?
+
+  * Do you actually need the Tcl command `clock` to do that?
+  * Determine which (report) file is oldest and which newest.
+  * How much time has passed between both time stamps?
+
+* Regenerate the newest report but **keep the oldest untouched**.
+
+  * Verify the time span between the newest report and the oldest report
+    has actually increased.
+
+
+---
+template: plain
+header: ### Part 1 / Step 3: Preparing the Tcl Development Cycle
+
+* **Start an Editor** of your choice._[] and write a single line into it:  
+
+```
+puts "HERE-I-AM"
+```
+
+* Save it to a file `list_reports.tcl` **in the working directory** of your
+  Vivado Tcl console.
+  * (Tcl Command Hint: `pwd`)
+
+.F[:
+Under Microsoft Windows, if you have installed [ActiveTcl] you can use their
+editor, otherwise it is recommended to install and use *Notepad++* which can be
+downloaded for free from http://notepad-plus-plus.org.
+]
+
+---
+template: plain
+header: ### Part 1 / Step 4: Sourcing the Tcl Script File
+
+* **Back to the Vivado Console** (but leave the editor window open)
+
+  * Check the file `list_reports.tcl` actually exists where you have stored it
+     * (Tcl Command Hint: `file exists …`)
+
+  * Run the command stored in `list_reports.tcl` by using  
+
+```
+source list_reports.tcl
+```
+
+.N.center[
+IMPORTANT NOTE  
+If you do not get the output `HERE-I-AM` but anything else happens, either fix
+the error (if you see any) or ask the tutor.
+]
+
+---
+template: plain
+header: ### Part 1 / Step 5: Abbreviations of the `source` Command
+
+
+* **In the Vivado Console** (with the editor window still open)
+
+  * Run the command in `list_reports` ones more using
+
+```
+sourc list_reports.tcl
+sour list_reports.tcl
+```
+   * How many more letters of the Tcl Command `source` can be left out until
+     you get an error message?
+      * (Tcl Command Hint: `info proc so*` will help to see the problem)
+
+* **Back to the Editor**
+
+  * Change your file as follows:
+
+```
+proc list_reports {} {
+    puts HERE-I-AM
+}
+```
+
+  * Save it back to `list_reports.tcl` (overwriting previous content)
+	  
+---
+template: plain
+header: ### Part 1 / Step 6: Source AND RUN the Subroutine
+
+* **Back to the Vivado Console** (with the editor window still open)
+  
+  * Again use the command._[]
+
+```
+source list_reports.tcl
+```
+
+  * Why doesn't happen anything right away?
+  * Run the sub-routine by using
+
+```
+list_reports
+```
+  
+  * Check the current definition of the sub-routine `list_reports`
+     * (Tcl Command Hint: `info body list_reports`)
+
+* **Back to the Editor**
+  
+  * Change the file content to:
+
+```
+proc list_reports {} {
+    glob $::outputDir/*.rpt
+}
+
+```
+
+---
+template: plain
+header: ### Part 1 / Step 7: Run the Modified Subroutine
+
+* **Back to the Vivado Console**
+
+```
+source the list_reports.tcl
+```
+
+  * Check that the new definition of `list_reports` was loaded.
+  * Run the sub-routine with:._[]
+
+```
+list_reports
+```
+
+.N[
+From now on the two steps to **write-back** the file (in the editor) and
+**`source`** the modified subroutine definition (in Vivado) will no longer
+be mentioned explicitly.._[]
+]
+
+.F[:
+And of course, once you "automatically" – without much thinking – save the
+changes to the subroutine definition  `list_reports` in the editor, then
+`source` the file `list_reports.tcl` in Vivado, there is no point every
+time to verify the definition of the subroutine body has actually changed.
+]
+
+---
+template: plain
+header: ### Part 1 / Step 8: Further Enhance the Subroutine
+
+[`glob`]: https://www.tcl.tk/man/tcl8.4/TclCmd/lsort.htm
+
+* **Back to the Editor** 
+
+  * Change the definition of `list_reports` step by step so that it
+     * (1st step) list the name of all reports on output
+     * (2nd step) adds in a first column the modification time
+        *`YYYX-MM-DD hh:mm:ss`*
+
+* **Back to the Vivado Console**
+
+  * Test the modifications you made to ` list_reports.tcl`
+
+-------------------------------------------------------------------------------
+
+You may now continue with Part 2, or add the following extra feature:._[]
+
+* On output list the files ordered by their modification time,
+  * oldest first,
+  * most recent last.
+
+.F[:
+Hint: First write the *mtime* and the file *name* in a list, where each
+element is itself a two-element list, consisting of the modification time
+and the file name. Then look up to find how use the Tcl Command `lsort` can
+be used to sort a "list of lists" and use a specific element from the *nested*
+list as "sort key" (i.e. comparison criteria).
+]
+
+---
+template: plain
+header: ### Part 1 / Optional Tcl Challenge
+
+Add **one** argument `sort_order` to `list_reports` which determine the
+order of the file names on output with one of the following values::
+* `-by_name` – sort alphabetically (ascending) by file name
+* `-by_name_reversed` – as before but descending
+* `-by_mtime` – sort (ascending) by modification time
+* `-by_mtime_reversed` – as before but descending
+
+A first sketch how `list_reports` could look like this:._[]
+```
+proc list_reports {sort_order} {
+    switch -excat -- $sort_order {
+        ... TO BE DONE ..
+    }
+}
+```
+.F[:
+PLEASE look-up the description of the *Tcl Multi-Way Branch Command* `switch`
+in the documentation. You may ALWAYS ask the trainer if something is not clear
+there, but there are too many Standard and Vivado Tcl Commands to go beyond
+hinting **where** to look.
+
+Also feel free to chose a **different** parametrization style, which controls
+the sort key and order by two arguments, which can be used in combination,
+like:   
+`list_reports -by_name` – (and plain use too) means sort by name, ascending  
+`list_reports -by_name -revresed` – as before, descending  
+`list_reports -by_mtime` –  means sort by modification time, ascending  
+`list_reports -by_mtime -reversed` – as before, descending  
+]
+
+---
+template:plain
+header: ## Part 2: Processing File Content
+
+.N.center[
+The following is **not any more** based on [XILINX UG888] → *LAB 1*  
+but you may well use a report generated there as test case.
+
+]
+
+* **In to the Editor** write a **new** subroutine:
+
+```
+proc find_in_report {fname {pattern {.*}}} {
+    # ... TO BE DONE (see below)
+}
+```
+
+* For the moment leave its body empty and
+  * save it into a **new** file `find_in_report.tcl` and
+  * be sure to remember you have to `source` **THAT** file now in Vivado
+
+* So, **back to the Vivado Console**
+  * test the modifications you made so far ...
+
+---
+template:plain
+header: ### Part 2 / Step 1: Open a File, Read Line by Line
+
+[`open`]: https://www.tcl.tk/man/tcl8.4/TclCmd/open.htm
+[`close`]: https://www.tcl.tk/man/tcl8.4/TclCmd/close.htm
+[`gets`]: https://www.tcl.tk/man/tcl8.4/TclCmd/gets.htm
+[`regexp`]: https://www.tcl.tk/man/tcl8.4/TclCmd/regexp.htm
+
+* **Back to the editor** implement the following basic code structure:._[]
+
+.N[
+* with [`open`] to open the file for reading, use the argument `fname`
+  as file name, store the file handle returned in a variable `fh`
+* in a `while` loop (controlled by the return value of [`gets`])
+  * via the file handle `fh` read the file line-by-line (using [`gets`])
+  * compare each line using [`regexp`] against the regular expression
+    specified as argument `pattern`
+  * if it matches (i.e. [`regexp`] returns `1`)
+     * print the line
+* finally close the file (handle)
+]
+
+.F[:
+Just in case you need a more concrete fragment:
+```
+set fh [open $fname r]
+while {[gets $fh line] >= 0} {
+    if {[regexp $pattern $line]} {
+        puts $line
+    }
+}
+close $fd
+```
+]
+
+---
+template:plain
+header: ### Part 2 / Step 2: Optionally Make the Code More Robust
+
+[`catch`]: https://www.tcl.tk/man/tcl8.4/TclCmd/catch.htm
+
+* **Back to the Vivado Console**
+
+  * test `find_in_report` with a report and patterns of your choice
+
+-------------------------------------------------------------------------------
+
+Optionally – if all is running and well ana nice you still aren't tired:
+
+* Add sufficient robustness to the code by
+  * [`catch`]-ing attempts to open non-existing files;
+  * fixing the problem of comparison patterns
+     * **not** using correct regular expressions syntax
+     * starting with a minus (`-`) sign.._[]
+
+.F[:
+If the regular expression pattern starts with a minus sign, `regexp` gets
+confused because cannot discern the pattern (argument) from a (potentially
+misspelled) option.  
+This problem in fact is easy to fix … all you need is RTFM!  
+In the case of a syntactically wrong regular expression (pattern) the cure is
+to [`catch`] such problem and turn them into a nice error messages.
+]
+
+---
+template: plain
+header: ## Tcl Regular Expression Challenge
+
+Here is a list of eight regular expressions, numbered *(1)* to *(8)*:._[]
+
+.N[
+(1) `"[^"]*"`  
+(2) `\d+\.\d*`  
+(3) `-[1-9]\d*|[1-9]\d*-`  
+(4) `\d{1,3}([.]\d{1,3}){3}`  
+(5) `[_a-zA-Z][_a-zA-Z0-9]*`  
+(6) `(\(\d?\d( \d\d)*\) )?\d?\d( \d\d)*`  
+(7) `[ a-zA-Z]+ *= *(\d+|"[^"]*")`  
+(8) `[a-fA-F0-9]{2}([- ][a-fA-F0-9]{2})*`  
+]
+
+
+.pull-left[
+In each of the following eight sections *(A)* to *(H)*, one of the above is
+described verbally and with test examples, *GOOD* ones (matching to the above)
+and *BAD* ones (not matching the above).
+]
+.pull-right[
+**Find the proper associations:**
+
+* *Number* (from above lines) vs.
+
+* *Letter* (from pages following)
+]
+
+.F[:
+In a Tcl application **all** of these would need to be enclosed in curly
+braces, or otherwise contained white-space, backslashes, and square brackets
+would require backslash-quoting.
+]
+
+---
+template: plain
+header: ### Tcl Regular Expression Challenge (cont.)
+
+(A) An integral number with no leading zeroes and an optional
+    minus sign, either before of after the number.
+
+```
+    GOOD: 123
+          -4
+          50-
+    BAD:  023
+          34 -
+          +1
+```
+
+(B) A floating point number with no sign and an optionally empty fractional
+    part, but the decimal point always visible.
+
+```
+    GOOD: 3.1415
+          3.14
+          3.
+    BAD:  .34
+          3,4
+```
+
+---
+template: plain
+header: ### Tcl Regular Expression Challenge (cont.)
+
+(C) An "IP Number" written in dotted form (though with only incomplete._[]
+   checks of the contained parts for the valid range `0`…`255`).
+```
+    GOOD: 192.148.144.123
+          0.0.0.1
+          253.254.255.256
+    BAD:  1.2.34
+          1..234
+```
+
+(D) An identifier as typically used in programming languages, i.e.
+    beginning with an underscore or letter, followed by any number
+    of underscores, letters, or digit.
+
+```
+    GOOD: var
+          a
+          _x12
+    BAD:  12x
+```
+
+.F[:
+I.e. one of the "GOOD" test cases isn't actually a valid IP.
+]
+
+---
+template: plain
+header: ### Tcl Regular Expression Challenge (cont.)
+
+(E) A string of any characters, *enclosed* in double quotes, but not
+    *containing* double quotes.
+```
+    GOOD: "hello, world"
+          "what's up"
+          ""
+    BAD:  'hello, world'
+          "how "nice" is this?"
+```
+
+(F) A "*variable* - *value*"-assignment, i.e. an identifier followed by an
+    equals sign, followed by either an *"integral value"* with an optional
+    leading minus sign, or a *"string"* in double quotes.
+
+```
+    GOOD my_number = 10
+         x = 10
+         x= 10
+         x    =10
+         y = "hello"
+    BAD: y := "hi!"
+         pi = 3.14
+         x = u
+         7 = 12
+```
+
+---
+template: plain
+header: ### Tcl Regular Expression Challenge (cont.)
+
+(G) A hexadecimal number, `A`…`F`, only allowed in upper case and written
+    grouped in pairs of two, separated either by space or minus signs.
+```
+    GOOD: 6A 35 A7 00
+          6A-35-A7-00
+          6A-35 A7-00
+          1A CA FE
+    BAD:  1a Ca-fe
+          12 -34- 77
+```
+
+(H) A phone number with an optional area code in parentheses to the left,
+    digits written in pairs of two, with either one or two digits only in
+    the left-most part.
+```
+    GOOD: 12 34 56
+          1 23 45 67
+          (1 23) 45 67 89
+    BAD:  0171 54 81 764
+          0171 5481 764
+          (0171) 5 48 17 64
+```
+
+---
+template: plain
+header: ### Tcl Regular Expression Challenge – DIY
+
+If to want to try the regular expressions of this challenge with more
+examples of your own, you may do it with the following helper function:._[]
+```
+proc re_test {re} {
+     while {[gets stdin line] > 0} {
+         if {[regexp ^$re\$ $line]} {
+              puts "matched!"
+         } else {
+              puts "NO match"
+         }
+     }
+}
+```
+
+The intended use is  – say with with regular expression (3) from the list:
+.pull-left[
+```
+re_test {-[1-9]\d*|[1-9]\d*-}
+```
+]
+.pull-right[
+(Interactively supply any test input you want and finally terminate with an
+empty line.)
+]
+
+.F[:
+If you strive for a bit more "concise" code you may also replace the body of the
+`while`-loop with this:  
+`puts [lindex [list "matched!" "NO match"] ![regexp ^$re\$ $line]] ;#`
+[YANETUT](http://slang.org/yanetut-meaning-definition)
+]
+
+
+</textarea>
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+<!-- ::::::::::::::::::::: )-: ereh TNETNOCLAER fo dne :::::::::::::::::::: -->
+<!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
+    <script src="remark.min.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      var slideshow = remark.create({ highlightLanguage: 'tcl', highlightStyle: 'docco' });
+    </script>
+  </body>
+</html>
