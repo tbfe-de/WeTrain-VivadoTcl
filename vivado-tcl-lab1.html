@@ -401,7 +401,7 @@ Any code of substantial length should be rather written as sub-routine.
 proc evaluate_math_expression {} {
     while {[gets stdin x] > 0} {
         if {[catch {expr $x} result]} { puts "ERROR: $result" }\
-        } else                        { puts "$x ==> $result" }
+        else                          { puts "$x ==> $result" }
     }
 }
 ```
@@ -444,7 +444,7 @@ Change the first argument to supply different test input.
 ```
 proc evaluation_loop {fh} {
     set n 1
-    while {[gets fh x] > 0} {
+    while {[gets $fh x] > 0} {
         math_expression $x res
         puts "($n) $res"
         incr n
@@ -614,7 +614,7 @@ llength [lindex $li 1]
 lindex $i 2
 lindex $i end
 lindex $i end-1
-lindex [lindex $li 1] 2}
+lindex [lindex $li 1] 2o
 lindex $li {1 2}
 lindex $li {2 1}
 lindex $li {2 0}

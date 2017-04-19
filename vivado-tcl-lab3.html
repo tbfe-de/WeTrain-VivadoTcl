@@ -106,8 +106,8 @@ name: frontmatter
 ]
 
 .subtitle[
-	From Vivado GUI-Sessions  
-	to Vivado Tcl Scripts
+	Exploring the Vivado  
+	In-Memory Design Model
 ]
 
 .F[:
@@ -142,14 +142,14 @@ header: ## Part 1: Project Mode Filesets
 Start Vivado and create the Vivado Example Project `Wavegen`.
 ]
 
-* Use `wavegen_1` (instead of `project_1`) as project name and for the moment
-  do not (yet) run any other step (like *Synthesis* etc.)
+* Use *Name* for the project use `wavegen_1` (instead of `project_1`) and for
+  – only for the moment – do not run any other step (like *Synthesis* etc.)
 
 * How can you easily determine which Vivado Tcl Commands have been executed?
 
   * Where does the project name appear as part of that commands?
-  * The directory to store the project files?
-  * The XILINX part?
+  * Where the directory to store the project files?
+  * Where the XILINX part?
 
 * Where is the same information (project name, directory, XILINX part) located
   in the Vivado GUI?
@@ -282,7 +282,7 @@ foreach f [get_files *.v] {
 
 And the alternative:
 ```
-set files [get_files *.v -filter {!IS_ENABLED}
+set files [get_files *.v -filter {!IS_ENABLED}]
 ```
 
 * Which option needs to be added in the second case to get **exactly** the same
@@ -301,7 +301,7 @@ With respect to the *Source File Set* of a project you will find that
   corresponds to it.
 
 .N.center[
-So how to produce a list of file names is sorted by modification time?
+So how to produce a list of file names sorted by modification time?
 ]
 
 You may now
@@ -517,9 +517,9 @@ Open or continue with the Elaborated Design of Example `Wavegen`.
 
 This part focusses on
 
-* **Navigation By Relationship**
+* **Navigation By Relationship** through
 
-through connected Design Objects.._[]
+* Design Objects *connected to each other*.._[]
 
 .F[:
 The term "connected" is used here for both, physical and logical connections.  
@@ -918,24 +918,45 @@ specified.
 template: plain
 header: ### Part 4 / Step 8: Naming with Regular Expressions
 
+For the following commands predict which *Cell Names* they match, i.e. the
+regular expression used
+* **need to have correct syntax**
+* and **should match anything** at all.._[]
+
 .pull-left[
-Assign the following commands to name design elements …
 ```
+get_bd_cells -regex {*}
 get_bd_cells -regex {.*}
 get_bd_cells -regex {.*/i*}
 get_bd_cells -regex {.*/i.*}
-get_bd_cells -regex {.*/inputs/v.*}
-get_bd_cells -regex {.*/inputs/v\d}
+get_bd_cells -regex {.*/inputs}
+get_bd_cells -regex {BD/*}
+get_bd_cells -regex {BD/.*}
+get_bd_cells -regex {BD/*/*}
+get_bd_cells -regex {BD/.*/.*}
 ```
-
-* Why is it recommendable to include the match pattern in curly braces?
-
-* Does the `current_bd_instance effect the matching
 ]
 .pull-right[
 ```
-aaa
+current_bd_instance BD/inputs
+get_bd_cells -regex {v1}
+get_bd_cells -regex {v1|v2}
+get_bd_cells -regex {v[12]}
+get_bd_cells -regex {v[0-9]+}
+get_bd_cells -regex {v\d+}
+current_bd_instance
+get_bd_cells -hier -re {v\d+}
+get_bd_cells -hier -re {.*v\d+}
 ```
+]
+
+Also be sure to understand that some *Regular Expressions* need to use
+characters special to the Tcl Syntax Analysis:
+* Which of the above  therefore **require** to be enclosed in curly braces?
+
+.F[:
+The result list returned might empty, which usually draws a warning, unless
+the option `-quiet` is used.
 ]
 
 ---
@@ -947,27 +968,26 @@ except the *TYPE*.._[]
 
 The following need to be solved:
 
-* For an existing port or determine
-  * all non-modifiable properties
-  * all modifiable properties,
-  * it's connectivity to the design.
+* For an existing port determine
+  * all non-modifiable properties,
+  * all modifiable properties, and
+  * how it is connected with other design elements.
 
 .N.center[
-Determine the Tcl Commands to set all this for a **new** port or pin.
+Find out how to set all this for a **newly created** port.
 ]
 
-Hint: In the Block Design developed so far create a "Twin Sister" of its
-*Output Port* `sum` step by step, using via the Vivado GUI … the look-up the
-command(s) used in the documentation (e.g. in [XILINX UG835] or with Vivado's
-integrated help).
-
-* Finally wrap everything in an easy-to-use Tcl subroutine.
+Possible approach:
+* In the Block Design developed so far create a "Twin Sister" of the
+  *Output Port* `sum` via the **Vivado GUI** …   
+* … then look-up the commands viewed on the **Tcl Colsole** in the
+  documentation – just to be sure you understood everything right,
+* and finally wrap everything in an easy-to-use Tcl subroutine.
 
 .F[:
 The motivation may be to change the type of existing ports, for which there is
 no direct way as the property is read-only and can only be set on creation.
 ]
-
 
 </textarea>
 <!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
