@@ -918,6 +918,57 @@ specified.
 template: plain
 header: ### Part 4 / Step 8: Naming with Regular Expressions
 
+.pull-left[
+Assign the following commands to name design elements …
+```
+get_bd_cells -regex {.*}
+get_bd_cells -regex {.*/i*}
+get_bd_cells -regex {.*/i.*}
+get_bd_cells -regex {.*/inputs/v.*}
+get_bd_cells -regex {.*/inputs/v\d}
+```
+
+* Why is it recommendable to include the match pattern in curly braces?
+
+* Does the `current_bd_instance effect the matching
+]
+.pull-right[
+```
+aaa
+```
+]
+
+---
+template: plain
+header: ### Part 4 / Optional Tcl Challenge
+
+Design Tcl solution to "clone" a pin or port, keeping all its properties
+except the *TYPE*.._[]
+
+The following need to be solved:
+
+* For an existing port or determine
+  * all non-modifiable properties
+  * all modifiable properties,
+  * it's connectivity to the design.
+
+.N.center[
+Determine the Tcl Commands to set all this for a **new** port or pin.
+]
+
+Hint: In the Block Design developed so far create a "Twin Sister" of its
+*Output Port* `sum` step by step, using via the Vivado GUI … the look-up the
+command(s) used in the documentation (e.g. in [XILINX UG835] or with Vivado's
+integrated help).
+
+* Finally wrap everything in an easy-to-use Tcl subroutine.
+
+.F[:
+The motivation may be to change the type of existing ports, for which there is
+no direct way as the property is read-only and can only be set on creation.
+]
+
+
 </textarea>
 <!-- :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: -->
 <!-- ::::::::::::::::::::: )-: ereh TNETNOCLAER fo dne :::::::::::::::::::: -->
