@@ -148,7 +148,7 @@ Tcl Commands
 * [`file`] `mtime  …`  
    – mainly to access some properties of file
 * [`clock`] `format … -format …`  
-   – to turn an internal time stamps into the usual (human readable)
+   – to turn internal time stamps into the usual (human readable)
    date-time representation.
   
 [`glob`]: https://www.tcl.tk/man/tcl8.4/TclCmd/glob.htm
@@ -205,6 +205,8 @@ Lab (i.e. [XILINX UG835] → *Lab 1* → *Step 3*).
 template: plain
 header: ### Part 1 / Step 3: Preparing the Tcl Development Cycle
 
+[`pwd`]: https://www.tcl.tk/man/tcl8.4/TclCmd/pwd.htm
+
 * **Start an Editor** of your choice._[] and write a single line into it:  
 
 ```
@@ -213,7 +215,8 @@ puts "HERE-I-AM"
 
 * Save it to a file `list_reports.tcl` **in the working directory** of your
   Vivado Tcl console.
-  * (Tcl Command Hint: `pwd`)
+
+  * (Tcl Command Hint: [`pwd`])
 
 .F[:
 Under Microsoft Windows, if you have installed [ActiveTcl] you can use their
@@ -227,7 +230,8 @@ header: ### Part 1 / Step 4: Sourcing the Tcl Script File
 
 * **Back to the Vivado Console** (but leave the editor window open)
 
-  * Check the file `list_reports.tcl` actually exists where you have stored it
+  * Check that the file `list_reports.tcl` actually exists where you have
+    stored it
      * (Tcl Command Hint: `file exists …`)
 
   * Run the command stored in `list_reports.tcl` by using  
@@ -239,7 +243,7 @@ source list_reports.tcl
 .N.center[
 IMPORTANT NOTE  
 If you do not get the output `HERE-I-AM` but anything else happens, either fix
-the error (if you see any) or ask the tutor.
+the error (if you see any) or ask the trainer.
 ]
 
 ---
@@ -257,6 +261,7 @@ sour list_reports.tcl
 ```
    * How many more letters of the Tcl Command `source` can be left out until
      you get an error message?
+
       * (Tcl Command Hint: `info proc so*` will help to see the problem)
 
 * **Back to the Editor**
@@ -291,6 +296,7 @@ list_reports
 ```
   
   * Check the current definition of the sub-routine `list_reports`
+
      * (Tcl Command Hint: `info body list_reports`)
 
 * **Back to the Editor**
@@ -372,7 +378,7 @@ template: plain
 header: ### Part 1 / Optional Tcl Challenge
 
 Add **one** argument `sort_order` to `list_reports` which determine the
-order of the file names on output with one of the following values::
+order of the file names on output with one of the following values:
 * `-by_name` – sort alphabetically (ascending) by file name
 * `-by_name_reversed` – as before but descending
 * `-by_mtime` – sort (ascending) by modification time
@@ -474,13 +480,13 @@ header: ### Part 2 / Step 2: Optionally Make the Code More Robust
 
 -------------------------------------------------------------------------------
 
-Optionally – if all is running and well ana nice you still aren't tired:
+Optionally – if all is running and well and nice you still aren't tired:
 
-* Add sufficient robustness to the code by
+* Add sufficient robustness._[] to the code by
   * [`catch`]-ing attempts to open non-existing files;
   * fixing the problem of comparison patterns
      * **not** using correct regular expressions syntax
-     * starting with a minus (`-`) sign.._[]
+     * starting with a minus (`-`) sign.
 
 .F[:
 If the regular expression pattern starts with a minus sign, `regexp` gets
