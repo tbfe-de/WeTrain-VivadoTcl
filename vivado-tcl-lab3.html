@@ -218,7 +218,7 @@ Do you recognize the difference between a Fileset *Object* and its *Name*?._[]
 
 .F[:
 If so, you should be able to identify which of the above commands needs a
-*Fileset Name*, which one **absolutely* requires a *Fileset Object*, and which
+*Fileset Name*, which one **absolutely** requires a *Fileset Object*, and which
 can work with both.
 ]
 
@@ -245,7 +245,7 @@ get_property IS_ENABLED $f
 ```
 ]
 .pull-right[
-Disable the file via the GUI and repeat to verify.
+**After** this disable the file via the GUI, **then repeat** to verify.
 ]
 
 Now re-enable the file with the following Tcl Command …
@@ -275,7 +275,7 @@ Compare the following:
 set files [list]
 foreach f [get_files *.v] {
     if {![get_property IS_ENABLED $f]} {
-        lappend list $f
+        lappend files $f
     }
 }
 ```
@@ -298,7 +298,7 @@ With respect to the *Source File Set* of a project you will find that
   time-stamp it is displayed with the *General File Proerties* …
 
 * … but if you look at the *Properties* of a *File Object* you will find
-  corresponding to it.
+  **nothing** corresponding to it.
 
 .N.center[
 So how to produce a list of file names sorted by modification time?
@@ -404,15 +404,21 @@ In the *Schematic* (Diagram) locate the top-level cell `uart_rx_i0`.
 * One by one run the following Vivado Tcl Commands and watch their effect:
 ```
 highlight_objects [get_cells uart_rx_i0/*]
-current_instance uart_rx_0
-unhighlight_objects *
+current_instance uart_rx_i0
+unhighlight_objects [get_cells *]
 ```
 * Watch and explain the effects of these commands on (some of) the objects
   displayed in the Vivado GUI.
 
   * What still has **permanently** changed?
-  * How would you undo it?
+  * How would you undo it?._[]
 
+.F[:
+To answer the preceeing question first: Of course, `current_instance` does
+not yet (again) point to the top of the design, **be sure to reset it
+before you continue with:**  
+`current_instance` (without arguments).
+]
 ---
 template:plain
 header: ### Part 2 / Optional Tcl Challenge
@@ -424,8 +430,8 @@ proc show_leaf_cells {n {p ""}} {
     } else {
         foreach c [get_cells *] {
             set cs [split $c /]
-            show_leaf_cell [lindex $cs end]\
-                           [join [lreplace $cs end end] /]/
+            show_leaf_cells [lindex $cs end]\
+                            [join [lreplace $cs end end] /]/
         }
         current_instance -quiet ..
     }
@@ -660,7 +666,7 @@ set_highlighted my_cells                    ; after 1000
 template:plain
 header: ## Part 4: Working with Block Designs
 
-.N[
+.N.center[
 This part centers around a trivial Block Design.
 ]
 
@@ -671,8 +677,8 @@ A. Understand how
    * relates to *Vivado Tcl Commands*.
 
 B. Make available a
-   * close to trivial *Hierarchical Design* which then can be used to
-   * to train your understanding for *Naming Objects* in hierarchies.
+   * close to trivial *Hierarchical Design* (which then can be used to)
+   * train your understanding for *Naming Objects* in hierarchies.
 
 .F[:
 There is no prepared project for it but if you are mostly interested in the
@@ -693,7 +699,7 @@ Create a fresh project._[]
 
 Create a Block Design
 * Locate IP-Integrator in the Flow Navigator
-  * if necessary, click so that sub-items are shown)
+  * (if necessary, click so that sub-items are shown)
 * Click *Create Block Design*
 
 .F[:
@@ -719,13 +725,13 @@ In the *Diagram* (canvas)
 * *Click* on the *Constant* (just created), to make it selected
   * then in the *Block Properties* Window
      * (if not already active) select Tab *General*
-         * set its *Name* to `v1`
+         * change the *Name* to `v1`
      * select Tab *Properties*
         * expand the entry *CONFIG* and
            * set *WIDTH* to *3*
            * and *VAL* to *5*
 
-Review the changes just made to the *Constant* named `v1` (now).
+Review the changes just made to the *Constant*, named `v1` now.
 
 ---
 template: plain
@@ -741,9 +747,9 @@ In the *Diagram* (canvas)
 
 * Display the *Block Properties* of
   * the *Constant* `v2`
-     * (maybe change its *Value*)
+     * (feel free to its *Value*)
   * the *Adder/Subtracter*
-     * change its name to `adder`
+     * change its *Name* to `adder`
 
 On the *Diagram* review the changes just made.
 

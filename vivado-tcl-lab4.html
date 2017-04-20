@@ -106,7 +106,7 @@ name: frontmatter
 ]
 
 .subtitle[
-	Diving-Down into Reports
+	Diving Deeper into Reports
 ]
 
 .F[:
@@ -350,8 +350,8 @@ header: ### Part 1 / Step 8: Further Enhance the Subroutine
 
   * Change the definition of `list_reports` step by step so that it
      * (1st step) list the name of all reports on output
-     * (2nd step) adds in a first column the modification time
-        *`YYYX-MM-DD hh:mm:ss`*
+     * (2nd step) adds in a first column the modification time  
+        *`YYYY-MM-DD hh:mm:ss`*
 
 * **Back to the Vivado Console**
 
@@ -506,7 +506,7 @@ Here is a list of eight regular expressions, numbered *(1)* to *(8)*:._[]
 .N[
 (1) `"[^"]*"`  
 (2) `\d+\.\d*`  
-(3) `-[1-9]\d*|[1-9]\d*-`  
+(3) `-?[1-9]\d*|[1-9]\d*-`  
 (4) `\d{1,3}([.]\d{1,3}){3}`  
 (5) `[_a-zA-Z][_a-zA-Z0-9]*`  
 (6) `(\(\d?\d( \d\d)*\) )?\d?\d( \d\d)*`  
@@ -539,7 +539,7 @@ template: plain
 header: ### Tcl Regular Expression Challenge (cont.)
 
 (A) An integral number with no leading zeroes and an optional
-    minus sign, either before of after the number.
+    minus sign, either before or after the number.
 
 ```
     GOOD: 123
