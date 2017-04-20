@@ -142,14 +142,14 @@ header: ## Part 1: Project Mode Filesets
 Start Vivado and create the Vivado Example Project `Wavegen`.
 ]
 
-* Use *Name* for the project use `wavegen_1` (instead of `project_1`) and for
-  – only for the moment – do not run any other step (like *Synthesis* etc.)
+* As *Name* for the project use `wavegen_1` (instead of `project_1`) and for
+  the moment do not run any other step (like *Synthesis* etc.)
 
-* How can you easily determine which Vivado Tcl Commands have been executed?
+* How can you determine which Vivado Tcl Commands have been executed?
 
-  * Where does the project name appear as part of that commands?
-  * Where the directory to store the project files?
-  * Where the XILINX part?
+  * Where does the project name become part of these commands?
+  * Where the directory that stores the project files?
+  * Where the "XILINX part"?
 
 * Where is the same information (project name, directory, XILINX part) located
   in the Vivado GUI?
@@ -167,8 +167,8 @@ current_fileset -constr
 ```
 ]
 .pull-right[
-Watch the Tcl Console Output for the return values and determine where that
-information is provided in the Vivado GUI too.
+Watch the Tcl Console Output for the return values and determine where the
+same information is provided via the Vivado GUI.
 ]
 
 What kind of fileset is created with the following command?
@@ -178,7 +178,7 @@ create_fileset my_fileset
 ```
 ]
 .pull-right[
-And where shows it up in the GUI?
+And where is the new fileset shown in the GUI?
 ]
 
 Execute the following commands one by one._[] and track via the GUI:
@@ -237,7 +237,7 @@ foreach f $files {puts $f}
 (Setting the variable `files` is also important for what follows below.)
 ]
 
-First guess then try out to determine the effect of these commands:
+First guess, then try out to determine the effect of the following commands:
 .pull-left[
 ```
 set f [lindex $files 0]
@@ -255,11 +255,11 @@ set_property IS_ENABLED TRUE $f
 ```
 ]
 .pull-right[
-… and use the GUI to verify.
+… and again use the GUI to verify the effect.
 ]
 
 .F[:
-Simply printing the file names can also be achieved in a different way but be
+Simply printing the file names can also be achieved in a different way, but be
 sure to understand that the "object-nes" of the files gets removed by it:
 `puts -nonewline [join [get_files *.v] \n]`
 ]
@@ -286,7 +286,7 @@ set files [get_files *.v -filter {!IS_ENABLED}]
 ```
 
 * Which option needs to be added in the second case to get **exactly** the same
-effect from both commands?
+effect from both code fragments?
 
 ---
 template:plain
@@ -294,11 +294,11 @@ header: ### Part 1 / Optional Tcl Challenge
 
 With respect to the *Source File Set* of a project you will find that
 
-* Vivado obviously **knows** about the modification time of each file as it is
-  displayed with the *General File Proerties* …
+* Vivado obviously **knows** about the modification time of each file as that
+  time-stamp it is displayed with the *General File Proerties* …
 
-* … but if you look Properties of a *File Object* you will find nothing that
-  corresponds to it.
+* … but if you look at the *Properties* of a *File Object* you will find
+  corresponding to it.
 
 .N.center[
 So how to produce a list of file names sorted by modification time?
@@ -346,8 +346,8 @@ This part focusses on
 
 * *Hierarchically Related Design Objects*.
 
-It is similar to navigating hierarchical objects of a *Block Design* and
-therefore the topic will receive further coverage there.
+It is similar to navigating hierarchical objects of a *Block Design*,
+a topic that will receive further coverage later.
 
 ---
 template:plain
@@ -417,7 +417,6 @@ unhighlight_objects *
 template:plain
 header: ### Part 2 / Optional Tcl Challenge
 
-Review the following Tcl subroutine and determine what it does:._[]
 ```
 proc show_leaf_cells {n {p ""}} {
     if {[catch {current_instance $n}]} {
@@ -433,10 +432,11 @@ proc show_leaf_cells {n {p ""}} {
 }
 ```
 
+Determine the effect of the above Tcl code …._[]
 .pull-left[
-* By trying like shown right.
-* By guessing from the name.
-* By analyzing its body.
+* … by trying it like shown right;
+* … by guessing from its name;
+* … by analyzing its body.
 ]
 .pull-right[
 ```
@@ -465,8 +465,8 @@ proc show_leaf_cells {n} {
 }   
 ```
 
-* Which draw-backs of the original solution have been solved.
-* Are there still short-comings – obvious ones or less obvious ones.
+* Which draw-backs of the original solution have been solved?
+* Are there still short-comings – obvious ones or less obvious ones?
 * Any ideas how those might be overcome?
 
 .N.center[
@@ -534,7 +534,7 @@ followed by excerpts of an exhaustive diagram in subsequent sections.
 template:plain
 header: ### Part 3 / Step 1: From Ports to Nets to Pins …
 
-Open the *Schematic*, bring element `rxd_pin` (top/left) to the center, and
+Open the *Schematic*, bring element `rxd_pin` (located top/left) into view, and
 enter the following commands (one by one)._[],
 
 .pull-left[
@@ -546,8 +546,8 @@ highlight_objects $n
 ```
 ]
 .pull-right[
-For each step try to predict what will happen and compare with what happens
-(maybe zooming-in and -out as necessary).
+For each step try to predict what will happen and compare with what actually
+happens (zooming in and out as necessary).
 ]
 
 Continue with:
@@ -667,8 +667,8 @@ This part centers around a trivial Block Design.
 The goals are two-fold:._[]
 
 A. Understand how
-   * creating a *Vivado Block Design*
-   * relates to *Vivado Tcl Commands.
+   * creating a *Vivado Block Design* via the GUI
+   * relates to *Vivado Tcl Commands*.
 
 B. Make available a
    * close to trivial *Hierarchical Design* which then can be used to
@@ -693,7 +693,7 @@ Create a fresh project._[]
 
 Create a Block Design
 * Locate IP-Integrator in the Flow Navigator
-  * if necessary, click so that sub-items are shownD)
+  * if necessary, click so that sub-items are shown)
 * Click *Create Block Design*
 
 .F[:
@@ -721,11 +721,11 @@ In the *Diagram* (canvas)
      * (if not already active) select Tab *General*
          * set its *Name* to `v1`
      * select Tab *Properties*
-        * expand entry *CONFIG*
+        * expand the entry *CONFIG* and
            * set *WIDTH* to *3*
            * and *VAL* to *5*
 
-Review the changes just made to the *Constant* (now) named `v1`.
+Review the changes just made to the *Constant* named `v1` (now).
 
 ---
 template: plain
@@ -793,7 +793,7 @@ In the *Diagram*
 * drag `v1` and `v2` inside `inputs` and
 * if necessary expand it (*Click* on [+] in the top-left corner)
 
-Select **both**, `inputs` **and** `adder`._[]
+Select **both**, `inputs` **and** `adder`.._[]
 * *Right-Click* and (from the pop-up menu) choose *Create Hierarchy*
   * set *Cell Name* to `BD` and
   * verify *Move selected blocks to hierarchy* is checked (*Click OK*)
@@ -838,7 +838,7 @@ Maybe – if you like – finally *Right Click* and chose *Regenerate Layout*.
 
 ---
 template: plain
-header: ### Part 4 / Optional: Create a Tcl Script
+header: ### Part 4 / Optional Step: Create a Tcl Script
 
 You may now
 
@@ -955,7 +955,7 @@ characters special to the Tcl Syntax Analysis:
 * Which of the above  therefore **require** to be enclosed in curly braces?
 
 .F[:
-The result list returned might empty, which usually draws a warning, unless
+The result list returned might be empty, which usually draws a warning, unless
 the option `-quiet` is used.
 ]
 
@@ -963,7 +963,7 @@ the option `-quiet` is used.
 template: plain
 header: ### Part 4 / Optional Tcl Challenge
 
-Design Tcl solution to "clone" a pin or port, keeping all its properties
+Design a Tcl solution to "clone" a pin or port, keeping all its properties
 except the *TYPE*.._[]
 
 The following need to be solved:
