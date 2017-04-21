@@ -319,7 +319,35 @@ template:plain
 name: general_tcl_tk
 header: ## General Tcl/Tk
 
+* [TOC for HTML presentations](#toc_for_html_presentation)
 * [Tk-Example for Trying Out `expr`](#tk_example_for_trying_out_expr)
+
+---
+template:plain
+name: toc_for_html_presentation
+header: ### TOC for HTML Presentations
+
+```
+# read complete file into `htmltext`, close handle `fh`
+#
+set htmltext [read $fh]; close $fh
+
+# RE to strip prefix and postfix for actual content
+#        ++----------------------------------- anything (\1)
+#        ||  +++++++++++++-------------------- start-tag
+#        ||  |||||||||||||  ++---------------- any content (\2)
+#        ||  |||||||||||||  ||  +++++++++----- end-tag
+#        ||  |||||||||||||  ||  |||||||||  ++- anything (\3)
+set re {(.*)<textarea[^>]*>(.*)</textare.>(.*)}
+
+set content [regsub $re $htmltext {\2}]
+set page 0 ;# not necessary in recent Tcl version
+foreach line [split $content \n] {
+    if {[regexp {^header:(.*)} $line dummy chapter]} {
+        puts "[incr page]$chapter"
+    }
+}
+```
 
 ---
 template:plain

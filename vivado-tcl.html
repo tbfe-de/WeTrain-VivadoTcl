@@ -2923,7 +2923,7 @@ All (orthogonally) possible variations may now be generated with:
 foreach x $argset_1 {
     foreach y $argset_2 {
         parametrized_flow $x $y
-    
+    }
 }
 ```
 
@@ -2950,7 +2950,7 @@ set argset_tree {G {U V W    }
 … to be used with the following processing loop:
 ```
 foreach {x1 args2} $argset_tree {
-    foreach x2 $argset_2{
+    foreach x2 $args2 {
         parametrized_flow $x1 $x2
     }
 }
