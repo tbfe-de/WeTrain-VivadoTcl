@@ -32,7 +32,7 @@ Styled with [{{styling}}]({{styling}}) by {{styling-by}}
 layout: true
 name: plain
 copyright: (CC) BY-SA
-branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2016-04-18 (Single Day)
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2017-09-11 (Single Day)
 customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
 
 <!--
@@ -67,11 +67,11 @@ template: blank
 name: frontmatter
 
 .title[
-	Tcl Quick Introduction
+	Tcl Quick Introduction._[]
 ]
 .subtitle[
-	Introducing Tcl as preparation to
-	its use as Vivado Command Language._[]
+	Introducing Tcl as Preparation to  
+	its Use as Vivado Command Language
 ]
 .author.pull-left[
 	Durchführung  
@@ -82,7 +82,7 @@ name: frontmatter
 ]
 .client.pull-right[
 	Open Training  
-	2016-04-25 (Single Day)  
+	2017-09-11 (Single Day)  
 	Programming Logic Competence Center  
 	http://plc2.com
 ]
@@ -381,23 +381,26 @@ a supervising server, coordinating the TCP/IP interface.
 template: plain
 header: #### Tcl Outside Vivado – Example 2
 
+[Active State]: https://www.activestate.com/activetcl/downloads
+
 For an embedded device with a touch small touch screen, running a Linux based
 application, implement the high-level control logic including in Tcl/Tk.
 
 * Large parts of the development work can be done without access to the
   "real hardware":
 
-  * Either on a hosted Linux Version (chose your favorite – Tcl/Tk is available
-    not only on Linux but on most any U*ix based OS, like BSD, Mac …) …
-  * … or on Windows (e.g. using the Tcl/Tk implementation freely available from
-    [Active State].
+  * On a hosted Linux Version chose your favorite Tcl/Tk (besides on Linux
+    Tcl/Tk is freely available on most any U*ix based OS, like BSD, Mac, …)
+
+  * On Windows you may want to use the Tcl/Tk implementation freely available
+    from [Active State].
 
 * You can show (and try-out) a working prototype early to your customer with the
-  option to shift time critical parts closer to the hardware (Tcl → C/C++ →
-  kernel driver or module → FPGA → dedicated hardware).
+  option to shift time critical parts closer to the hardware, i.e. from Tcl →
+  to C/C++ → to a driver or kernel module → to the FPGA → to dedicated hardware.
 
 .N[
-Has been applied – by the author of this._[] … and others probably too.
+Has been applied – by the author of this … and others probably too.
 ]
 
 ---
@@ -1081,7 +1084,7 @@ Try it as follows:._[]
 What makes an interesting experiment is to use `=` with its own definition:
 
 ```
-   = proc = args {
+= proc = args {
     set n 0
     foreach arg $args {
         puts "[incr n]:>$arg<:"
@@ -1092,7 +1095,7 @@ What makes an interesting experiment is to use `=` with its own definition:
 
 ---
 template: plain
-header: #### Intermezzo: "Funny Names" (1)
+header: #### Intermezzo: "Funny Names"
 
 Unlike most any other programming language Tcl does not restrict what the name
 of a function or variable has to look like, because
@@ -1103,53 +1106,60 @@ of a function or variable has to look like, because
 is "just table lookup" only, where the name serves as key and therefore can be
 everything.._[]
 
-.N[
-Except for rare cases it does not seem advisable to exploit that freedom.
-]
-
-Whether the subroutine from the last page falls into that category or not is
-disputable.
-
-The "funny name" `=` was used for it to point out that it does nothing with a
-real purpose … except to help Tcl-beginners to understand how a command looks
-**after** the Tcl Syntax Analysis is done and its substitutions are applied.  
-
 .F[:
-Also note that procedures and variables with the same name may coexist, since
-they are looked up in different tables.
+An equals sign (`=`) was used as "funny name" for the command from the previous
+page to emphasize the point that its only purpose was to help Tcl-beginners to
+understand how a command **finally** looks, i.e. the Tcl Syntax Analysis is done
+and its substitutions are consequently applied.  
 ]
 
 ---
 template: plain
-header: #### Intermezzo: "Funny Names" (2)
+header: #### Intermezzo: "Funny Names" - When to Avoid?
 
 As a general rule: **Avoid unusual names** – even if Tcl supports them – and
 stay with the rules of most high-level programming languages:
 
 .N.center[
-Compose name identifiers from letters, digits and underscore only.._[]
+Compose name identifiers from letters, digits and underscore only.
 ]
 
-Having said that, it might *sometimes* be convenient or even elegant to use
-"funny names", especially
+* Besides readability this also is also necessary so that the content of
+  variables can be easily expanded in the command line by prepending a `$`
+  dollar sign (`$`).._[]
 
-* for **variables** that store kind of "internal secrets" and are not expected
-  to be touched or modified often,
-* for **subroutines** that do something very unusual or special, so the pure
-  sight of the name should alert about this.
+* Variable names **not** only consisting of letters, digits and underscore need
+  to be enclosed in curly braces when used after `$`.
 
-Hint: a nifty way to temporarily remove a subroutine **definition**, maybe to
-find out in which way other code depends on it, is to prepend a `#` to its name
-(not the `proc` command, this would only comment out one line).
+* For names of subroutines no special care needs to be taken.
 
 .F[:
-Besides readability this also is also necessary so that the content of variables
-can be easily expanded in the command line by prepending a `$` (dollar sign)..
-Variable names **not** only consisting of letters, digits and underscore need to
-be enclosed in curly braces when used after `$`, while for subroutine no special
-care needs to be taken. And finally, as crazy as it may sound: it is even
-possible to use an empty string as name – just write an empty pair of curly
-braces or two adjacent double quotes where the name is expected.
+As crazy as it may sound: it is even possible to use an empty string as name!  
+To "use" it just write an empty pair of curly braces. (For a subroutine also two
+adjacent double quotes will do.
+]
+
+---
+template: plain
+header: #### Intermezzo: "Funny Names" - When to Use?
+
+Having steered you away from "unusual" names possible in Tcl, it might
+*sometimes* be convenient or even elegant to still use them e.g.:
+
+* For **variables** storing kind of "internal secrets" and are not expected
+  to be touched or modified often,
+
+* For **subroutines** doing something unusual or very special, so the pure
+  appearance of the name should alert about this.
+
+* To temporarily "mask" the definition of a subroutine.._[]
+
+.F[:
+More concretely: there is a nice technique to temporarily remove a subroutine
+definition by prepending its name with a `-` sign.  The motivation might be to
+find out which other code on this subroutine depends, because all its uses will
+then give an error message. (Some uses may then still be selectively re-enabled
+by prepending the `-` in the calling code.)
 ]
 
 ---
@@ -1216,7 +1226,7 @@ Until the next **unquoted** double quote._[]
 
 * **no** newline or semicolon will be taken as **command separator**,
 
-* **no** horizontal white space._[] will be taken as **word separator**, and
+* **no** horizontal white space will be taken as **word separator**, and
 
 * **no reduction of** adjacent **horizontal white space** to a single space takes place.
 
@@ -1230,8 +1240,7 @@ What still has its special function are
   substituting the return value).
 
 More will be demonstrated on the page showing
-[Quoting by Examples](#quoting_by_example).
-]
+[Quoting Examples](#quoting_example).
 
 .F[:
 Double quotes are what in German is known as *Gänsefüßchen*.
@@ -1262,12 +1271,12 @@ enclosed in (matching) curly braces!
 ]
 
 More will be demonstrated on the page showing
-[Quoting by Examples](#quoting_by_example).
+[Quoting Examples](#quoting_examples).
 
 ---
 template: plain
-name: quoting_by_example
-header: #### Quoting by Example (1)
+name: quoting_examples
+header: #### Quoting Example (1)
 
 The best way to demonstrate the effects of quoting is with a subroutine which
 simply prints its arguments, like the one defined [here](#defining_subroutines):
@@ -1306,8 +1315,8 @@ arguments, if the first one refers to an open file, as will be demonstrated in
 
 ---
 template: plain
-name: quoting_by_example_2
-header: #### Quoting by Example (2)
+name: quoting_examples_2
+header: #### Quoting Examples (2)
 
 Also try the following …
 .pull-left[
@@ -3854,7 +3863,7 @@ in which the last line is terminated with end-of-line characters (as is usually
 the case).
 
 .pull-left[
-.N[
+.N.center[
 The loop is exited after the last line (as it is probably intended).
 ]
 ]
@@ -3865,6 +3874,8 @@ set the end-of-file state – this will only happen with the **next** call to
 `gets`.._[]
 ]
 ]
+
+<!-- -->
 
 .F[:
 But that call then returns an empty string, hence the `result` list has another
@@ -4389,7 +4400,7 @@ call-backs when
 
 * subroutines executed (entry, exit, or line-by-line trace).
 
-.N[
+.N.center[
 The speaker will show live examples if this topic is of special interest.
 ]
 
@@ -4406,7 +4417,7 @@ The command [`rename`] allows to
 
 * completely remove it (by renaming it to the empty string `""`).
 
-.N[
+.N.center[
 The speaker will show live examples if this topic is of special interest.
 ]
 
@@ -4448,7 +4459,7 @@ header: ### Part 4: Using Tcl in Vivado and Beyond
 The (relative) weight of the major sections is controlled by attendees and may
 vary between "50:50" or "80:20", with the 80% on either side.
 
-.N[
+.N.center[
 There will be a short poll now so that time can be appropriately allotted.
 ]
 
@@ -4580,12 +4591,13 @@ This, of course, needs some quoting in Tcl, but full quoting
 
 will fail in that particular case, due to the trailing back-slash.._[]
 
-.N[
+.N.center[
 Therefore the recommended solution is this:
+]
 
 * **`"\\abc\\def uvw\\xyz\\"`**
 
-.N[
+.N.center[
 **Use double quotes and write all contained back-slashes twice.**
 ]
 

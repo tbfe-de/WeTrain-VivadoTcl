@@ -106,17 +106,13 @@ name: frontmatter
 ]
 
 .subtitle[
-	User-Proposed Tcl Challenges
-	(and some Q&A)
+	Systematic Variations in Scripted Flows
 ]
 
 .F[:
 In the Online Version of this Lab you can access additional help as part of
 the *Presenters Notes* – just hit the `P`-key once …
 ]
-
-[XILINX UG835]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug835-vivado-tcl-commands.pdf
-[XILINX UG888]: http://www.xilinx.com/support/documentation/sw_manuals/xilinx2016_4/ug888-vivado-design-flows-overview-tutorial.pdf
 
 ???
 
@@ -133,310 +129,219 @@ after pressing the P-key, simply use HTML comments, like it is done here.
 -->
 
 ---
-template: plain
-header: ## Section Overview
-
-* [Vivado Related](#vivado_related)
-* [General Tcl/Tk](#general_tcl_tk)
-* [Non-Programming](#non_programming)
-
----
 template:plain
-name: vivado_related
-header: ## Vivado Related
+header: ## Part 1: Analyze the Example
 
-* [Report all Ports of a Block-Design](#report_all_bd_ports)
-* [Report Design Files used by Current Top](#report_used_design_files)
-* [Disable Un-used Design Files](#disable_unused_design_files)
-* [Change Type of Line in a Block Design](#change_bd_type_of_line)
-* [Parse List of Design Files](#parse_design_file_list)
-* [Connect Net to Pin for Debugging](#connect_net_to_pin_for_debug)
-* [Examples for Filtering Reports](#report_filtering_examples)
+Get familiar with the Tcl script `Examples/flow_demo.tcl` and answer the
+following questions:
 
----
-template:plain
-name: report_all_bd_ports
-header: ### Report all Ports of a Block Design
+* What is obviousyl the purpose of its first (ca.) 10 lines?
 
-Try something along the lines of:
-```
-proc report_all_bd_ports {names} {
-    set f {%-18s -> %-18s -> %-18s}
-    puts [format $f Cell Net Port]
-    puts [string repeat - [expr {3*18 + 2*4}]]
-    foreach cell [get_bd_cells $names] {
-    	foreach net [get_bd_nets -quiet -of_object $cell] {
-            foreach port [get_bd_ports -quiet -of_object $net] {
-            	puts [format $f $cell $net $port]
-            }
-        }
-    }
-}
-```
+* Which Tcl sub-routines are defined?
 
-Example Output:
-```
-Cell               -> Net                -> Port              
---------------------------------------------------------------
-/BD                -> /BD/adder_S        -> /BD/S             
-/BD                -> /BD/inputs/v1_dout -> /BD/inputs/dout2  
-/BD                -> /BD/inputs/v2_dout -> /BD/inputs/dout1
+* Which "test cases" are contained.
 
-```
-
----
-template:plain
-name: report_used_design_files
-header: ### Report Design Files Used by Current Top
-
-Try something along the lines of:
-```
-get_files -compile_order sources -used_in synthesis
-```
-
-(Maybe with more specific file name patterns or filtering.)
-
----
-template:plain
-name: disable_unused_design_files
-header: ### Disable Unused Design Files
-
-Try something along the lines of:._[]
-```
-set used [get_files -compile_order sources -used_in synthesis]
-foreach file [get_files {*.v *.vhdl}] {
-    if {[lsearch $used $file] == -1} {
-        set_property IS_ENABLED false $file
-    }
-}
-```
-
-To re-enable all files all currently disabled files use:
-```
-set_property IS_ENABLED true [get_files {*.v *.vhdl}]
-```
-
-Or, to avoid a warning if currently no files are disabled:
-```
-foreach file [get_files {*.v *.vhdl} -quiet] {
-    set_property IS_ENABLED true $file
-}
-```
+* How can these be executed?
 
 .F[:
-Used exactly as shown the approach also captures some files for which the
-`IS_ENABLED` property cannot be modified, despite the fact that it isn't marked
-read-only for such files. As this is typically happens for *IPs*, a crude way
-to avoid a number of warnings for such files add `-filter { NAME !~ */ip/* }`.
+Hint (if you need one):
+The script file are written to be run "stand-alone", i.e. from a plain Tcl
+interpreter as available on Linux and Windows (e.g. via Active Tcl in the
+latter case). Nevertheless it is also possible to `source` them from the Vivado
+Tcl Shell **after** setting the variable `argv` to select one of the prepared
+test cases:
+```
+set argv hard-coded_1
+source -notrace Examples/flow_demo.tcl
+```
+Or:
+```
+set argv orthogonal
+source -notrace Examples/flow_demo.tcl
+```
+(etc.)
 ]
 
 ---
 template:plain
-name: change_bd_type_of_line
-header: ### Change Type of Line in a Block Design
+header: ### Part 2 / Step 1: Compare `hard-coded` to `fixed_args`
 
-– see last page of LAB 4 –
+Try the following test cases contained in `Examples/flow_demo.tcl`:
+
+* `hard-coded_1` and `hard-coded_2`
+
+* `fixed-args_1` and `fixed-args_2`
+
+Are there any differences in the output?._[]
+
+.N[
+Be sure to understand how the `parametrized_flow` factors-out commonalities in
+the two (previously) hard-coded flows and handles variations via arguments.
+]
+
+.F[:
+Of course there shouldn't be any …
+]
 
 ---
 template:plain
-name: parse_design_file_list
-header: ### Parse List of Design Files
+header: ### Part 2 / Step 2: Understand Orthogonal Variations
 
-[`file`]: https://www.tcl.tk/man/tcl8.4/TclCmd/file.htm
+How many executions of the `parametrized_flow` do you expect with the current
+argument set for "orthogonal" variations:
+```
+set argset_1 [list fff ggg iii]
+set argset_2 [list uuu vvv www xxx yyy]
+```
 
 .pull-left[
-`Src1.lst`:
+How many do you expect here …
 ```
-/DIR_a/Src_2.lst
-/DIR_b/Src_3.lst
-…
-../vhd/Design_file_1.vhd
-../vhd/Design_file_2.vhd
-…
+set argset_1 [list fff ggg iii]
+set argset_2 [list uuu yyy]
 ```
 ]
 .pull-right[
-`Src_2.lst`:
+… and here?
 ```
-/DIR_c/Src_4.lst
-/DIR_d/Src_5.lst
-…
-../vhd/Design_file_3.vhd
-../vhd/Design_file_4.vhd
-/DIR_X/vhd/Design_file_4.vhd
+set argset_1 [list fff "ii oo"]
+set argset_2 [list uuu xxx yyy]
 ```
 ]
 
-Assuming the list of file names look similar to the above, the following
-code fragment may serve as a base to start with:._[]
-```
-proc get_file_lists {name} {
-    set fh [open $name r]
-    foreach fn [split [read $fh] \n] {
-        # do whatever needs to be done with the file named `$fn`
-    }
-    close $fh
-}
-```
-
-.F[:
-Look-up Tcl's [`file`] command to learn how path names (read into the variable
-`fn` above) can be plucked into pieces and also re-assembled, if necessary.
-]
+(Of course, you should also verify your prediction and – if there was a
+difference – understand why your guess was wrong.)
 
 ---
 template:plain
-name: connect_net_to_pin_for_debug
-header: ### Connect Net to Pin for Debugging
+header: ### Part 2 / Step 3: Understand Tree-Based Variations
 
-If you have an implemented design, you may roughly use this approach:
+How many executions of the `parametrized_flow` do you expect with the current
+argument set for "tree-based" variations:
+```
+set argset_tree {
+    fff { uuu vvv www         }
+    ggg { uuu         xxx     }
+    iii {         www xxx yyy }
+}
+```
 
-* Identify the net to be watched,
+How many do you expect here?
+```
+set argset_tree { fff { uuu www } ggg { uuu xxx } iii www }
+```
 
-* **and** an unused external pin,
+---
+template:plain
+header: ## Intermezzo:
 
-* **then** connected both.
+Assuming you have grasped the idea to run a design flow with systematic variations
+via control loops …
 
 .N.center[
-The Vivado Tcl Command to add connections is `connect_net`.
+… If You Have Concrete Use Case …
 ]
 
-* Finally **route** the added connection by
-
-  * running the appropriate routing tool in *Non-Project Mode* or
-
-  * launching an appropriate implementation run in *Project Mode*.
+… feel free to apply the technique now to a small demo project.
 
 ---
 template:plain
-name: report_filtering_examples
-header: ### Examples for Filtering Reports
+header: ## Optional Part 3: More Flow Variations
 
-– see LAB 4 Part 2 –
+The reminder of this Lab deals with
+
+* some ideas to add more "flow variations" and
+
+* "user-friendly" ways to control these via variables only.._[]
+
+.F[:
+The results of this part "just scratches the surface" and might – for advanced
+applications – evolve into a *"Domain Specific 'little' Language"*, specifying
+optimization strategies where consecutive refinements (i.e.  steps applied and
+options tried second, third, forth etc.) depend on previous results.
+]
 
 ---
 template:plain
-name: general_tcl_tk
-header: ## General Tcl/Tk
+header: ### Part 3 / Step 1: Conditional Flow Parts
 
-* [TOC for HTML presentations](#toc_for_html_presentation)
-* [Tk-Example for Trying Out `expr`](#tk_example_for_trying_out_expr)
+Add a third argument to the `parametrized_flow` which may take the value `1` or
+`0` and completely omits the `aaa ddd zzz` in the second case.
 
----
-template:plain
-name: toc_for_html_presentation
-header: ### TOC for HTML Presentations
-
+.pull-left[
+Which arguments need now be given to get this …
 ```
-# read complete file into `htmltext`, close handle `fh`
-#
-set htmltext [read $fh]; close $fh
+aaa ddd vvv ttt
+aaa ppp jjj
+qqq zzz vvv ppp
+```
+]
+.pull-right[
+… and this result?
+```
+aaa ddd uuu ttt
+aaa ddd zzz
+aaa ppp jjj
+qqq zzz uuu ppp
+```
+]
 
-# RE to strip prefix and postfix for actual content
-#        ++----------------------------------- anything (\1)
-#        ||  +++++++++++++-------------------- start-tag
-#        ||  |||||||||||||  ++---------------- any content (\2)
-#        ||  |||||||||||||  ||  +++++++++----- end-tag
-#        ||  |||||||||||||  ||  |||||||||  ++- anything (\3)
-set re {(.*)<textarea[^>]*>(.*)</textare.>(.*)}
+.F[:
+Hint (if you need one):  
+If your third argument is named `arg3`, enclose any conditional part (…) that
+way: `if {$arg3} { … }`
+]
 
-set content [regsub $re $htmltext {\2}]
-set page 0 ;# not necessary in recent Tcl version
-foreach line [split $content \n] {
-    if {[regexp {^header:(.*)} $line dummy chapter]} {
-        puts "[incr page]$chapter"
-    }
+---
+template:plain
+header: ### Part 3 / Step 2: Adding Orthogonal Levels
+
+Modify the "orthogonal variations" by adding add a third level
+
+* so that the conditional part – according to the modification done in the
+  previous step
+
+  * gets **systematically added and omitted**,
+
+  * for **all variations** controlled by `argset_1` and `argset_2`
+
+.F[:
+Hint (if you need one):  
+You may either use a conditional in the current two (nested) `foreach`-loops or
+– probably better as then all behaviour were "controlled by data" – add an `argset_3`
+with values `0` and `1` and a third (nested) `foreach`-loop.
+]
+
+---
+template:plain
+header: ### Part 3 / Step 3: Adding Tree-Based Levels
+
+Modify "tree-based variations" so that – with respect to the conditional part
+introduced in Step 1 – the control specification
+```
+set argset_tree {
+    fff { uuu vvv www         } yes
+    ggg { uuu         xxx     } no
+    iii {         www xxx yyy } yesno
 }
 ```
+will cause the following **eleven** runs of `parametrized_flow`:
 
----
-template:plain
-name: tk_example_for_trying_out_expr
-header: ### Tk-Example for Trying Out `expr`
+* for `arg1` taking the value `fff` **three** runs total with
+  * `arg2` taking the values `uuu`, `vvv`, `www`, and
+  * the conditional part *always included*;
+* for `arg1` taking the value `ggg` **two** runs total with
+  * `arg2` taking the values `uuu` and `xxx`, and
+  * the conditional part *never included*;
+* for `arg1` taking the value `iii` **six** runs total with
+  * `arg2` taking the values `www`, `xxx`, and `yyy`, and
+  * the conditional part *included once* and *omitted once*.
 
-```
-#!/usr/bin/env wish
-pack [label .x -text expr]\
-     [entry .e -width 30 -textvariable in]\
-     [button .b -text "→" -command calc]\
-     [label .r -width 15 -bg yellow -textvariable out]\
-     -side left
-proc calc {} {
-    if {[catch {
-        set ::out [expr $::in]
-        .r configure -bg yellow
-    }]} {
-        set ::out ***
-        .r configure -bg red
-    }
-}
-bind .e <Return> calc
-```
-
----
-template:plain
-name: non_programming
-header: ## Non-Programming
-
-* [Recommendable Books](#book_recommendations)
-* [Free Online Resources](#free_online_resources)
-* [Question & Answers](#question_and_answers)
-
----
-template:plain
-name: book_recommendations
-header: ### Book Recommendations
-
--------------------------------------------------------------------------------
-[
-**Tcl and the Tk Toolkit (2nd Edition)** by *John Oustehrhout & Ken Jones*
-](https://books.google.de/books?id=BWf6mdwHjDMC)
-
--------------------------------------------------------------------------------
-[
-**Practical Programming in Tcl and Tk (4th Edition)** by *Brent Welch*
-](https://books.google.de/books/about/Practical_Programming_in_Tcl_and_Tk.html)
-
--------------------------------------------------------------------------------
-
----
-template:plain
-name: free_online_resources
-header: ### Free Online Resources
-
--------------------------------------------------------------------------------
-**Tcl Developer's Exchange** → http://www.tcl.tk
-
--------------------------------------------------------------------------------
-**The Tcl'ers Wiki** → http://wiki.tcl.tk
-
--------------------------------------------------------------------------------
-**Learning Tcl/Tk by Tutorials Point**  
-→ https://www.tutorialspoint.com/tcl-tk
-
--------------------------------------------------------------------------------
-
----
-template:plain
-name: question_and_answers
-header: ### Questions & Answers
-
--------------------------------------------------------------------------------
-Q: **Where can I find a Tcl/Tk implementation for Windows?**
-
-A: Look for Active State Tcl → https://www.activestate.com/activetcl
-
--------------------------------------------------------------------------------
-Q: **How to use more than one *XDC*-files per project?**
-
-A: (Pending)
-
--------------------------------------------------------------------------------
-Q: **How to sort out important from insignificant warnings?**
-
-A: (Pending)
-
--------------------------------------------------------------------------------
+.F[:
+Hint (if you need one): There are "*many ways to skin the cat*" but a
+particularly nifty approach would be to map "`yes`", "`no`", and "`yesno`" to 
+the lists `{1}`, `{0}`, and `{1 0}` and just add another `foreach`-loop …
+]
 
 
 </textarea>

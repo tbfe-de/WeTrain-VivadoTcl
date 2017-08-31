@@ -32,7 +32,7 @@ Styled with [{{styling}}]({{styling}}) by {{styling-by}}
 layout: true
 name: plain
 copyright: (CC) BY-SA
-branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2017-04-19 … 2017-04-21
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2017-09-12 … 2017-09-14
 customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
 
 <!--
@@ -65,7 +65,7 @@ customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
 layout: true
 name: linkinfo
 copyright: (CC) BY-SA
-branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2017-04-19 … 2017-04-21
+branding:  [Dipl.-Ing. Martin Weitzel](http://tbfe.de) &#8199;&#8199; 2017-09-12 … 2017-09-14
 customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
 
 <!--
@@ -92,7 +92,7 @@ customer:  [PLC2 – Programmable Logic Competence Center](http://plc2.com)
 ]
 
 .pagefooter[
-{{copyright}}: {{branding}} {{customer}} .plc2-logo[]
+{{copyright}}: {{branding}} .plc2-logo[{{customer}}]
 ]
 
 ---
@@ -116,7 +116,7 @@ name: frontmatter
 ]
 .client.pull-right[
 	Open Training and Workshop  
-	2017-04-19 to 2017-04-21  
+	2017-09-12 to 2017-09-14  
 	Programming Logic Competence Center  
 	http://plc2.com
 ]
@@ -198,20 +198,20 @@ header: ## Agenda
 
 ------------------------------------------------------------------------------
 
-* 2017-04-19
+* 2017-09-12
 
     * Part 1: [Tcl Quick Refresher](#tcl_quick_refresher)
 
-    * Part 2: [Retrieving Scripts from Journals](#retrieving_scripts_from_journals)
+    * Part 2: [Basing Scripts on Journals](#retrieving_scripts_from_journals)
 
 
-* 2017-04-20 
+* 2017-09-13 
 
     * Part 3: [Tcl Vivado Integration](#tcl_vivado_integration)
 
     * Part 4: [Processing Files and Reports](#processing_files_and_reports)
 
-* 2017-04-21
+* 2017-09-14
 
     * Part 5: [Automating Systematic Variations](#automating_variations)
 
@@ -226,7 +226,7 @@ header: ## Part 1: Tcl Quick Refresher
 
 ------------------------------------------------------------------------------
 
-* [Tcl Quick Syntax Refresher](#tcl_quick_syntax)
+* [Tcl Syntax Quickly](#tcl_quick_syntax)
 
     * [Command and Word Separation](#tcl_command_and_word_sep)
     * [Three Kinds of Quoting](#tcl_three_kinds_of_quoting)
@@ -237,7 +237,7 @@ header: ## Part 1: Tcl Quick Refresher
 
 ------------------------------------------------------------------------------
 
-* [Tcl Quick Library Refresher](#tcl_quick_library)
+* [Tcl Library Quickly](#tcl_quick_library)
 
     * [Character Strings](#tcl_character_strings)
     * [Regular Expressions](#tcl_regular_expressions)
@@ -534,7 +534,7 @@ Originating in the Unix tradition, Tcl **of course** supports REs._[] for:
   – `regexp {(\d{1,3}(?:\.\d{3})*),(\d{2}) Euro} $ec - eur cnt`
 
 * Substitutions, e.g.  
-  – `regsub {^[ \t]*(.*[^ \t])[ \t]*$) $line {\1} line`
+  – `regsub {^[ \t]*(.*[^ \t])[ \t]*$} $line {\1} line`
 
 .N.center[
 Clearly, the above is does not strive to introduce REs from ground-up! :-)
@@ -612,29 +612,30 @@ Therefore in Germany the output will probably not be … `00:00:00` … but
 ]
 
 ---
-
 template: plain
 name: retrieving_scripts_from_journals
-header: ## Retrieving Scripts from Journals
+header: ## Part 2: Basing Scripts on Journals
 
 ------------------------------------------------------------------------------
 * [Accessing the Vivado Design Suite](#accessing_the_vivado_design_suite)
-
   * [Using the Vivado GUI](#using_the_vivado_gui)
   * [Using Vivado Tcl Commands](#using_vivado_tcl_commands)
+
 ------------------------------------------------------------------------------
 * [Accessing the Tool Command Language](#accessing_the_tool_command_language)
-
   * [The Vivado Tcl-Console](#the_vivado_tcl_console)
   * [Suspending the Vivado GUI](#suspending_the_vivado_gui)
   * [Vivado Batch Script Mode](#vivado_batch_script_mode)
+
 ------------------------------------------------------------------------------
 * [From Journal-Files to Automation](#from_journal_files_to_automation)
-
   * [Turning Journals into Tcl-Scripts](#turning_journals_into_tcl_scripts)
   * [Plain Use vs. Packaging in `proc`s](#plain_use_vs_packaging_in_procs)
+
 ------------------------------------------------------------------------------
 * [Bring-in Your Own Design?](#bring_in_your_own_design)
+
+------------------------------------------------------------------------------
 
 ---
 template: linkinfo
@@ -969,7 +970,7 @@ a file, can be as easy as to
 
 .N[
 Instead of removing the heading comments completely, you may rather decide to
-change it into something meaningful._[]
+change it into something meaningful.._[]
 ]
 
 To provide some structure, you may also want to:
@@ -1146,27 +1147,27 @@ participants.
 ---
 template: plain
 name: tcl_vivado_integration
-header: ## Tcl Vivado Integration
+header: ## Part 3: Tcl Vivado Integration
 
 ------------------------------------------------------------------------------
 * [Tcl and Vivado – The Big Picture](#tcl_vivado_big_picture)
-
     * [Non-Project- vs. Project Mode](#nonproject_vs_project_mode)
     * [Interacting with the Design Model](#interacting_with_the_design_model)
 
+------------------------------------------------------------------------------
 * [Vivado Command Conventions](#vivado_command_conventions)
-
     * [Tcl vs. Vivado Commands](#tcl_vs_vivado_commands)
     * [Necessity of Quoting](#necessity_of_quoting)
     * [Storing Command Parameters](#storing_command_parameters)
+
 ------------------------------------------------------------------------------
 * [Diving Deeper Into Vivado …](#diving_deeper_into_vivado)
-
   * [Understanding Non-Project Mode](#understanding_non_project_mode)
   * [Understanding Project Mode](#understanding_project_mode)
   * [Understanding the Design Model](#understanding_the_design_model)
      * [Basics of Design Navigation](#basics_of_design_navigation)
      * [Accessing Object Properties](#accessing_object_properties)
+
 ------------------------------------------------------------------------------
 
 ---
@@ -2658,7 +2659,7 @@ set_property XXX nval $objs
 ---
 template: plain
 name: processing_files_and_reports
-header: ## Processing Files and Reports
+header: ## Part 4: Processing Files and Reports
 
 ------------------------------------------------------------------------------
 
@@ -2793,7 +2794,7 @@ A Demonstration will be given live.
 ---
 template: plain
 name: automating_variations
-header: ## Automating Variations
+header: ## Part 5: Automating Variations
 
 Often it is not clear in advance which of several optimizations will have the
 best effect or offer the best trade-off between competing goals.
@@ -2809,63 +2810,150 @@ header: ### General Approach
 
 To automate variations the general approach should be:
 
-* Package what needs to be done in a sub-routine.
+1. Determine what needs to be done (steps/tools to be executed)
 
-* Via parameters specify those parts of the contained commands for which
-  different values should be tried systematically.
+2. Determine the commonalities and necessary variations.
 
-* Determine the set of actual values the parameters should take.
+3. Package the steps into a (hard-coded) sub-routine.
+
+4. Parametrize values to be varied.
+
+5. Accordingly add arguments to calls.
 
 .N.center[
 Note that the following pages outline the approach rather "schematically" than
 with concrete Vivado commands.
 ]
 
-The reason is that this technique as such is very general and this should not be
-obscured by using a too specific examples.
+The reason is that this technique as such is very general and therefore the core
+approach should not be obscured by using an example that is too specific.
 
 ---
 template: plain
-name: find_commonalities
-header: #### Find Commonalities
+name: determine_what_needs_to_be_done
+header: #### Determine what needs to be done
 
-Assume from two GUI sessions journals are extracted, with some differences but
-also many obvious commonalities:
+Assume the steps to be executed – maybe extracted from GUI session journals
+– in two similar design flow schematically look as follows:
+
+.pull-left[
+Design Flow 1:
+
+* `aaa ddd ggg ttt`
+* `aaa ddd zzz`
+* `aaa hhh jjj`
+* `qqq ggg hhh zzz`
+]
+.pull-right[
+Design Flow 2:
+
+* `aaa ddd uuu ttt`
+* `aaa ddd zzz`
+* `aaa vvv jjj`
+* `qqq uuu vvv zzz`
+]
+
+Say `aaa` and `qqq` are some arbitrary tools or (i.e. Vivado commands)
+
+* like running design and implementation,
+* generating various reports,
+* doing some optimization
+
+and `ddd`, `ggg`, `uuu` are tool (or command) options._[]
+
+.F[
+Or even be **part** of a command name, as the technique also works if `aaa ddd`
+and `aaa hhh` actually were `aaa_ddd` and `aaa_hhh` (say `report_ddd` and
+`report_hhh`).
+]
+
+---
+template: plain
+name: find_commonalities_and_variations
+header: #### Find Commonalities and Variations
+
+The following highlights the differences (using bold italics) from the
+commonalities:
+
+.pull-left[
+Design Flow 1:
+
+* `aaa` `ddd` ***`ggg`*** `ttt`
+* `aaa` `ddd zzz`
+* `aaa` ***`hhh`*** `jjj`
+* `qqq` ***`ggg` `hhh`*** `zzz`
+]
+.pull-right[
+Design Flow 2:
+
+* `aaa` `ddd` ***`uuu`*** `ttt`
+* `aaa` `ddd` `zzz`
+* `aaa` ***`vvv`*** `jjj`
+* `qqq` ***`uuu` `vvv`*** `zzz`
+]
+
+The variations can be summarized as follows:
+
+.pull-left[
+* ***`ggg`*** in flow 1 …
+* ***`hhh`*** in flow 1 …
+]
+.pull-right[
+* … is ***`uuu`*** in flow 2
+* … is ***`vvv`*** in flow 2
+]
+
+Be sure to understand the example was **kept structurally very simple** to
+better highlight the general approach.._[]
+
+.F[:
+In concrete applications some variations may express themselves in commands to
+be run in some of the flows only and omitted in others. This is easy to achieve
+with the [Tcl command `if`] or the [Tcl command `switch`] and expressing the
+variation with a boolean flag or a case-selector.
+]
+
+[Tcl command `if`]: https://www.tcl.tk/man/tcl8.4/TclCmd/if.htm
+[Tcl command `switch`]: https://www.tcl.tk/man/tcl8.4/TclCmd/switch.htm
+
+---
+template: plain
+name: find_commonalities_and_variations
+header: #### Implementing the Hard-Coded Flows
+
+(In practice either the previous or this step may well be skipped.)
 
 .pull-left[
 ```
-proc separate_flow_1 {} {
-    = abc def G xyz
-    = abc def z
-    = abc H ijk
-    = qqq G H z
+proc hardcoded_flow_1 {} {
+    aaa ddd ggg ttt
+    aaa ddd zzz
+    aaa hhh jjj
+    qqq ggg hhh zzz
 }
 ```
 ]
 .pull-right[
 ```
-proc separate_flow_2 {} {
-    = abc def U xyz
-    = abc def z
-    = abc V ijk
-    = qqq U V z
+proc hardcoded_flow_2 {} {
+    aaa ddd uuu ttt
+    aaa ddd zzz
+    aaa vvv jjj
+    qqq uuu vvv zzz
 }
 ```
 ]
 
-(To help spotting the commonalities, they are shown in lower case above.)
-
-.N.center[
-Of course, commonalities are not always that easy to recognize.._[]
-]
+The calls to this sub-routines will – of course – look as simple as:._[]
+```
+hardcoded_flow_1
+hardcoded_flow_2
+```
 
 .F[:
-It may e.g. also be the case that some the differences require additional
-commands, to be left out n other cases … what can be easily handled with the
-[Tcl command `if`].
+For a practical demonstration you may want to try the Tcl script
+`Examples/flow_demo.tcl` with argument `hard-coded_1` or `hard-coded_2`.
 ]
-
-[Tcl command `if`]: https://www.tcl.tk/man/tcl8.4/TclCmd/if.htm
 
 ---
 template: plain
@@ -2875,50 +2963,70 @@ header: #### Parametrize Variations
 Factoring-out the commonalities leads to:
 ```
 proc parametrized_flow {arg1 arg2} {
-    = abc def $arg1 xyz
-    = abc def z
-    = abc $arg1 ijk
-    = qqq $arg1 $arg2 z
+    aaa ddd $arg1 ttt
+    aaa ddd zzz
+    aaa $arg2 jjj
+    qqq $arg1 $arg2 zzz
 }
 ```
 
+The effect of the two previously hard-coded flows can be reproduced as
+follows:._[]
+
 .pull-left[
-The effect of `separate_flow_1` can be produced with:
+`hardcoded_flow_1` now is:
 ```
-parametrized_flow G H
+parametrized_flow ggg hhh
 ```
 ]
 .pull-right[
-The effect of `separate_flow_2` can be produced with:
+`hardcoded_flow_2` now is:
 ```
-parametrized_flow U V
+parametrized_flow uuu vvv
 ```
+]
+
+.F[:
+For a practical demonstration you may want to try the Tcl script
+`Examples/flow_demo.tcl` with argument `fixed-args_1` or `fixed-args_2`.
 ]
 
 ---
 template: plain
-name: define_argument_sets
-header: #### Define Argument Sets
+name: orthogonal_argument_sets
+header: #### Orthogonal Argument Sets
 
 Further analysing what may determine that valid argument sets are:
 
-* `arg1` could take the values `G`, `H`, and `I`, while
+* `arg1` could take the values `fff`, `ggg`, and `iii`, while
 
-* `arg2` could take the values `U`, `V`, `W`, `X`, and `Y`.
+* `arg2` could take the values `uuu`, `vvv`, `www`, `xxx`, and `yyy`.
 
-These could be represented as two lists:
+These two sets could be represented as two Tcl lists:._[]
 
 ```
-set argset_1 [list G H I]
-set argset_2 [list U V W X Y]
+set argset_1 [list fff ggg iii]
+set argset_2 [list uuu vvv www xxx yyy]
 ```
+
+.N[
+Using the [Tcl command `list`] is somewhat precautionary in this case.._[]
+]
+
+.F[:
+To develop the habit to construct all lists in this way helps to avoid
+surprises if the actual values may contain characters having a special effect
+in the Tcl syntax.
+]
+
+[Tcl command `list`]: https://www.tcl.tk/man/tcl8.4/TclCmd/list.htm
 
 ---
 template: plain
 name: orthogonal_combination
 header: #### Orthogonal Combination
 
-All (orthogonally) possible variations may now be generated with:
+All orthogonally possible variations may now be generated with:._[]
 ```
 foreach x $argset_1 {
     foreach y $argset_2 {
@@ -2927,27 +3035,55 @@ foreach x $argset_1 {
 }
 ```
 
+.F[:
+For a practical demonstration you may want to try the Tcl script
+`Examples/flow_demo.tcl` with argument `orthogonal`.
+]
+
+---
+template: plain
+name: tree_based_argument_set
+header: #### Tree-Based Argument Sets
+
+Alternatively it may be the case that **not all possible combinations** make
+sense, but only the following ones:
+
+* `fff` may be combined with `uuu`, `vvv`, `www`
+* `ggg` may be combined with `uuu` and `xxx`
+* `iii` may be combined with `www`, `xxx`, and `yyy`.
+
+This may be specified in a "nested-list" style._[] as follows:
+```
+set argset_tree {
+    fff { uuu vvv www         }
+    ggg { uuu         xxx     }
+    iii {         www xxx yyy }
+}
+```
+
+
+.F[:
+Note that the list has been formatted for readability here, highlighting the
+possible combinations. To maximize that effect the lists were not constructed
+using the [Tcl command `list`], though this could also be done precautionary
+here:
+```
+set argset_tree [list\
+    fff [list uuu vvv www         ]\
+    ggg [list uuu         xxx     ]\
+    iii [list         www xxx yyy ]
+]
+```
+]
+
+[Tcl command `list`]: https://www.tcl.tk/man/tcl8.4/TclCmd/list.htm
+
 ---
 template: plain
 name: tree_based_combination
 header: #### Tree-Based Combination
 
-Alternatively it may be the case that not all possible combinations make
-sense, only the following:
-
-* `G` may be combined with `U`, `V`, `W`
-* `H` may be combined with `U` and `X`
-* `I` may be combined with `W`, `X`, and `Y`.
-
-This may be specified in a nested-list style as follows …
-```
-set argset_tree {G {U V W    }
-                 H {U     X  }
-                 I {    W X Y}
-                }
-```
-
-… to be used with the following processing loop:
+The tree-based argument set can be applied with  the following processing loop:
 ```
 foreach {x1 args2} $argset_tree {
     foreach x2 $args2 {
@@ -2956,10 +3092,15 @@ foreach {x1 args2} $argset_tree {
 }
 ```
 
+.F[:
+For a practical demonstration you may want to try the Tcl script
+`Examples/flow_demo.tcl´ with argument `tree-based`.
+]
+
 ---
 template: plain
 name: tcl_reusability
-header: ## Tcl from the Reusability Viewpoint
+header: ## Part 6: Tcl from the Reusability Viewpoint
 
 ------------------------------------------------------------------------------
 

@@ -205,6 +205,7 @@ a, a > code {
 
 div.remark-slide-number {
 	padding-bottom: 4px;
+	padding-right: 4px;
 	font-size: 90%
 }
 div.remark-notes {
@@ -296,6 +297,12 @@ table td, table th {
 	border: solid medium darkgrey;
 	background: yellow;
 }
+@media print { /* for a more uniform appearance */
+	.I {
+		background: white;
+		color: black;
+	}
+}
 .I:before {
 	content: "";
 	display: block;
@@ -333,7 +340,7 @@ table td, table th {
 .W code.remark-code {
 	color: black;
 }
-@media print { /* For a more uniform appperance */
+@media print { /* for a more uniform appearance */
 	.W {
 		background: white;
 		color: black;
@@ -361,7 +368,6 @@ table td, table th {
 		text-align: center;
 	}
 }
-
 
 /* ---- FOOTNOTE ------------------------ special area at the bottom of page */
 .F {
@@ -445,21 +451,19 @@ div.infolink {
         height: 1.9em;
 	bottom: 12px;
         left: 40px;
-	right: 110px;
+	right: 130px;
 }
 
-@media screen {
-	.pagefooter:before {
-		content: "";
-		display: block;
-		background: url("logo-MW-12x12.png") no-repeat;
-		position: absolute;
-		bottom: -4.7em;
-		left: -3px;
-		width: 36mm;
-		height: 24mm;
-		float: left;
-	}
+.pagefooter:before {
+	content: "";
+	display: block;
+	background: url("logo-MW-12x12.png") no-repeat;
+	position: absolute;
+	bottom: -4.7em;
+	left: -3px;
+	width: 36mm;
+	height: 24mm;
+	float: left;
 }
 
 .pagefooter a:link {
@@ -584,10 +588,10 @@ div.linkpage span.X {
 		-webkit-box-shadow: none;
 		box-shadow: none;
 	}
-}
 @page {
 	size: A4;
-	margin-left: 2cm;
+	margin-right: 1cm;
+}
 }
 
 /*
